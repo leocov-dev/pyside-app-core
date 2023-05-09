@@ -1,0 +1,1 @@
+# pyside-frameless-style
