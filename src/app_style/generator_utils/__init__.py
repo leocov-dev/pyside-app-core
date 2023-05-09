@@ -1,0 +1,1 @@
+from .generate_resources import compile_qrc_to_resources

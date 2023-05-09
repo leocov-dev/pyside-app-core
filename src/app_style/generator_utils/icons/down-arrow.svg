@@ -1,0 +1,15 @@
+<svg version="1.1"
+     width="16" height="16"
+     xmlns="http://www.w3.org/2000/svg">
+
+    <polygon points="
+    1,5
+    1,9
+    8,14
+    15,9
+    15,5
+    8,10
+"
+             fill="#e3e3e3"
+    />
+</svg>

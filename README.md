@@ -1,1 +1,1 @@
-# pyside-frameless-style
+# pyside-app-core

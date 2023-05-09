@@ -1,0 +1,10 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+{% for qr in qresources %}
+    <qresource{% if qr.prefix %} prefix="{{ qr.prefix }}"{% endif %}{% if qr.lang %} lang="{{ qr.lang }}"{% endif %}>
+    {%- for file in qr.files %}
+        <file{% if file.alias %} alias="{{ file.alias }}"{% endif %}>{{ file.path }}</file>
+    {%- endfor %}
+    </qresource>
+{% endfor +%}
+</RCC>

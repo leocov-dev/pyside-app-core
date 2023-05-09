@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyside-app-core"
+version = "0.1.0"
+description = "Framework for PySide applications"
+readme = "README.md"
+authors = [{ name = "Leo Covarrubias", email = "leo@leocov.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Development Status :: 2 - Pre-Alpha",
+    "Topic :: Desktop Environment",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["pyside", "pyside6", "frameless", "app", "style"]
+dependencies = [
+    "pyside6 ~= 6.5.0",
+    "jinja2 ~= 3.1.2",
+    "pyqtgraph ~= 0.13.3"
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = [
+    "black ~= 23.3.0",
+    "pytest ~= 7.3.1",
+    "pre-commit ~= 3.3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/leocov-dev/pyside-app-core"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
+[tool.black]
+line-length = 88

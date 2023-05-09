@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+     width="32"
+     height="32">
+    <style> <![CDATA[
+        path {
+            fill: none;
+            stroke-width: 1.5;
+            stroke: #e3e3e3;
+        }
+        ]]>
+    </style>
+    <defs>
+        <clipPath clipPathUnits="userSpaceOnUse">
+            <rect style="display:inline;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.83338;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+                  width="17.703548"
+                  height="11.25647"
+                  x="7.1906762"
+                  y="10.371765"/>
+        </clipPath>
+    </defs>
+    <path d="M 8.7821738 21.785368 A 7.3988056 7.3988056 0 0 1 8.2946253 19.143995 A 7.3988056 7.3988056 0 0 1 15.693431 11.74519 A 7.3988056 7.3988056 0 0 1 23.092237 19.143995 L 23.092237 19.143995 A 7.3988056 7.3988056 0 0 1 22.606097 21.781679 "
+          transform="matrix(1.1852528,0,0,1.1095956,-2.935032,-1.9324275)"/>
+    <path d="m 18.347711,19.143995 a 2.6542799,2.6542799 0 0 1 -2.65428,2.65428 2.6542799,2.6542799 0 0 1 -2.65428,-2.65428 2.6542799,2.6542799 0 0 1 2.65428,-2.65428 2.6542799,2.6542799 0 0 1 2.65428,2.65428 z"
+          transform="matrix(1.1852528,0,0,1.1095956,-2.935032,-1.9324275)"/>
+    <path d="M 2.1459337,29.831133 V 2.0879145 H 23.178571 l 6.714644,5.4841246 V 29.750484 Z"/>
+    <path d="m 6.8961958,2.26445 0.078649,6.4793898 H 20.109366 l -0.07866,-6.4057604"/>
+    <path d="M 5.5877371,29.848721 V 22.236145 H 26.451412 v 7.489792"/>
+</svg>

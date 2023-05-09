@@ -1,0 +1,61 @@
+<svg version="1.1"
+     width="40" height="40"
+     xmlns="http://www.w3.org/2000/svg">
+
+    <style> <![CDATA[
+        rect, path, line {
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke: #e3e3e3;
+        }
+        circle {
+            fill: #e3e3e3;
+        }
+        ]]>
+    </style>
+
+    <rect width="36"
+          height="36"
+          rx="3"
+          x="2"
+          y="2"
+    />
+
+    <line x1="2"
+          y1="10"
+          x2="38"
+          y2="10"
+    />
+
+    <circle r="1.5"
+            cx="6"
+            cy="6"
+    />
+
+    <!-- - -->
+    <line x1="6"
+          y1="16"
+          x2="34"
+          y2="16"
+    />
+
+    <line x1="6"
+          y1="21.25"
+          x2="34"
+          y2="21.25"
+    />
+
+    <line x1="6"
+          y1="26.5"
+          x2="34"
+          y2="26.5"
+    />
+
+    <line x1="6"
+          y1="32"
+          x2="34"
+          y2="32"
+    />
+
+</svg>
