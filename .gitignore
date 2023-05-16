@@ -5,3 +5,12 @@
 venv/
 venv*/
 
+.python-version
+
+__pycache__/
+
+build/
+*.egg-info/
+
+resources.rcc
+resoruces.py

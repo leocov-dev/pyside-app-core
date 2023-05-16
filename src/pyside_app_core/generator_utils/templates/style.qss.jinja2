@@ -1,0 +1,194 @@
+/* --- standard qss style --- */
+
+/* ------------------------------------------------------------------------- */
+QWidget {
+    background: {{ theme.background_color }};
+    color: {{ theme.text_color }};
+    /* border: 1px solid {{ theme.widget_border_color }}; */
+}
+QWidget:!active {
+    background: {{ theme.background_color_inactive }};
+    color: {{ theme.text_color_inactive }};
+}
+
+/* ------------------------------------------------------------------------- */
+QMainWindow {
+    border-radius: {{ theme.win_corner_radius }};
+}
+
+/* ------------------------------------------------------------------------- */
+QMenuBar {
+    color: {{ theme.text_color }};
+    spacing: 0;
+}
+QMenuBar::item {
+    color: {{ theme.text_color }};
+    margin: 0;
+    padding: 3px 8px 3px 8px;
+    border-radius: {{ theme.widget_corner_radius }};
+}
+QMenuBar::item:selected {
+    background: {{ theme.widget_accent_main_color }};
+    border: none;
+}
+
+/* ------------------------------------------------------------------------- */
+QMenu {
+    color: {{ theme.text_color }};
+    background: {{ theme.background_color }};
+    spacing: 0;
+}
+QMenu::item {
+    color: {{ theme.text_color }};
+    border-radius: {{ theme.widget_corner_radius }};
+    padding: 3px;
+    margin: 4px 8px 4px 8px;
+}
+QMenu::item:selected {
+    background: {{ theme.widget_accent_main_color }};
+}
+
+/* ------------------------------------------------------------------------- */
+QLabel {
+    color: {{ theme.text_color }};
+}
+
+/* ------------------------------------------------------------------------- */
+QPlainTextEdit {
+    background-color: {{ theme.input_background_color }};
+}
+QPlainTextEdit:!active {
+    background-color: {{ theme.input_background_color_inactive }};
+}
+
+/* ------------------------------------------------------------------------- */
+QSizeGrip {
+    image: url(:/std/icons/grab-corner.svg);
+}
+
+/* ------------------------------------------------------------------------- */
+QStatusBar {
+    color: {{ theme.text_color }};
+    border-top: {{ theme.win_divider_width }} solid {{ theme.win_divider_color }};
+}
+
+/* ------------------------------------------------------------------------- */
+QToolTip {
+    color: {{ theme.text_color }};
+    background: {{ theme.tooltip_background_color }};
+    padding: 3px;
+    border: none;
+}
+
+/* ------------------------------------------------------------------------- */
+QProgressBar {
+    border: 1px solid {{ theme.widget_border_color }};
+    border-radius: {{ theme.widget_corner_radius }};
+}
+QProgressBar::chunk {
+    background-color: {{ theme.widget_accent_main_color }};
+    width: 10%;
+}
+
+/* ------------------------------------------------------------------------- */
+QPushButton {
+    color: {{ theme.text_color }};
+    border: 1px solid {{ theme.widget_border_color }};
+    padding: 6px 10px 6px 10px;
+    background: {{ theme.widget_accent_neutral_color }};
+    border-radius: {{ theme.widget_corner_radius }};
+}
+QPushButton:hover {
+    background: {{ theme.widget_hover_color }};
+}
+QPushButton:pressed {
+    background: {{ theme.widget_accent_main_color }};
+}
+QPushButton:disabled {
+    background: {{ theme.background_color }};
+    color: {{ theme.text_color_disabled }};
+}
+QPushButton:checked {
+    background: {{ theme.widget_accent_main_color }};
+}
+QPushButton:checked:!active {
+    background: {{ theme.widget_accent_main_color.darker().desaturated(125) }};
+}
+QPushButton:checked:hover {
+    color: {{ theme.text_color.lighter(200) }};
+    background: {{ theme.widget_accent_main_color.lighter(110) }};
+}
+/* ------------------------------------------------------------------------- */
+QToolBar {
+    spacing: 8px;
+}
+
+
+/* ------------------------------------------------------------------------- */
+QToolButton {
+    color: {{ theme.text_color }};
+    border: 1px solid {{ theme.widget_border_color }};
+    padding: 4px 3px 3px 4px;
+    background: {{ theme.widget_accent_neutral_color }};
+    border-radius: {{ theme.widget_corner_radius }};
+}
+QToolButton:hover {
+    background: {{ theme.widget_hover_color }};
+}
+QToolButton:pressed {
+    background: {{ theme.widget_accent_main_color }};
+}
+
+/* ------------------------------------------------------------------------- */
+QComboBox{
+    color: {{ theme.text_color }};
+    background: {{ theme.widget_accent_neutral_color }};
+    padding: 6px;
+    border: 1px solid {{ theme.widget_border_color }};
+    border-radius: {{ theme.widget_corner_radius }};
+}
+QComboBox:disabled{
+    background: {{ theme.background_color }};
+    color: {{ theme.text_color_disabled }};
+}
+QComboBox::drop-down {
+    width: 20px;
+    border-left-width: 1px;
+    border-left-color: {{ theme.text_color_disabled }};
+    border-left-style: solid;
+    border-top-right-radius: {{ theme.widget_corner_radius }};
+    border-bottom-right-radius: {{ theme.widget_corner_radius }};
+}
+QComboBox::drop-down:hover {
+    background: {{ theme.widget_hover_color }};
+}
+QComboBox::down-arrow {
+    image: url(:/std/icons/down-arrow.svg);
+}
+QComboBox::indicator:checked {
+    color: transparent;
+    background: transparent;
+}
+QComboBox::item {
+    padding: 0px 0px 0px 0px;
+    padding-left: -20px;
+    width: 100%;
+    height: 30px;
+}
+QComboBox::item:selected {
+    background: {{ theme.widget_accent_main_color }};
+}
+
+/* ------------------------------------------------------------------------- */
+QAbstractItemView {
+    color: {{ theme.text_color }};
+    border: none;
+    background-color: {{ theme.widget_accent_neutral_color }};
+}
+{% if qss_extra %}
+/* ---- CUSTOM ------------------------------------------------------------- */
+{% for qss in qss_extra %}
+/* ------------------------------------------------------------------------- */
+{% include qss %}
+{% endfor %}
+{% endif %}
