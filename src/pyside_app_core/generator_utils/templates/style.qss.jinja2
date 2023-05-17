@@ -63,7 +63,7 @@ QPlainTextEdit:!active {
 
 /* ------------------------------------------------------------------------- */
 QSizeGrip {
-    image: url(:/std/icons/grab-corner.svg);
+    image: url(:/std/icons/grab-corner);
 }
 
 /* ------------------------------------------------------------------------- */
@@ -118,6 +118,12 @@ QPushButton:checked:hover {
     color: {{ theme.text_color.lighter(200) }};
     background: {{ theme.widget_accent_main_color.lighter(110) }};
 }
+QPushButton:default {
+    background: {{ theme.widget_accent_main_color.darker() }};
+}
+QPushButton:default:hover {
+    background: {{ theme.widget_accent_main_color }};
+}
 /* ------------------------------------------------------------------------- */
 QToolBar {
     spacing: 8px;
@@ -163,7 +169,7 @@ QComboBox::drop-down:hover {
     background: {{ theme.widget_hover_color }};
 }
 QComboBox::down-arrow {
-    image: url(:/std/icons/down-arrow.svg);
+    image: url(:/std/icons/down-arrow);
 }
 QComboBox::indicator:checked {
     color: transparent;

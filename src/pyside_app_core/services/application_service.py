@@ -1,5 +1,5 @@
 from pyside_app_core.errors.basic_errors import ApplicationError
-from pyside_app_core.generator_utils.style_types import QssTheme
+from pyside_app_core.qt.style import QssTheme
 
 __app_name = ""
 __app_id = ""

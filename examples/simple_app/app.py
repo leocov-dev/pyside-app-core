@@ -5,8 +5,7 @@ from simple_app.main_window import SimpleMainWindow
 
 
 class SimpleApp(FramelessApp):
-
-    def __init__(self, resources_rcc: Path):
+    def __init__(self, resources_rcc: Path | None = None):
         super(SimpleApp, self).__init__(resources_rcc=resources_rcc)
 
         self._main_window = SimpleMainWindow()

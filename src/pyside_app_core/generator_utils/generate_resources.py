@@ -1,11 +1,12 @@
 import subprocess
 from pathlib import Path
-from typing import List, Literal
+from typing import List, Literal, Type
 
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 
 from pyside_app_core.generator_utils.standard_resources import STANDARD_RESOURCES
-from pyside_app_core.generator_utils.style_types import DEFAULT_THEME, QssTheme, QtResourceGroup
+from pyside_app_core.generator_utils.style_types import QtResourceGroup
+from pyside_app_core.qt.style import DEFAULT_THEME, QssTheme
 
 
 def _compose_template_environment(*extra_template_files: Path) -> Environment:
@@ -52,12 +53,17 @@ ResourceFormat = Literal["python", "binary"]
 
 def compile_qrc_to_resources(
     target_dir: Path,
-    qss_theme: QssTheme | None = None,
-    rcc_format: ResourceFormat = "python",
+    qss_theme: QssTheme | Type[QssTheme],
+    rcc_format: ResourceFormat = "binary",
     qss_template_extra: List[Path] | None = None,
     resources_extra: List[QtResourceGroup] | None = None,
-) -> None:
-    _write_qss_file(_compile_qss_template(qss_theme or DEFAULT_THEME, qss_template_extra))
+) -> Path:
+    if not isinstance(qss_theme, QssTheme):
+        qss_theme = qss_theme()
+
+    _write_qss_file(
+        _compile_qss_template(qss_theme or DEFAULT_THEME, qss_template_extra)
+    )
 
     resources = STANDARD_RESOURCES
     if resources_extra:
@@ -72,6 +78,10 @@ def compile_qrc_to_resources(
         file_name = "resources.rcc"
         rcc_args.append("--binary")
 
+    file_target = target_dir / file_name
+
     subprocess.check_call(
-        ["pyside6-rcc", *rcc_args, "-o", str(target_dir / file_name), str(qrc_file)]
+        ["pyside6-rcc", *rcc_args, "-o", str(file_target), str(qrc_file)]
     )
+
+    return file_target

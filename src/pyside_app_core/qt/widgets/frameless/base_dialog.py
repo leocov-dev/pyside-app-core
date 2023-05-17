@@ -21,7 +21,7 @@ class FramelessBaseDialog(FramelessBaseMixin, QDialog):
     clicked = Signal(QAbstractButton)
 
     def __init__(self, icon: QIcon | None = None):
-        super().__init__(parent=None)
+        super().__init__(parent=None, f=Qt.WindowType.WindowCloseButtonHint)
 
         self.layout().setContentsMargins(10, 0, 10, 10)
         self.layout().addSpacing(20)

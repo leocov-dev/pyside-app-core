@@ -13,7 +13,6 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.generator_utils.style_types import QssTheme
 from pyside_app_core.services import application_service, platform_service
 
 
@@ -25,6 +24,7 @@ class Action(IntEnum):
 
 
 ShapeFunc = Callable[[QPainter, QRect, QColor, Action], None]
+EnabledFunc = Callable[[], bool]
 
 
 class ButtonData(NamedTuple):
@@ -32,6 +32,7 @@ class ButtonData(NamedTuple):
     action: Action
     signal: Signal
     shape_fn: ShapeFunc
+    enabled_fn: EnabledFunc
 
 
 class WindowActions(QWidget):
@@ -53,8 +54,6 @@ class WindowActions(QWidget):
         self._hover = Action.NONE
         self._press = Action.NONE
         self._focus = True
-        self._can_maximize = True
-        self._can_minimize = True
 
         self._pen = QPen(Qt.GlobalColor.transparent)
 
@@ -80,7 +79,9 @@ class WindowActions(QWidget):
         else:
             _height = 20
 
-        _spacing = 3 if platform_service.is_windows else 5 if platform_service.is_macos else 10
+        _spacing = (
+            3 if platform_service.is_windows else 5 if platform_service.is_macos else 10
+        )
 
         self._a_rect = QRect(self._side_offset, _top_offset, _width, _height)
         self._b_rect = self._a_rect.translated(_width + _spacing, 0)
@@ -92,8 +93,8 @@ class WindowActions(QWidget):
             else self._a_rect.y() + self._a_rect.height() + self.contentsMargins().top()
             if platform_service.is_macos
             else self._a_rect.y()
-                 + self._a_rect.height()
-                 + self.contentsMargins().top() * 2
+            + self._a_rect.height()
+            + self.contentsMargins().top() * 2
         )
         self.container_width = self._c_rect.x() + self._c_rect.width()
 
@@ -112,15 +113,30 @@ class WindowActions(QWidget):
                 Action.MINIMIZE,
                 self.minimize_clicked,
                 self._draw_min,
+                lambda: (
+                    self.parent().windowFlags() & Qt.WindowType.WindowMinimizeButtonHint
+                )
+                > 0,
             ),
             ButtonData(
                 self._theme.win_maximize,
                 Action.MAXIMIZE,
                 self.maximize_clicked,
                 self._draw_max,
+                lambda: (
+                    self.parent().windowFlags() & Qt.WindowType.WindowMaximizeButtonHint
+                )
+                > 0,
             ),
             ButtonData(
-                self._theme.win_close, Action.CLOSE, self.close_clicked, self._draw_close
+                self._theme.win_close,
+                Action.CLOSE,
+                self.close_clicked,
+                self._draw_close,
+                lambda: (
+                    self.parent().windowFlags() & Qt.WindowType.WindowCloseButtonHint
+                )
+                > 0,
             ),
         ]
 
@@ -131,7 +147,9 @@ class WindowActions(QWidget):
 
     @property
     def min_bounds(self) -> QRect:
-        return QRect(self._rect_map[0][0].topLeft(), self._rect_map[-1][0].bottomRight())
+        return QRect(
+            self._rect_map[0][0].topLeft(), self._rect_map[-1][0].bottomRight()
+        )
 
     def paintEvent(self, event: QPaintEvent) -> None:
         p = QPainter(self)
@@ -141,17 +159,15 @@ class WindowActions(QWidget):
         p.setBrush(Qt.GlobalColor.transparent)
 
         for rect, data in self._rect_map:
-            c_background = (
-                data.color if self.isActiveWindow() else self._theme.win_action_inactive
-            )
-            self._draw_shape(p, rect, c_background, data.action)
+            enabled = self.isActiveWindow() and data.enabled_fn()
 
-            if platform_service.is_macos and not self.isActiveWindow():
+            c_background = data.color if enabled else self._theme.win_action_inactive
+            self._draw_shape(p, rect, c_background, data.action, enabled)
+
+            if platform_service.is_macos and not enabled:
                 pass
             else:
-                c_shape = (
-                    data.color if self.isActiveWindow() else data.color.darker(300)
-                )
+                c_shape = data.color if enabled else data.color.darker(300)
                 c_shape = c_shape.darker(200) if platform_service.is_macos else c_shape
                 data.shape_fn(p, rect, c_shape, data.action)
 
@@ -162,6 +178,9 @@ class WindowActions(QWidget):
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         prev = self._hover
         for rect, data in self._rect_map:
+            if not data.enabled_fn():
+                continue
+
             if rect.contains(event.pos()):
                 self._hover = data.action
                 break
@@ -182,6 +201,9 @@ class WindowActions(QWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         for rect, data in self._rect_map:
+            if not data.enabled_fn():
+                continue
+
             if rect.contains(event.pos()):
                 data.signal.emit()
                 break
@@ -194,6 +216,9 @@ class WindowActions(QWidget):
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         for rect, data in self._rect_map:
+            if not data.enabled_fn():
+                continue
+
             if rect.contains(event.pos()):
                 self._press = data.action
                 break
@@ -227,15 +252,18 @@ class WindowActions(QWidget):
         else:
             return color
 
-    def _draw_shape(self, p: QPainter, rect: QRect, color: QColor, action: Action):
+    def _draw_shape(
+        self, p: QPainter, rect: QRect, color: QColor, action: Action, enabled: bool
+    ):
         p.setPen(Qt.GlobalColor.transparent)
 
         f_col = self._get_shape_color(color)
 
-        if self._hover == action:
-            f_col = color
-        if self._press == action:
-            f_col = color.lighter(135)
+        if enabled:
+            if self._hover == action:
+                f_col = color
+            if self._press == action:
+                f_col = color.lighter(135)
 
         p.setBrush(f_col)
 
@@ -282,8 +310,20 @@ class WindowActions(QWidget):
         pen, brush = self._get_shape_tools(color, action)
         p.setPen(pen)
 
-        oH = 0.3 if platform_service.is_macos else 0.325 if platform_service.is_windows else 0.35
-        oW = 0.3 if platform_service.is_macos else 0.375 if platform_service.is_windows else 0.35
+        oH = (
+            0.3
+            if platform_service.is_macos
+            else 0.325
+            if platform_service.is_windows
+            else 0.35
+        )
+        oW = (
+            0.3
+            if platform_service.is_macos
+            else 0.375
+            if platform_service.is_windows
+            else 0.35
+        )
 
         rect = self._scale_rect(rect.adjusted(1, 1, 0, 0), oH, oW)
 
@@ -298,8 +338,20 @@ class WindowActions(QWidget):
         pen, brush = self._get_shape_tools(color, action)
         p.setPen(pen)
 
-        oH = 0.3 if platform_service.is_macos else 0.325 if platform_service.is_windows else 0.25
-        oW = 0.3 if platform_service.is_macos else 0.375 if platform_service.is_windows else 0.25
+        oH = (
+            0.3
+            if platform_service.is_macos
+            else 0.325
+            if platform_service.is_windows
+            else 0.25
+        )
+        oW = (
+            0.3
+            if platform_service.is_macos
+            else 0.375
+            if platform_service.is_windows
+            else 0.25
+        )
 
         rect = self._scale_rect(rect, oH, oW)
         if platform_service.is_macos:
@@ -318,8 +370,20 @@ class WindowActions(QWidget):
         pen, brush = self._get_shape_tools(color, action)
         p.setPen(pen)
 
-        oH = 0.3 if platform_service.is_macos else 0.325 if platform_service.is_windows else 0.25
-        oW = 0.3 if platform_service.is_macos else 0.375 if platform_service.is_windows else 0.25
+        oH = (
+            0.3
+            if platform_service.is_macos
+            else 0.325
+            if platform_service.is_windows
+            else 0.25
+        )
+        oW = (
+            0.3
+            if platform_service.is_macos
+            else 0.375
+            if platform_service.is_windows
+            else 0.25
+        )
 
         rect = self._scale_rect(rect, oH, oW)
         div = 2 if platform_service.is_macos or platform_service.is_windows else 1

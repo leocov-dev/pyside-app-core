@@ -1,0 +1,28 @@
+name: Publish
+on:
+  release:
+    types: [ published ]
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    name: PyPi Publish
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Build
+        run: > 
+          python3 -m pip install -U build twine 
+          && python3 -m build 
+          && twine check dist/**
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@v1.8.6
+        with:
+          password: ${{ secrets.PYPI_TEST_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/

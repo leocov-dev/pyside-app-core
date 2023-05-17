@@ -7,9 +7,12 @@ venv*/
 
 .python-version
 
+requirements*.txt
+
 __pycache__/
 
 build/
+dist/
 *.egg-info/
 
 resources.rcc

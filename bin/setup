@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -e
+
+__repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+if [[ -z $VIRTUAL_ENV && -z $CI ]]; then
+  echo "Please create or activate a virtual environment for development
+  $ python3 -m venv .venv
+  $ source .venv/bin/activate"
+  exit 1
+fi
+
+pushd "$__repo" > /dev/null
+
+echo "Setup Development Environment..."
+
+python3 -m pip install -q -U pip wheel setuptools build pip-tools twine
+
+rm -f requirements.txt
+
+pip-compile --quiet --resolver backtracking --extra dev --allow-unsafe
+
+pip install -q -U -r requirements.txt
+
+pre-commit install
+
+rm -f requirements.txt
+
+echo "Done."
+
+popd > /dev/null

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyside-app-core"
-version = "0.1.0"
+version = "0.0.1"
 description = "Framework for PySide applications"
 readme = "README.md"
 authors = [{ name = "Leo Covarrubias", email = "leo@leocov.com" }]
@@ -20,7 +20,7 @@ keywords = ["pyside", "pyside6", "frameless", "app", "style"]
 dependencies = [
     "pyside6 ~= 6.5.0",
     "jinja2 ~= 3.1.2",
-    "pyqtgraph ~= 0.13.3"
+    "pyqtgraph ~= 0.13.3",
 ]
 requires-python = ">=3.11"
 
@@ -29,13 +29,34 @@ dev = [
     "black ~= 23.3.0",
     "pytest ~= 7.3.1",
     "pre-commit ~= 3.3.1",
+    "import-linter ~= 1.9.0"
 ]
 
 [project.urls]
 Homepage = "https://github.com/leocov-dev/pyside-app-core"
+
+[project.scripts]
+compile-pyside-theme = "pyside_app_core.generator_utils.__main__:main"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 
 [tool.black]
 line-length = 88
+
+[tool.importlinter]
+root_packages = [
+    "src.pyside_app_core",
+    "examples.simple_app",
+]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Don't import from examples"
+type = "forbidden"
+source_modules = [
+    "src.pyside_app_core",
+]
+forbidden_modules = [
+    "examples.simple_app",
+]

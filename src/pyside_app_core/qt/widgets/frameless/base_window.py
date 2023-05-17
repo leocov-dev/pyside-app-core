@@ -2,7 +2,7 @@ from PySide6.QtCore import QPoint, QRect, QSize, Qt, Signal
 from PySide6.QtGui import QBitmap, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout
 
-from pyside_app_core.generator_utils.style_types import QssTheme
+from pyside_app_core.qt.style import QssTheme
 from pyside_app_core.qt.widgets.frameless.border import FramelessWindowBorder
 from pyside_app_core.qt.widgets.frameless.window_actions import WindowActions
 from pyside_app_core.services import application_service
@@ -18,7 +18,7 @@ class FramelessBaseMixin:
     ):
         super(FramelessBaseMixin, self).__init__(*args, **kwargs)
 
-        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint)
         self.setMouseTracking(True)
         self.setMinimumSize(300, 128)
 
@@ -32,7 +32,10 @@ class FramelessBaseMixin:
             QSizePolicy.Policy.MinimumExpanding,
         )
         self._title.setFixedHeight(32)
-        self._top_layout.addWidget(self._title, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
+        self._top_layout.addWidget(
+            self._title,
+            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop,
+        )
 
         self.setLayout(self._top_layout)
 
@@ -52,7 +55,9 @@ class FramelessBaseMixin:
 
     @property
     def window_bar_rect(self) -> QRect:
-        return QRect(0, 0, self.rect().width(), self._window_actions.geometry().height())
+        return QRect(
+            0, 0, self.rect().width(), self._window_actions.geometry().height()
+        )
 
     def setWindowTitle(self, title: str):
         self._title.setText(title)
@@ -101,7 +106,9 @@ class FramelessBaseMixin:
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         p.setBrush(Qt.GlobalColor.black)
-        p.drawRoundedRect(rect, self._theme.win_corner_radius, self._theme.win_corner_radius)
+        p.drawRoundedRect(
+            rect, self._theme.win_corner_radius, self._theme.win_corner_radius
+        )
         p.end()
 
         return b
@@ -128,10 +135,10 @@ class FramelessBaseMixin:
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if (
-                event.buttons() & Qt.MouseButton.LeftButton
-        ) == Qt.MouseButton.LeftButton \
-                and self.window_bar_rect.contains(event.pos()) \
-                and not self._window_actions.geometry().contains(event.pos()):
+            (event.buttons() & Qt.MouseButton.LeftButton) == Qt.MouseButton.LeftButton
+            and self.window_bar_rect.contains(event.pos())
+            and not self._window_actions.geometry().contains(event.pos())
+        ):
             self._moving = True
 
             win = self.window()

@@ -22,7 +22,8 @@ def __custom_excepthook(etype: Type[Exception], evalue: Exception, tb: Traceback
             log.exception(formatted_exception_string)
             return
 
-    error_dialog = ErrorDialog(f"{etype.__name__}:\n{evalue}", formatted_exception_string)
-    error_dialog.setWindowTitle(etype.__name__)
+    error_dialog = ErrorDialog(
+        f"<{etype.__name__}>\n{evalue}", formatted_exception_string
+    )
 
     error_dialog.exec()

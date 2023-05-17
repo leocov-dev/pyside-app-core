@@ -1,0 +1,42 @@
+name: Continuous Integration
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build Smoke Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: bin/setup
+
+      - name: Unit Tests
+        run: pytest -k test_ tests/unit
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Smoke Test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check Build
+        run: >
+          python3 -m pip install -U build twine 
+          && python3 -m build 
+          && twine check dist/**
