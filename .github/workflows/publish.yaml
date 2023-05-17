@@ -9,10 +9,6 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Get Version Tag
-        id: vars
-        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-
       - name: Install Python
         uses: actions/setup-python@v4
         with:
@@ -24,7 +20,7 @@ jobs:
       - name: Download Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release download ${{ steps.vars.outputs.tag }} --dir dist
+        run: gh release download ${{ github.event.release.tag_name }} --dir dist
 
       - name: Validate Dist Files
         run: twine check dist/**
