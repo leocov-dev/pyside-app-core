@@ -9,6 +9,9 @@ jobs:
   release-draft:
     runs-on: ubuntu-latest
     name: Create Draft Release
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Get Version Tag
         id: vars
