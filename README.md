@@ -2,6 +2,7 @@
 
 Custom style, widgets, and utilities for PySide 6.5 applications.
 
+> This project should be considered unstable and subject to breaking changes at any time
 
 ### Run example application
 

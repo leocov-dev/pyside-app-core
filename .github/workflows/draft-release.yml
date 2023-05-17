@@ -1,0 +1,50 @@
+name: Create Draft Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release-draft:
+    runs-on: ubuntu-latest
+    name: Create Draft Release
+    steps:
+      - name: Get Version Tag
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Check Version Strings
+        run: >
+          TAG=${{ steps.vars.outputs.tag }} 
+          python3 scripts/validate-release-version.py
+
+      - name: Build Source & Wheel
+        run: >
+          python3 -m pip install -U build twine 
+          && python3 -m build 
+          && twine check dist/**
+
+      - name: List Files
+        run: ls ./dist
+
+      - name: Draft Release
+        uses: release-drafter/release-drafter@v5
+        with:
+          tag: ${{ steps.vars.outputs.tag }}
+          version: ${{ steps.vars.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload --clobber ${{ steps.vars.outputs.tag }} ./dist/*
