@@ -6,6 +6,8 @@ jobs:
   pypi:
     runs-on: ubuntu-latest
     name: PyPi Publish
+    permissions:
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,8 +23,7 @@ jobs:
           && python3 -m build 
           && twine check dist/**
 
-      - name: Publish
+      - name: Publish To Test Env
         uses: pypa/gh-action-pypi-publish@v1.8.6
         with:
-          password: ${{ secrets.PYPI_TEST_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
