@@ -9,19 +9,25 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Get Version Tag
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
 
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Build
-        run: > 
-          python3 -m pip install -U build twine 
-          && python3 -m build 
-          && twine check dist/**
+      - name: Dependencies
+        run: python3 -m pip install -U twine
+
+      - name: Download Release Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download ${{ steps.vars.outputs.tag }} --dir dist
+
+      - name: Validate Dist Files
+        run: twine check dist/**
 
       - name: Publish To Test Env
         uses: pypa/gh-action-pypi-publish@v1.8.6
