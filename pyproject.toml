@@ -29,7 +29,8 @@ dev = [
     "black ~= 23.3.0",
     "pytest ~= 7.3.1",
     "pre-commit ~= 3.3.1",
-    "import-linter ~= 1.9.0"
+    "import-linter ~= 1.9.0",
+    "bumpver ~= 2023.1121"
 ]
 
 [project.urls]
@@ -60,3 +61,21 @@ source_modules = [
 forbidden_modules = [
     "examples.simple_app",
 ]
+
+[tool.bumpver]
+current_version = "0.0.3"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"src/pyside_app_core/__init__.py" = [
+    "{version}"
+]
+
