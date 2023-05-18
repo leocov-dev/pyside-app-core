@@ -11,4 +11,4 @@ class CoreError(Exception):
 
 
 class ApplicationError(CoreError):
-    """ something bad happened at the application level """
+    """something bad happened at the application level"""

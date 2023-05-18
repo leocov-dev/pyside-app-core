@@ -1,12 +1,14 @@
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel
 
-from pyside_app_core.qt.widgets.frameless.base_dialog import FramelessBaseDialog, StandardButton
+from pyside_app_core.qt.widgets.frameless.base_dialog import (
+    FramelessBaseDialog,
+    StandardButton,
+)
 from pyside_app_core.services import application_service
 
 
 class AboutDialog(FramelessBaseDialog):
-
     def __init__(self):
         super().__init__(icon=QIcon(":/std/icons/console"))
 

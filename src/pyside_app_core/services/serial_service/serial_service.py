@@ -13,7 +13,9 @@ from pyside_app_core.errors.serial_errors import (
     SerialWriteError,
 )
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.services.serial_service.utils.abstract_decoder import DecoderInterface
+from pyside_app_core.services.serial_service.utils.abstract_decoder import (
+    DecoderInterface,
+)
 
 log.set_level(lvl=logging.DEBUG)
 

@@ -6,7 +6,6 @@ from pyside_app_core.qt.widgets.frameless.main_window import FramelessMainWindow
 
 
 class SimpleMainWindow(FramelessMainWindow):
-
     def __init__(self):
         super(SimpleMainWindow, self).__init__()
 
@@ -22,7 +21,10 @@ class SimpleMainWindow(FramelessMainWindow):
 
         _central_layout.addStretch()
 
-        with self._tool_bar.add_action(self.tr("error dialog"), QIcon(":/std/icons/console")) as ed:
+        with self._tool_bar.add_action(
+            self.tr("error dialog"), QIcon(":/std/icons/console")
+        ) as ed:
+
             def _show_ed():
                 raise ValueError("A simulated error")
 

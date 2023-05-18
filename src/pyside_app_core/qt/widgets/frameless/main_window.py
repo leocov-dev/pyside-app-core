@@ -11,7 +11,6 @@ from pyside_app_core.services import platform_service
 
 
 class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
-
     def __init__(self):
         super(FramelessMainWindow, self).__init__(parent=None)
 
@@ -25,7 +24,9 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
 
         self._menu_bar = MenuBarContext(
             self,
-            border_width=0 if platform_service.is_macos else self._theme.win_divider_width,
+            border_width=0
+            if platform_service.is_macos
+            else self._theme.win_divider_width,
             border_color=self._theme.win_divider_color,
         )
 
@@ -46,9 +47,7 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
 
                 about_action.triggered.connect(_show_about)
 
-        self._tool_bar = ToolBarContext(
-            area="top", parent=self, movable=False
-        )
+        self._tool_bar = ToolBarContext(area="top", parent=self, movable=False)
         self._tool_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
         if platform_service.is_macos:

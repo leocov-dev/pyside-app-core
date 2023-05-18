@@ -10,6 +10,7 @@ logging.setLoggerClass(PACLogger)
 
 __pac_name = "pyside_app_core"
 
+
 def _get_caller_name():
     try:
         stack = inspect.stack()

@@ -2,7 +2,11 @@ import struct
 from decimal import Decimal
 from typing import Any, Iterator, Mapping, Self, TypeVar
 
-from pyside_app_core.constants import DATA_STRUCT_ENDIAN, FLOAT_PRECISION, STRUCT_FLOAT_FMT
+from pyside_app_core.constants import (
+    DATA_STRUCT_ENDIAN,
+    FLOAT_PRECISION,
+    STRUCT_FLOAT_FMT,
+)
 
 K = TypeVar("K", bound=int)
 

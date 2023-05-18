@@ -12,17 +12,15 @@ from pyside_app_core.services import application_service
 ToolBarArea = Literal["top", "bottom", "left", "right"]
 
 _TOOL_BAR_AREA_MAP = {
-    "top":    Qt.ToolBarArea.TopToolBarArea,
+    "top": Qt.ToolBarArea.TopToolBarArea,
     "bottom": Qt.ToolBarArea.BottomToolBarArea,
-    "right":  Qt.ToolBarArea.RightToolBarArea,
-    "left":   Qt.ToolBarArea.LeftToolBarArea,
+    "right": Qt.ToolBarArea.RightToolBarArea,
+    "left": Qt.ToolBarArea.LeftToolBarArea,
 }
 
 
 class ToolBarContext(ObjectNameMixin, QToolBar):
-    def __init__(
-        self, area: ToolBarArea, parent: QMainWindow, movable=False
-    ):
+    def __init__(self, area: ToolBarArea, parent: QMainWindow, movable=False):
         self._area = area
         self._theme = application_service.get_app_theme()
 

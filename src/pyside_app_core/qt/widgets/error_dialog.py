@@ -1,16 +1,14 @@
 from PySide6.QtGui import QClipboard
 from PySide6.QtWidgets import QApplication, QLabel, QPlainTextEdit
 
-from pyside_app_core.qt.widgets.frameless.base_dialog import FramelessBaseDialog, StandardButton
+from pyside_app_core.qt.widgets.frameless.base_dialog import (
+    FramelessBaseDialog,
+    StandardButton,
+)
 
 
 class ErrorDialog(FramelessBaseDialog):
-
-    def __init__(
-        self,
-        message: str,
-        detailed: str | None = None
-    ):
+    def __init__(self, message: str, detailed: str | None = None):
         super().__init__()
 
         self.setWindowTitle("Encountered An Unexpected Error")
@@ -18,7 +16,9 @@ class ErrorDialog(FramelessBaseDialog):
 
         self._clipboard = QClipboard(parent=self)
 
-        self.setStandardButtons(StandardButton.Ignore | StandardButton.Reset | StandardButton.Abort)
+        self.setStandardButtons(
+            StandardButton.Ignore | StandardButton.Reset | StandardButton.Abort
+        )
         self.setDefaultButton(StandardButton.Ignore)
 
         self.setButtonText(StandardButton.Ignore, "Ignore")
@@ -47,6 +47,8 @@ class ErrorDialog(FramelessBaseDialog):
 
     def _copy_to_clipboard(self):
         if self._trace_box:
-            self._clipboard.setText(f"{self._message_box.toPlainText()}\n\n{self._trace_box.toPlainText()}")
+            self._clipboard.setText(
+                f"{self._message_box.toPlainText()}\n\n{self._trace_box.toPlainText()}"
+            )
         else:
             self._clipboard.setText(self._message_box.toPlainText())
