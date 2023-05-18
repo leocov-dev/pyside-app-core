@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import List, Literal, Type
 
@@ -32,16 +33,7 @@ def _compile_qrc_template(resources: List[QtResourceGroup]) -> str:
     return qrc_template.render(qresources=resources)
 
 
-def _write_qss_file(data: str) -> Path:
-    target = Path(__file__).parent / "style.qss"
-    with open(target, "w") as f:
-        f.write(data)
-
-    return target
-
-
-def _write_qrc_file(data: str) -> Path:
-    target = Path(__file__).parent / "resources.qrc"
+def _write_file(target: Path, data: str) -> Path:
     with open(target, "w") as f:
         f.write(data)
 
@@ -61,27 +53,33 @@ def compile_qrc_to_resources(
     if not isinstance(qss_theme, QssTheme):
         qss_theme = qss_theme()
 
-    _write_qss_file(
-        _compile_qss_template(qss_theme or DEFAULT_THEME, qss_template_extra)
-    )
+    with tempfile.TemporaryDirectory() as tempdir:
+        tempdir = Path(tempdir)
 
-    resources = STANDARD_RESOURCES
-    if resources_extra:
-        resources.extend(resources_extra)
+        _write_file(
+            tempdir / "style.qss",
+            _compile_qss_template(qss_theme or DEFAULT_THEME, qss_template_extra),
+        )
 
-    qrc_file = _write_qrc_file(_compile_qrc_template(resources))
+        resources = STANDARD_RESOURCES
+        if resources_extra:
+            resources.extend(resources_extra)
 
-    file_name = "resources.py"
+        qrc_file = _write_file(
+            tempdir / "resources.qrc", _compile_qrc_template(resources)
+        )
 
-    rcc_args = []
-    if rcc_format == "binary":
-        file_name = "resources.rcc"
-        rcc_args.append("--binary")
+        file_name = "resources.py"
 
-    file_target = target_dir / file_name
+        rcc_args = []
+        if rcc_format == "binary":
+            file_name = "resources.rcc"
+            rcc_args.append("--binary")
 
-    subprocess.check_call(
-        ["pyside6-rcc", *rcc_args, "-o", str(file_target), str(qrc_file)]
-    )
+        file_target = target_dir / file_name
+
+        subprocess.check_call(
+            ["pyside6-rcc", *rcc_args, "-o", str(file_target), str(qrc_file)]
+        )
 
     return file_target
