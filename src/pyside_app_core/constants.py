@@ -1,4 +1,4 @@
-from types.numeric import FloatPrecision
+from pyside_app_core.types.numeric import FloatPrecision
 
 # ------------------------------------------------------------------------------
 # defined values
