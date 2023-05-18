@@ -9,7 +9,7 @@ if __name__ == "__main__":
     sys.path.append(str(__repo / "src"))
     from pyside_app_core import __version__ as src_version
 
-    tag_version = os.environ.get("TAG", "").lstrip("v")
+    tag_version = os.environ.get("TAG", "")
 
     with open(__repo / "pyproject.toml", "rb") as ppt:
         project_version = tomllib.load(ppt)["project"]["version"]
