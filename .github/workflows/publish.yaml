@@ -30,5 +30,3 @@ jobs:
 
       - name: Publish To Test Env
         uses: pypa/gh-action-pypi-publish@v1.8.6
-        with:
-          repository-url: https://test.pypi.org/legacy/

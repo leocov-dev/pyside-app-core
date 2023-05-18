@@ -2,7 +2,15 @@
 
 Custom style, widgets, and utilities for PySide 6.5 applications.
 
-> This project should be considered unstable and subject to breaking changes at any time
+> This project should be considered experimental and subject to breaking changes at any time.
+
+
+### Install
+
+```shell
+$ pip install pyside-app-core
+```
+
 
 ### Run example application
 
@@ -11,6 +19,8 @@ $ python -m examples.simple_app --generate-rcc
 ```
 
 ### Generate resources files
+
+Resource files MUST be generated at least once for stylesheets and icons to function.
 
 ```shell
 # from repo with this lib installed
