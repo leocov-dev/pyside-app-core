@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyside-app-core"
-version = "0.0.4"
+version = "0.1.0"
 description = "Framework for PySide applications"
 readme = "README.md"
 authors = [{ name = "Leo Covarrubias", email = "leo@leocov.com" }]
@@ -63,7 +63,7 @@ forbidden_modules = [
 ]
 
 [tool.bumpver]
-current_version = "0.0.4"
+current_version = "0.1.0"
 version_pattern = "[v]MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
