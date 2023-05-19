@@ -26,8 +26,6 @@ def main():
 
     excepthook.install_excepthook()
 
-    rcc = _root / "resources.rcc"
-
     sys.exit(SimpleApp().launch())
 
 

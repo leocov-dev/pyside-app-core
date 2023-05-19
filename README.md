@@ -27,8 +27,13 @@ Resource files MUST be generated at least once for stylesheets and icons to func
 $ compile-pyside-theme <target directory>
 
 # custom QssTheme subclass where `./theme.py` has `THEME = CustomTheme()`
-$ compile-pyside-theme <target directory> --custom-theme-pypath theme.THEME
+$ compile-pyside-theme \
+    --custom-theme-pypath theme.THEME \
+    <target directory> 
 
 # if needed to resolve python modules you can include pypath updates
-$ compile-pyside-theme <target directory> --extra-python-path ./src --custom-theme-pypath src.example_app.theme.THEME
+$ compile-pyside-theme \
+    --extra-python-path ./src \
+    --custom-theme-pypath src.example_app.theme.THEME \
+    <target directory>
 ```

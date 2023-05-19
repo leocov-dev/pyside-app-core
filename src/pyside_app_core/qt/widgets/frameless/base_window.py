@@ -1,9 +1,19 @@
 from PySide6.QtCore import QPoint, QRect, QSize, Qt, Signal
-from PySide6.QtGui import QBitmap, QMouseEvent, QPainter, QPaintEvent, QResizeEvent
-from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout
+from PySide6.QtGui import (
+    QBitmap,
+    QBrush,
+    QColor,
+    QMouseEvent,
+    QPainter,
+    QPainterPath,
+    QPaintEvent,
+    QPen,
+    QResizeEvent,
+)
+from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
 
 from pyside_app_core.qt.style import QssTheme
-from pyside_app_core.qt.widgets.frameless.border import FramelessWindowBorder
+from pyside_app_core.qt.widgets.frameless.window_shade import FramelessWindowShade
 from pyside_app_core.qt.widgets.frameless.window_actions import WindowActions
 from pyside_app_core.services import application_service
 
@@ -19,6 +29,7 @@ class FramelessBaseMixin:
         super(FramelessBaseMixin, self).__init__(*args, **kwargs)
 
         self.setWindowFlags(self.windowFlags() | Qt.WindowType.FramelessWindowHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setMouseTracking(True)
         self.setMinimumSize(300, 128)
 
@@ -27,14 +38,15 @@ class FramelessBaseMixin:
         self._top_layout = QVBoxLayout()
         self._top_layout.setContentsMargins(5, 0, 5, 5)
         self._title = QLabel("", parent=self)
+        self._title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._title.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding,
+            QSizePolicy.Policy.Fixed,
             QSizePolicy.Policy.MinimumExpanding,
         )
         self._title.setFixedHeight(32)
         self._top_layout.addWidget(
             self._title,
-            alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop,
+            alignment=Qt.AlignmentFlag.AlignTop,
         )
 
         self.setLayout(self._top_layout)
@@ -51,7 +63,7 @@ class FramelessBaseMixin:
         self._window_actions.minimize_clicked.connect(self._on_minimize)
         self._window_actions.maximize_clicked.connect(self._on_maximize)
 
-        self._window_border = FramelessWindowBorder(parent=self)
+        self._window_shade = FramelessWindowShade(parent=self)
 
     @property
     def window_bar_rect(self) -> QRect:
@@ -85,33 +97,60 @@ class FramelessBaseMixin:
     def paintEvent(self, event: QPaintEvent) -> None:
         super().paintEvent(event)
 
+        p = QPainter(self)
+        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        p.setPen(Qt.GlobalColor.transparent)
+        p.setBrush(self._theme.background_color)
+
+        p.drawRoundedRect(
+            self.rect(), self._theme.win_corner_radius, self._theme.win_corner_radius
+        )
+
+        self._draw_border(p, self.rect())
+
         # TODO: a bit crude - we want the border to be on top of everything, but no need to call
         #  every time - how to call after all subclasses have added edited widgets? unknown...
-        self._window_border.raise_()
+        self._window_shade.raise_()
         self._window_actions.raise_()
 
-        rect = self.rect()
-
-        b = self._generate_bitmap_mask(rect)
-        self.setMask(b)
+        p.end()
+        event.accept()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
+        self._title.setFixedWidth(self.rect().width())
         self._window_actions.resizeEvent(event)
         super().resizeEvent(event)
 
-    def _generate_bitmap_mask(self, rect: QRect) -> QBitmap:
-        b = QBitmap(rect.size())
-        b.fill(Qt.GlobalColor.white)
-        p = QPainter(b)
-        p.setRenderHint(QPainter.RenderHint.Antialiasing)
+    def _draw_border(self, p: QPainter, rect: QRect):
+        # outline
+        p.setBrush(QBrush(Qt.GlobalColor.transparent))
 
-        p.setBrush(Qt.GlobalColor.black)
+        draw_rect = rect.adjusted(1, 1, -1, -1)
+
+        top_corner = QPainterPath(rect.topRight())
+        top_corner.lineTo(rect.topLeft())
+        top_corner.lineTo(rect.bottomLeft())
+        p.setClipPath(top_corner)
+
+        p.setPen(QPen(self._theme.background_color.lighter(220), 1))
         p.drawRoundedRect(
-            rect, self._theme.win_corner_radius, self._theme.win_corner_radius
+            draw_rect,
+            self._theme.win_corner_radius - 2,
+            self._theme.win_corner_radius - 2,
         )
-        p.end()
 
-        return b
+        bottom_corner = QPainterPath(rect.topRight())
+        bottom_corner.lineTo(rect.bottomRight())
+        bottom_corner.lineTo(rect.bottomLeft())
+        p.setClipPath(bottom_corner)
+
+        p.setPen(QPen(self._theme.background_color.lighter(130), 2))
+        p.drawRoundedRect(
+            draw_rect,
+            self._theme.win_corner_radius - 2,
+            self._theme.win_corner_radius - 2,
+        )
 
     def _on_maximize(self):
         if self.isMaximized():

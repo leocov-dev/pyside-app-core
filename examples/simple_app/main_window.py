@@ -10,7 +10,6 @@ class SimpleMainWindow(FramelessMainWindow):
         super(SimpleMainWindow, self).__init__()
 
         # ------------------------------------------------------------------------------
-        self.setWindowTitle(self.tr("Simple App Example"))
         self.setMinimumSize(QSize(800, 480))
 
         _central_layout = QVBoxLayout()

@@ -53,7 +53,6 @@ class WindowActions(QWidget):
         self._theme = application_service.get_app_theme()
         self._hover = Action.NONE
         self._press = Action.NONE
-        self._focus = True
 
         self._pen = QPen(Qt.GlobalColor.transparent)
 

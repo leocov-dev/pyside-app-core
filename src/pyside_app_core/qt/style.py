@@ -21,7 +21,7 @@ class QssTheme:
     text_color_inactive = SColor(200)
     text_color_disabled = SColor(120)
 
-    win_corner_radius = PixelVal(12)
+    win_corner_radius = PixelVal(14)
     widget_corner_radius = PixelVal(8)
 
     win_divider_width = PixelVal(2)

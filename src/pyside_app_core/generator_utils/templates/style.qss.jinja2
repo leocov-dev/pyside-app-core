@@ -2,17 +2,19 @@
 
 /* ------------------------------------------------------------------------- */
 QWidget {
-    background: {{ theme.background_color }};
     color: {{ theme.text_color }};
     /* border: 1px solid {{ theme.widget_border_color }}; */
 }
 QWidget:!active {
-    background: {{ theme.background_color_inactive }};
     color: {{ theme.text_color_inactive }};
 }
 
 /* ------------------------------------------------------------------------- */
 QMainWindow {
+    border-radius: {{ theme.win_corner_radius }};
+}
+
+QFrame {
     border-radius: {{ theme.win_corner_radius }};
 }
 
@@ -56,6 +58,7 @@ QLabel {
 /* ------------------------------------------------------------------------- */
 QPlainTextEdit {
     background-color: {{ theme.input_background_color }};
+    border-radius: {{ theme.widget_corner_radius }};
 }
 QPlainTextEdit:!active {
     background-color: {{ theme.input_background_color_inactive }};

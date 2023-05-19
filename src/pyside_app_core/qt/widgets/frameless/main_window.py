@@ -17,6 +17,7 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
         self._about_dialog = AboutDialog()
 
         self._central = QWidget(parent=self)
+        self._central.setStyleSheet("""background-color: none;""")
         self.setCentralWidget(self._central)
 
         # must in order to show grab handle
