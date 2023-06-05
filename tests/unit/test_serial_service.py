@@ -39,7 +39,7 @@ def test_serial_service_buffering(mocker: MockerFixture):
     if we get partial messages we will buffer until the null bit terminator
     is read and emit only complete chunks.
     """
-    svc = SerialService(decoder=MockDecoder(), parent=None)
+    svc = SerialService(transcoder=MockDecoder(), parent=None)
 
     mock_com = mocker.patch.object(svc, "_com")
     mock_data_sig = mocker.patch.object(svc, "data")

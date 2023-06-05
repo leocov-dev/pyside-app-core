@@ -11,7 +11,7 @@ class ObjectNameMixin:
 
         obj_name = self.__class__.__name__
         if hasattr(self, "OBJECT_NAME"):
-            obj_name = self.OBJECT_NAME
+            obj_name = self.OBJECT_NAME.replace(" ", "_")
 
         self.setObjectName(obj_name)
 

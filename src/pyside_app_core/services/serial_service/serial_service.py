@@ -14,7 +14,8 @@ from pyside_app_core.errors.serial_errors import (
 )
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 from pyside_app_core.services.serial_service.utils.abstract_decoder import (
-    DecoderInterface,
+    CommandInterface,
+    TranscoderInterface,
 )
 
 log.set_level(lvl=logging.DEBUG)
@@ -32,14 +33,14 @@ class SerialService(ObjectNameMixin, QObject):
     data = Signal(object)
     error = Signal(Exception)
 
-    def __init__(self, decoder: DecoderInterface, parent: QObject):
+    def __init__(self, transcoder: TranscoderInterface, parent: QObject):
         super(SerialService, self).__init__(parent=parent)
 
-        self._decoder = decoder
+        self._transcoder = transcoder
         self._com: QSerialPort | None = None
         self._buffer = bytearray()
 
-    def _open(
+    def _new_com(
         self, port_info: QSerialPortInfo
     ) -> tuple[QSerialPort, QSerialPort.SerialPortError | None]:
         com = QSerialPort(port_info, parent=self)
@@ -48,15 +49,10 @@ class SerialService(ObjectNameMixin, QObject):
 
         return com, None if open_ok else com.error()
 
-    def _close(self, com: QSerialPort | None) -> None:
-        if com and com.isOpen():
-            com.flush()
-            com.close()
-
     def open_connection(self, port_info: QSerialPortInfo) -> bool:
         self.close_connection()
 
-        self._com, error = self._open(port_info)
+        self._com, error = self._new_com(port_info)
         if error:
             self._on_error(error)
             return False
@@ -107,20 +103,34 @@ class SerialService(ObjectNameMixin, QObject):
 
         self.ports.emit([p for p in ports if self._port_filter(p)])
 
+    def send_command(self, command: CommandInterface) -> None:
+        log.debug(f"sending cmd: {command}")
+
+        if not self._com:
+            log.debug("com port not connected")
+            return
+
+        self._com.write(command.encode())
+
     def close_connection(self) -> None:
-        if self._com:
-            self.com_disconnect.emit()
+        if not self._com:
+            return
 
-            try:
-                self._com.errorOccurred.disconnect()
-                self._com.readyRead.disconnect()
-            except Exception as e:
-                log.exception(e)
-                pass
+        self.com_disconnect.emit()
 
-            self._close(self._com)
-            self._com.deleteLater()
-            self._com = None
+        try:
+            self._com.errorOccurred.disconnect()
+            self._com.readyRead.disconnect()
+        except Exception as e:
+            log.exception(e)
+            pass
+
+        if self._com and self._com.isOpen():
+            self._com.flush()
+            self._com.close()
+
+        self._com.deleteLater()
+        self._com = None
 
     def deleteLater(self) -> None:
         self.close_connection()
@@ -138,10 +148,10 @@ class SerialService(ObjectNameMixin, QObject):
 
             for chunk in chunks:
                 try:
-                    command = self._decoder.decode_data(chunk)
+                    command = self._transcoder.decode_data(chunk)
                 except Exception as e:
                     log.exception(e)
-                    command = self._decoder.format_error(e)
+                    command = self._transcoder.format_error(e)
 
                 self.data.emit(command)
 

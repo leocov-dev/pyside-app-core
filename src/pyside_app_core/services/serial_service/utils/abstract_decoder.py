@@ -12,7 +12,11 @@ class CommandInterface(Protocol[T]):
         ...
 
 
-class DecoderInterface(Protocol[T]):
+class TranscoderInterface(Protocol[T]):
+    @classmethod
+    def encode_data(cls, command: CommandInterface) -> bytearray:
+        pass
+
     @classmethod
     def decode_data(cls, data: bytearray) -> CommandInterface:
         pass
