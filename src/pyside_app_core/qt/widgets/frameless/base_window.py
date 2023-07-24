@@ -1,8 +1,8 @@
+from typing import Tuple
+
 from PySide6.QtCore import QPoint, QRect, QSize, Qt, Signal
 from PySide6.QtGui import (
-    QBitmap,
     QBrush,
-    QColor,
     QMouseEvent,
     QPainter,
     QPainterPath,
@@ -10,12 +10,11 @@ from PySide6.QtGui import (
     QPen,
     QResizeEvent,
 )
-from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout
 
-from pyside_app_core.qt.style import QssTheme
-from pyside_app_core.qt.widgets.frameless.window_shade import FramelessWindowShade
 from pyside_app_core.qt.widgets.frameless.window_actions import WindowActions
-from pyside_app_core.services import application_service
+from pyside_app_core.qt.widgets.frameless.window_shade import FramelessWindowShade
+from pyside_app_core.services import application_service, platform_service
 
 
 class FramelessBaseMixin:
@@ -151,6 +150,7 @@ class FramelessBaseMixin:
             self._theme.win_corner_radius - 2,
             self._theme.win_corner_radius - 2,
         )
+        p.setClipping(False)
 
     def _on_maximize(self):
         if self.isMaximized():
@@ -175,7 +175,7 @@ class FramelessBaseMixin:
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if (
             (event.buttons() & Qt.MouseButton.LeftButton) == Qt.MouseButton.LeftButton
-            and self.window_bar_rect.contains(event.pos())
+            and self.window_bar_geo.contains(event.pos())
             and not self._window_actions.geometry().contains(event.pos())
         ):
             self._moving = True

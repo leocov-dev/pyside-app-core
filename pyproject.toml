@@ -15,6 +15,9 @@ classifiers = [
     "Topic :: Desktop Environment",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Typing :: Typed",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords = ["pyside", "pyside6", "frameless", "app", "style"]
 dependencies = [

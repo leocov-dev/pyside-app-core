@@ -8,9 +8,7 @@ from pyside_app_core.constants import (
     FLOAT_PRECISION,
     STRUCT_FLOAT_FMT,
 )
-from pyside_app_core.services.serial_service.utils.conversion_utils import (
-    int_from_bytes,
-)
+from pyside_app_core.services.serial_service.utils import conversion_utils
 
 K = TypeVar("K", bound=int)
 
@@ -108,7 +106,7 @@ class FloatMap(Mapping[K, float]):
         raw_pair_count = raw_data[:count_bytes]
         raw_key_val = raw_data[count_bytes:]
 
-        pair_count = int_from_bytes(raw_pair_count, signed=False)
+        pair_count = conversion_utils.int_from_bytes(raw_pair_count, signed=False)
         fmt_chars = [cls._key_fmt, STRUCT_FLOAT_FMT] * pair_count
 
         flat_pairs = struct.unpack(

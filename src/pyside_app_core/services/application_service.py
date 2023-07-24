@@ -1,3 +1,5 @@
+from typing import Type
+
 from pyside_app_core.errors.basic_errors import ApplicationError
 from pyside_app_core.qt.style import QssTheme
 
@@ -31,7 +33,7 @@ def set_app_version(app_version: str) -> None:
     __app_version = app_version
 
 
-def set_app_theme(app_theme: QssTheme) -> None:
+def set_app_theme(app_theme: QssTheme | Type[QssTheme]) -> None:
     global __app_theme
     if __app_theme:
         raise ApplicationError("Can't update app_theme after its been set once.")

@@ -1,8 +1,8 @@
 # pyside-app-core
 
-Custom style, widgets, and utilities for PySide 6.5 applications.
+Custom style, widgets, and utilities for cross-platform PySide 6.5 applications with a focus on 'frameless' styling.
 
-> This project should be considered experimental and subject to breaking changes at any time.
+> This project should be considered experimental and subject to breaking changes until a 1.0.0 release.
 
 
 ### Install

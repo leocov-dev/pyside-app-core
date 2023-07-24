@@ -1,4 +1,4 @@
-from PySide6.QtCore import QRect, Qt
+from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMainWindow, QWidget
 
@@ -71,5 +71,5 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
         return self._tool_bar
 
     @property
-    def window_bar_rect(self) -> QRect:
-        return self.tool_bar.geometry()
+    def window_bar_geo(self) -> QRect:
+        return QRect(QPoint(0, 0), self.tool_bar.geometry().bottomRight())

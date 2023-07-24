@@ -1,10 +1,10 @@
 import contextlib
-from typing import ContextManager, Literal
+from typing import ContextManager, List, Literal
 
 from PySide6 import QtGui
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMainWindow, QToolBar
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QMainWindow, QToolBar, QToolButton
 
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 from pyside_app_core.services import application_service
@@ -23,8 +23,9 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
     def __init__(self, area: ToolBarArea, parent: QMainWindow, movable=False):
         self._area = area
         self._theme = application_service.get_app_theme()
+        self._actions: List[QAction] = []
 
-        _margins = [1, 1, 1, 1]
+        _margins = [0, 0, 0, 0]
 
         if area == "left":
             self._border_side = "right"
@@ -41,6 +42,7 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
         super(ToolBarContext, self).__init__(self.OBJECT_NAME, parent=parent)
 
         self.setContentsMargins(*_margins)
+        self.setGeometry(10, 10, self.width(), self.height())
         self.setMovable(movable)
         self.setIconSize(QSize(28, 28))
 
@@ -51,12 +53,15 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
     @contextlib.contextmanager
     def add_action(
         self, name: str, icon: QIcon | None = None
-    ) -> ContextManager[QtGui.QAction]:
-        action = QtGui.QAction(text=name, parent=self)
+    ) -> ContextManager[QAction]:
+        action = QAction(text=name, parent=self)
         action.setObjectName(f"ToolBarAction_{name}")
         if icon:
             action.setIcon(icon)
 
+        self._actions.append(action)
+        if len(self._actions) == 1:
+            tool_button = [c for c in self.children() if isinstance(c, QToolButton)][0]
         yield action
         self.addAction(action)
 

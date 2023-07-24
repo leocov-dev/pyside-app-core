@@ -1,12 +1,13 @@
 from enum import IntEnum
 from typing import Callable, NamedTuple, Tuple
 
-from PySide6.QtCore import QEvent, QLine, QRect, Qt, Signal
+from PySide6.QtCore import QEvent, QLine, QPoint, QRect, Qt, Signal
 from PySide6.QtGui import (
     QBrush,
     QColor,
     QMouseEvent,
     QPainter,
+    QPainterPath,
     QPaintEvent,
     QPen,
     QResizeEvent,
@@ -64,37 +65,37 @@ class WindowActions(QWidget):
             if platform_service.is_macos
             else self.contentsMargins().right()
         )
+
         if platform_service.is_macos:
             _width = 14
+            _height = 14
+            _spacing = 5
         elif platform_service.is_windows:
             _width = 45
+            _height = 35
+            _spacing = 3
         else:
             _width = 20
-
-        if platform_service.is_macos:
-            _height = 14
-        elif platform_service.is_windows:
-            _height = 35
-        else:
             _height = 20
-
-        _spacing = (
-            3 if platform_service.is_windows else 5 if platform_service.is_macos else 10
-        )
+            _spacing = 10
 
         self._a_rect = QRect(self._side_offset, _top_offset, _width, _height)
         self._b_rect = self._a_rect.translated(_width + _spacing, 0)
         self._c_rect = self._b_rect.translated(_width + _spacing, 0)
 
-        self.container_height = (
-            self._a_rect.y() + self._a_rect.height()
-            if platform_service.is_windows
-            else self._a_rect.y() + self._a_rect.height() + self.contentsMargins().top()
-            if platform_service.is_macos
-            else self._a_rect.y()
-            + self._a_rect.height()
-            + self.contentsMargins().top() * 2
-        )
+        if platform_service.is_macos:
+            self.container_height = (
+                self._a_rect.y() + self._a_rect.height() + self.contentsMargins().top()
+            )
+        elif platform_service.is_windows:
+            self.container_height = self._a_rect.y() + self._a_rect.height()
+        else:
+            self.container_height = (
+                self._a_rect.y()
+                + self._a_rect.height()
+                + self.contentsMargins().top() * 2
+            )
+
         self.container_width = self._c_rect.x() + self._c_rect.width()
 
         self.setFixedHeight(self.container_height)
@@ -140,15 +141,10 @@ class WindowActions(QWidget):
         ]
 
         _order = [2, 0, 1] if platform_service.is_macos else [0, 1, 2]
+
         self._rect_map = []
         for i, o in enumerate(_order):
             self._rect_map.append((_rect_list[i], _button_data[o]))
-
-    @property
-    def min_bounds(self) -> QRect:
-        return QRect(
-            self._rect_map[0][0].topLeft(), self._rect_map[-1][0].bottomRight()
-        )
 
     def paintEvent(self, event: QPaintEvent) -> None:
         p = QPainter(self)
@@ -160,8 +156,7 @@ class WindowActions(QWidget):
         for rect, data in self._rect_map:
             enabled = self.isActiveWindow() and data.enabled_fn()
 
-            c_background = data.color if enabled else self._theme.win_action_inactive
-            self._draw_shape(p, rect, c_background, data.action, enabled)
+            self._draw_button(p, rect, data.color, data.action, enabled)
 
             if platform_service.is_macos and not enabled:
                 pass
@@ -245,18 +240,18 @@ class WindowActions(QWidget):
 
         super().resizeEvent(event)
 
-    def _get_shape_color(self, color: QColor) -> QColor:
+    def _get_button_color(self, color: QColor, is_enabled: bool) -> QColor:
         if platform_service.is_windows:
             return QColor(Qt.GlobalColor.transparent)
         else:
-            return color
+            return color if is_enabled else self._theme.win_action_inactive
 
-    def _draw_shape(
+    def _draw_button(
         self, p: QPainter, rect: QRect, color: QColor, action: Action, enabled: bool
     ):
         p.setPen(Qt.GlobalColor.transparent)
 
-        f_col = self._get_shape_color(color)
+        f_col = self._get_button_color(color, enabled)
 
         if enabled:
             if self._hover == action:
@@ -267,7 +262,22 @@ class WindowActions(QWidget):
         p.setBrush(f_col)
 
         if platform_service.is_windows:
-            p.drawRect(rect)
+            if action == Action.CLOSE:
+                offset = QPoint(0, 1)
+                path = QPainterPath(rect.topLeft() + offset)
+                path.lineTo(rect.bottomLeft() + offset)
+                path.lineTo(rect.bottomRight() + offset)
+
+                a = rect.topRight() + offset + QPoint(0, self._theme.win_corner_radius)
+                b = rect.topRight() + offset - QPoint(self._theme.win_corner_radius, 0)
+
+                path.lineTo(a)
+                path.cubicTo(rect.topRight(), b, b)
+
+                path.lineTo(rect.topLeft() + offset)
+                p.drawPath(path)
+            else:
+                p.drawRect(rect)
         else:
             p.drawEllipse(rect)
 
@@ -275,21 +285,9 @@ class WindowActions(QWidget):
         if self._press == action:
             color = color if platform_service.is_macos else color.lighter(200)
         elif self._hover == action:
-            color = (
-                color
-                if platform_service.is_macos
-                else color.lighter()
-                if platform_service.is_windows
-                else color.lighter(175)
-            )
+            color = color if platform_service.is_macos else color.lighter()
         else:
-            color = (
-                Qt.GlobalColor.transparent
-                if platform_service.is_macos
-                else color
-                if platform_service.is_windows
-                else color.lighter()
-            )
+            color = Qt.GlobalColor.transparent if platform_service.is_macos else color
 
         pen = QPen(color)
         pen.setWidth(3 if platform_service.is_windows else 2)
