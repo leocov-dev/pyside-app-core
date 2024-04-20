@@ -12,6 +12,9 @@ jobs:
       name: pypi
       url: https://pypi.org/p/pyside-app-core
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Download Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
