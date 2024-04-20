@@ -66,7 +66,7 @@ forbidden_modules = [
 ]
 
 [tool.bumpver]
-current_version = "0.1.7"
+current_version = "0.1.8"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
