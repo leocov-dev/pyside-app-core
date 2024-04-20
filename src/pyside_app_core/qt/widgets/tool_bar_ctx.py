@@ -25,23 +25,19 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
         self._theme = application_service.get_app_theme()
         self._actions: List[QAction] = []
 
-        _margins = [0, 0, 0, 0]
-
         if area == "left":
             self._border_side = "right"
         elif area == "right":
             self._border_side = "left"
         elif area == "top":
             self._border_side = "bottom"
-            _margins[1] = 5
         else:
             self._border_side = "top"
-            _margins[3] = 5
 
         self.OBJECT_NAME = f"ToolBar_{area}"
         super(ToolBarContext, self).__init__(self.OBJECT_NAME, parent=parent)
 
-        self.setContentsMargins(*_margins)
+        self.setContentsMargins(0, 0, 0, 0)
         self.setGeometry(10, 10, self.width(), self.height())
         self.setMovable(movable)
         self.setIconSize(QSize(28, 28))
@@ -61,15 +57,24 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
 
         self._actions.append(action)
         if len(self._actions) == 1:
-            tool_button = [c for c in self.children() if isinstance(c, QToolButton)][0]
+            _ = [c for c in self.children() if isinstance(c, QToolButton)][0]
         yield action
         self.addAction(action)
 
     def _setup_style(self):
         self.setStyleSheet(
             f"""
-#{self.obj_name} {{
+QToolBar#{self.obj_name} {{
     border-{self._border_side}: {self._theme.win_divider_width} solid {self._theme.win_divider_color};
+}}
+QToolBar#{self.obj_name} > QToolButton {{
+    margin-left: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    spacing: 0;
+}}
+QToolButton:first {{
+    background-color: red;
 }}
 """
         )

@@ -65,7 +65,7 @@ class FramelessBaseMixin:
         self._window_shade = FramelessWindowShade(parent=self)
 
     @property
-    def window_bar_rect(self) -> QRect:
+    def window_bar_geo(self) -> QRect:
         return QRect(
             0, 0, self.rect().width(), self._window_actions.geometry().height()
         )
@@ -94,7 +94,7 @@ class FramelessBaseMixin:
         raise ValueError
 
     def paintEvent(self, event: QPaintEvent) -> None:
-        super().paintEvent(event)
+        event.accept()
 
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -114,7 +114,6 @@ class FramelessBaseMixin:
         self._window_actions.raise_()
 
         p.end()
-        event.accept()
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         self._title.setFixedWidth(self.rect().width())
@@ -192,5 +191,10 @@ class FramelessBaseMixin:
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         self._moving = False
         self.update()
+
+        super().mouseReleaseEvent(event)
+
+    def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
+        self._on_maximize()
 
         super().mouseReleaseEvent(event)

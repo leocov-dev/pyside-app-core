@@ -67,17 +67,17 @@ class WindowActions(QWidget):
         )
 
         if platform_service.is_macos:
-            _width = 14
-            _height = 14
-            _spacing = 5
+            _width = 13
+            _height = 13
+            _spacing = 7
         elif platform_service.is_windows:
             _width = 45
             _height = 35
             _spacing = 3
         else:
-            _width = 20
-            _height = 20
-            _spacing = 10
+            _width = 17
+            _height = 17
+            _spacing = 8
 
         self._a_rect = QRect(self._side_offset, _top_offset, _width, _height)
         self._b_rect = self._a_rect.translated(_width + _spacing, 0)
@@ -147,11 +147,13 @@ class WindowActions(QWidget):
             self._rect_map.append((_rect_list[i], _button_data[o]))
 
     def paintEvent(self, event: QPaintEvent) -> None:
+        event.accept()
+
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-        p.setPen(Qt.GlobalColor.transparent)
-        p.setBrush(Qt.GlobalColor.transparent)
+        # p.setPen(Qt.GlobalColor.transparent)
+        # p.setBrush(Qt.GlobalColor.transparent)
 
         for rect, data in self._rect_map:
             enabled = self.isActiveWindow() and data.enabled_fn()
@@ -166,8 +168,6 @@ class WindowActions(QWidget):
                 data.shape_fn(p, rect, c_shape, data.action)
 
         p.end()
-
-        event.accept()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         prev = self._hover

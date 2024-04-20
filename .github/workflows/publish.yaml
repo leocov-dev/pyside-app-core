@@ -8,25 +8,16 @@ jobs:
     name: PyPi Publish
     permissions:
       id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyside-app-core
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Dependencies
-        run: python3 -m pip install -U twine
-
       - name: Download Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release download ${{ github.event.release.tag_name }} --dir dist
 
-      - name: Validate Dist Files
-        run: twine check dist/**
-
-      - name: Publish To Test Env
-        uses: pypa/gh-action-pypi-publish@v1.8.6
+      # trusted publishing workflow:
+      # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+      - name: Publish To PyPi
+        uses: pypa/gh-action-pypi-publish@v1.8.14

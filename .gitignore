@@ -19,3 +19,5 @@ dist/
 
 resources.rcc
 resoruces.py
+
+.DS_Store

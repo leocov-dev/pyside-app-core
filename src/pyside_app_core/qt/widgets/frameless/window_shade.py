@@ -24,6 +24,8 @@ class FramelessWindowShade(QWidget):
         self.setDisabled(not val)
 
     def paintEvent(self, event: QPaintEvent) -> None:
+        event.accept()
+
         rect = self.parent().contentsRect()
         self.setFixedSize(rect.size())
 

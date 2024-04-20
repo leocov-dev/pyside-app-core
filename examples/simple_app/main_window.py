@@ -10,7 +10,7 @@ class SimpleMainWindow(FramelessMainWindow):
         super(SimpleMainWindow, self).__init__()
 
         # ------------------------------------------------------------------------------
-        self.setMinimumSize(QSize(800, 480))
+        self.setMinimumSize(QSize(480, 240))
 
         _central_layout = QVBoxLayout()
         self.centralWidget().setLayout(_central_layout)
@@ -20,13 +20,14 @@ class SimpleMainWindow(FramelessMainWindow):
 
         _central_layout.addStretch()
 
-        with self._tool_bar.add_action(
-            self.tr("error dialog"), QIcon(":/std/icons/console")
-        ) as ed:
+        for _ in range(15):
+            with self._tool_bar.add_action(
+                self.tr("error dialog"), QIcon(":/std/icons/console")
+            ) as ed:
 
-            def _show_ed():
-                raise ValueError("A simulated error")
+                def _show_ed():
+                    raise ValueError("A simulated error")
 
-            ed.triggered.connect(_show_ed)
+                ed.triggered.connect(_show_ed)
 
         self.statusBar().showMessage(self.tr("Hi There"))

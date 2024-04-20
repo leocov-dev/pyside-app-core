@@ -3,16 +3,16 @@ from typing import Protocol, Self, TypeVar
 T = TypeVar("T")
 
 
-class CommandInterface(Protocol[T]):
+class CommandInterface(Protocol):
     def encode(self) -> bytearray:
         ...
 
     @classmethod
-    def decode(cls, raw_data: bytes) -> Self:
+    def decode(cls, raw_data: bytes):
         ...
 
 
-class TranscoderInterface(Protocol[T]):
+class TranscoderInterface(Protocol):
     @classmethod
     def encode_data(cls, command: CommandInterface) -> bytearray:
         pass

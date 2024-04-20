@@ -20,7 +20,7 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
         self._central.setStyleSheet("""background-color: none;""")
         self.setCentralWidget(self._central)
 
-        # must in order to show grab handle
+        # must call in order to show grab handle
         self.statusBar().show()
 
         self._menu_bar = MenuBarContext(

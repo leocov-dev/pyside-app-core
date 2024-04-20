@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyside-app-core"
-version = "0.1.7"
+version = "0.1.8"
 description = "Framework for PySide Applications"
 readme = "README.md"
 authors = [{ name = "Leo Covarrubias", email = "leo@leocov.com" }]
@@ -21,7 +21,7 @@ classifiers = [
 ]
 keywords = ["pyside", "pyside6", "frameless", "app", "style"]
 dependencies = [
-    "pyside6 ~= 6.5.0",
+    "pyside6 >=6.5.0,<7.0.0",
     "jinja2 ~= 3.1.2",
 ]
 requires-python = ">=3.11"
