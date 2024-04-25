@@ -1,13 +1,12 @@
 import contextlib
 from typing import ContextManager, List, Literal
 
-from PySide6 import QtGui
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMainWindow, QToolBar, QToolButton
 
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.services import application_service
+from pyside_app_core.qt import application_service
 
 ToolBarArea = Literal["top", "bottom", "left", "right"]
 

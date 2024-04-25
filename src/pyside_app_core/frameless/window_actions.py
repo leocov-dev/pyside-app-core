@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import auto, Enum, IntEnum
 from typing import Callable, NamedTuple, Tuple
 
 from PySide6.QtCore import QEvent, QLine, QPoint, QRect, Qt, Signal
@@ -14,14 +14,15 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.services import application_service, platform_service
+from pyside_app_core.services import platform_service
+from pyside_app_core.qt import application_service
 
 
-class Action(IntEnum):
-    NONE = 0
-    CLOSE = 1
-    MINIMIZE = 2
-    MAXIMIZE = 3
+class Action(Enum):
+    NONE = auto()
+    CLOSE = auto()
+    MINIMIZE = auto()
+    MAXIMIZE = auto()
 
 
 ShapeFunc = Callable[[QPainter, QRect, QColor, Action], None]
@@ -73,7 +74,7 @@ class WindowActions(QWidget):
         elif platform_service.is_windows:
             _width = 45
             _height = 35
-            _spacing = 3
+            _spacing = 0
         else:
             _width = 17
             _height = 17
@@ -151,9 +152,6 @@ class WindowActions(QWidget):
 
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        # p.setPen(Qt.GlobalColor.transparent)
-        # p.setBrush(Qt.GlobalColor.transparent)
 
         for rect, data in self._rect_map:
             enabled = self.isActiveWindow() and data.enabled_fn()
@@ -240,7 +238,9 @@ class WindowActions(QWidget):
 
         super().resizeEvent(event)
 
-    def _get_button_color(self, color: QColor, is_enabled: bool) -> QColor:
+    def _get_button_color(
+        self, color: QColor, action: Action, is_enabled: bool
+    ) -> QColor:
         if platform_service.is_windows:
             return QColor(Qt.GlobalColor.transparent)
         else:
@@ -251,7 +251,7 @@ class WindowActions(QWidget):
     ):
         p.setPen(Qt.GlobalColor.transparent)
 
-        f_col = self._get_button_color(color, enabled)
+        f_col = self._get_button_color(color, action, enabled)
 
         if enabled:
             if self._hover == action:
@@ -285,9 +285,17 @@ class WindowActions(QWidget):
         if self._press == action:
             color = color if platform_service.is_macos else color.lighter(200)
         elif self._hover == action:
-            color = color if platform_service.is_macos else color.lighter()
+            if platform_service.is_macos:
+                color = color
+            elif platform_service.is_windows:
+                color = color.lighter(200)
+            else:
+                color = color.lighter()
         else:
-            color = Qt.GlobalColor.transparent if platform_service.is_macos else color
+            if platform_service.is_macos:
+                color = Qt.GlobalColor.transparent
+            elif platform_service.is_windows:
+                color = Qt.GlobalColor.gray
 
         pen = QPen(color)
         pen.setWidth(3 if platform_service.is_windows else 2)

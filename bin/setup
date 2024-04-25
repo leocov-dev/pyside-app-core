@@ -15,17 +15,11 @@ pushd "$__repo" > /dev/null
 
 echo "Setup Development Environment..."
 
-python3 -m pip install -q -U pip wheel setuptools build pip-tools twine
+python3 -m pip install -q -U pip wheel setuptools build twine
 
-rm -f requirements.txt
-
-pip-compile --quiet --resolver backtracking --extra dev --allow-unsafe
-
-pip install -q -U -r requirements.txt
+pip install -e ".[dev]"
 
 pre-commit install
-
-rm -f requirements.txt
 
 echo "Done."
 

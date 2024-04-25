@@ -3,8 +3,10 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-        language_version: python3.11
+        types: [python]
   - repo: https://github.com/seddonym/import-linter
     rev: v1.8.0
     hooks:
       - id: import-linter
+        entry: env PYTHONPATH=./src lint-imports --verbose --no-cache
+        types: [python]

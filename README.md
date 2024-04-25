@@ -15,7 +15,7 @@ $ pip install pyside-app-core
 ### Run example application
 
 ```shell
-$ python -m examples.simple_app --generate-rcc
+$ python -m examples.toolbar_app --generate-rcc
 ```
 
 ### Generate resources files
@@ -24,16 +24,16 @@ Resource files MUST be generated at least once for stylesheets and icons to func
 
 ```shell
 # from repo with this lib installed
-$ compile-pyside-theme <target directory>
+compile-pyside-theme a/target/directory
 
 # custom QssTheme subclass where `./theme.py` has `THEME = CustomTheme()`
-$ compile-pyside-theme \
+compile-pyside-theme \
     --custom-theme-pypath theme.THEME \
-    <target directory> 
+    a/target/directory
 
 # if needed to resolve python modules you can include pypath updates
-$ compile-pyside-theme \
+compile-pyside-theme \
     --extra-python-path ./src \
     --custom-theme-pypath src.example_app.theme.THEME \
-    <target directory>
+    a/target/directory
 ```

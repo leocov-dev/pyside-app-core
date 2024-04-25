@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.services import application_service
+from pyside_app_core.qt import application_service
 
 
 class FramelessWindowShade(QWidget):

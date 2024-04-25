@@ -1,5 +1,5 @@
-from pyside_app_core.qt.util.pixel_val import PixelVal
-from pyside_app_core.qt.util.s_color import SColor
+from pyside_app_core.style.pixel_val import PixelVal
+from pyside_app_core.style.s_color import SColor
 from pyside_app_core.services import platform_service
 
 
@@ -37,7 +37,9 @@ class QssTheme:
 
     tooltip_background_color = SColor(85)
 
-    win_close = SColor(120) if platform_service.is_windows else SColor(237, 107, 95)
+    win_close = (
+        SColor(232, 16, 32) if platform_service.is_windows else SColor(237, 107, 95)
+    )
     win_minimize = SColor(120) if platform_service.is_windows else SColor(245, 191, 79)
     win_maximize = SColor(120) if platform_service.is_windows else SColor(98, 197, 84)
     win_action_inactive = SColor(85)

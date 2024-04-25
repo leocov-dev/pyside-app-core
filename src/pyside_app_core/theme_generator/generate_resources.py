@@ -5,13 +5,13 @@ from typing import List, Literal, Type
 
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 
-from pyside_app_core.generator_utils.standard_resources import STANDARD_RESOURCES
-from pyside_app_core.generator_utils.style_types import QtResourceGroup
-from pyside_app_core.qt.style import DEFAULT_THEME, QssTheme
+from pyside_app_core.theme_generator.standard_resources import STANDARD_RESOURCES
+from pyside_app_core.theme_generator.style_types import QtResourceGroup
+from pyside_app_core.style.theme import DEFAULT_THEME, QssTheme
 
 
 def _compose_template_environment(*extra_template_files: Path) -> Environment:
-    loaders = [PackageLoader("pyside_app_core.generator_utils")]
+    loaders = [PackageLoader("pyside_app_core.resources")]
 
     if extra_template_files:
         dirs = list(set([str(p.parent) for p in extra_template_files]))

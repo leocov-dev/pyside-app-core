@@ -1,10 +1,11 @@
 import os
+from typing import cast
 
 from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.services import application_service
+from pyside_app_core.qt import application_service
 
 
 class SettingsMixin:
@@ -27,7 +28,7 @@ class SettingsMixin:
             self._restored = True
 
         if isinstance(self, QWidget):
-            super().showEvent(event)
+            cast(QWidget, super()).showEvent(event)
 
     def _restore_state(self):
         pass

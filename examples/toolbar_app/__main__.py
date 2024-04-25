@@ -2,34 +2,31 @@ import argparse
 import os
 import sys
 from pathlib import Path
+from typing import Type
 
 _root = Path(__file__).parent
 
 
-def main(generate_rcc: bool):
-    # NOTE: these imports are lumped in here for the ability to
-    # override PLATFORM_OVERRIDE from code, normally would not do this
-    from pyside_app_core.errors import excepthook
-    from pyside_app_core.qt.style import QssTheme
-    from pyside_app_core.services import application_service
-    from simple_app import __version__
-    from simple_app.app import SimpleApp
+def generate_theme(theme: Type["QssTheme"]):
+    from pyside_app_core import theme_generator
 
-    class CustomTheme(QssTheme):
-        ...
+    theme_generator.compile_qrc_to_resources(qss_theme=theme, target_dir=_root)
+
+
+def main(theme: Type["QssTheme"]):
+    # NOTE: these imports are lumped in here for the ability to
+    # set PLATFORM_OVERRIDE from code, normally you would not need
+    # to do this
+    from pyside_app_core.errors import excepthook
+    from pyside_app_core.qt import application_service
+    from toolbar_app import __version__
+    from toolbar_app.app import SimpleApp
 
     excepthook.install_excepthook()
     application_service.set_app_version(__version__)
     application_service.set_app_id("com.example.simple-app")
     application_service.set_app_name("Simple App")
-    application_service.set_app_theme(CustomTheme)
-
-    if generate_rcc:
-        from pyside_app_core import generator_utils
-
-        generator_utils.compile_qrc_to_resources(
-            qss_theme=CustomTheme, target_dir=_root
-        )
+    application_service.set_app_theme(theme())
 
     sys.exit(SimpleApp().launch())
 
@@ -49,4 +46,12 @@ if __name__ == "__main__":
         case "nix":
             os.environ["PLATFORM_OVERRIDE"] = "Linux"
 
-    main(args.generate_rcc)
+    from pyside_app_core.style.theme import QssTheme
+
+    class CustomTheme(QssTheme):
+        ...
+
+    if args.generate_rcc:
+        generate_theme(CustomTheme)
+
+    main(CustomTheme)

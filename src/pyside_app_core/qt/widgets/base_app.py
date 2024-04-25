@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QMainWindow
 
 from pyside_app_core.errors.basic_errors import ApplicationError
 from pyside_app_core.qt.util.style_sheet import (
@@ -23,7 +23,7 @@ class BaseApp(QApplication):
         apply_style_sheet(":/style.qss", self)
 
         # override in subclass
-        self._main_window = None
+        self._main_window: QMainWindow = None
 
     def launch(self) -> int:
         if not self._main_window:
@@ -32,4 +32,5 @@ class BaseApp(QApplication):
             )
 
         self._main_window.show()
+        self._main_window.devicePixelRatio()
         return self.exec()

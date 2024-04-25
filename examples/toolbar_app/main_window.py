@@ -2,10 +2,10 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from pyside_app_core.qt.widgets.frameless.main_window import FramelessMainWindow
+from pyside_app_core.frameless.main_toolbar_window import FramelessMainToolbarWindow
 
 
-class SimpleMainWindow(FramelessMainWindow):
+class SimpleMainWindow(FramelessMainToolbarWindow):
     def __init__(self):
         super(SimpleMainWindow, self).__init__()
 

@@ -1,8 +1,10 @@
+from typing import Literal
+
 from pyside_app_core.types.numeric import FloatPrecision
 
 # ------------------------------------------------------------------------------
 # defined values
-DATA_ENCODING_ENDIAN = "little"
+DATA_ENCODING_ENDIAN: Literal["little"] = "little"
 LIST_DATA_LEN_BYTES = 2
 FLOAT_PRECISION: FloatPrecision = "single"
 

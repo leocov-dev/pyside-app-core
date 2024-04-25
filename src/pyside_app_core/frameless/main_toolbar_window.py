@@ -2,17 +2,17 @@ from PySide6.QtCore import QPoint, QRect, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMainWindow, QWidget
 
-from pyside_app_core.qt.widgets.about_dialog import AboutDialog
-from pyside_app_core.qt.widgets.frameless.base_window import FramelessBaseMixin
+from pyside_app_core.frameless.about_dialog import AboutDialog
+from pyside_app_core.frameless.base_window import FramelessBaseMixin
 from pyside_app_core.qt.widgets.menu_ctx import MenuBarContext
 from pyside_app_core.qt.widgets.tool_bar_ctx import ToolBarContext
 from pyside_app_core.qt.widgets.window_settings_mixin import WindowSettingsMixin
 from pyside_app_core.services import platform_service
 
 
-class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
+class FramelessMainToolbarWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
     def __init__(self):
-        super(FramelessMainWindow, self).__init__(parent=None)
+        super(FramelessMainToolbarWindow, self).__init__(parent=None)
 
         self._about_dialog = AboutDialog()
 
@@ -25,9 +25,9 @@ class FramelessMainWindow(WindowSettingsMixin, FramelessBaseMixin, QMainWindow):
 
         self._menu_bar = MenuBarContext(
             self,
-            border_width=0
-            if platform_service.is_macos
-            else self._theme.win_divider_width,
+            border_width=(
+                0 if platform_service.is_macos else self._theme.win_divider_width
+            ),
             border_color=self._theme.win_divider_color,
         )
 

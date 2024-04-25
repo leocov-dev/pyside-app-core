@@ -14,8 +14,6 @@ def _platform():
     if not __platform:
         __platform = override if override in __valid_platforms else system_platform
 
-    print(__platform)
-
     return __platform
 
 

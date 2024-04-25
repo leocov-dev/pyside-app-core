@@ -20,20 +20,21 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords = ["pyside", "pyside6", "frameless", "app", "style"]
+requires-python = ">=3.11"
 dependencies = [
     "pyside6 >=6.5.0,<7.0.0",
     "jinja2 ~= 3.1.2",
 ]
-requires-python = ">=3.11"
 
 [project.optional-dependencies]
 dev = [
-    "black ~= 23.3.0",
-    "pytest ~= 7.3.1",
-    "pytest_mock ~= 3.10.0",
-    "pre-commit ~= 3.3.1",
-    "import-linter ~= 1.9.0",
-    "bumpver ~= 2023.1121"
+    "black",
+    "pytest",
+    "pytest_mock",
+    "mypy",
+    "pre-commit",
+    "import-linter ~= 2.0.0",
+    "bumpver ~= 2023.1121",
 ]
 
 [project.urls]
@@ -42,36 +43,39 @@ Homepage = "https://github.com/leocov-dev/pyside-app-core"
 [project.scripts]
 compile-pyside-theme = "pyside_app_core.generator_utils.__main__:main"
 
+[tool.setuptools.package-data]
+"pyside_app_core" = ["py.typed"]
+"pyside_app_core.resources" = [
+    "icons/*",
+    "templates/*",
+]
+
+# ------------------------------
+# testing
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 
+# ------------------------------
+# linting
 [tool.black]
 line-length = 88
 
-[tool.importlinter]
-root_packages = [
-    "src.pyside_app_core",
-    "examples.simple_app",
-]
-include_external_packages = true
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+packages = ["pyside_app_core"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
+check_untyped_defs = true
 
-[[tool.importlinter.contracts]]
-name = "Don't import from examples"
-type = "forbidden"
-source_modules = [
-    "src.pyside_app_core",
-]
-forbidden_modules = [
-    "examples.simple_app",
-]
-
+# ------------------------------
+# version managment
 [tool.bumpver]
 current_version = "0.1.9"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message  = "Bump version {old_version} -> {new_version}"
-commit          = true
-tag             = true
-push            = true
+commit_message = "Bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = [
@@ -82,3 +86,31 @@ push            = true
     "{version}"
 ]
 
+# ------------------------------
+# import linter config and rules
+[tool.importlinter]
+root_packages = [
+    "pyside_app_core",
+]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Module Layering"
+type = "layers"
+layers = [
+    "frameless",
+    "qt",
+    "theme_generator",
+    "style",
+    "services",
+    "utils",
+    "errors",
+    "log",
+    "constants",
+    "types",
+]
+containers = ["pyside_app_core"]
+exhaustive = true
+
+
+# ------------------------------

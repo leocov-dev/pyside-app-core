@@ -12,8 +12,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.qt.util.pixel_val import PixelVal
-from pyside_app_core.qt.util.s_color import SColor
+from pyside_app_core.style.pixel_val import PixelVal
+from pyside_app_core.style.s_color import SColor
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 
 

@@ -37,7 +37,7 @@ def _get_cached_logger(name):
     return lg
 
 
-def set_level(name: str = None, lvl: int = None):
+def set_level(name: str | None = None, lvl: int | None = None):
     """set the logger level"""
     if not name:
         name = _get_caller_name()
@@ -91,7 +91,8 @@ def exception(msg, *args, **kwargs):
 
 def set_all_level(lvl: int):
     """set level of all loggers"""
-    for _, lg in sorted(__logger_cache):
+    for key in sorted(__logger_cache.keys()):
+        lg = __logger_cache[key]
         if not isinstance(lg, PACLogger):
             continue
         lg.setLevel(lvl)

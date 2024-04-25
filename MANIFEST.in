@@ -1,3 +1,0 @@
-include src/pyside_app_core/generator_utils/icons/*.svg
-include src/pyside_app_core/generator_utils/icons/**/*.svg
-include src/pyside_app_core/generator_utils/templates/*.jinja2

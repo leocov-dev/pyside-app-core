@@ -45,7 +45,7 @@ class PACLogger(logging.Logger):
         self.addHandler(get_handler())
 
     def findCaller(
-        self, stack_info: bool = ..., stacklevel: int = ...
+        self, stack_info: bool = False, stacklevel: int = 1
     ) -> tuple[str, int, str, str | None]:
         """
         Find the stack frame of the caller so that we can note the source

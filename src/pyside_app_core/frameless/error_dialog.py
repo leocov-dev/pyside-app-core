@@ -1,7 +1,7 @@
 from PySide6.QtGui import QClipboard
 from PySide6.QtWidgets import QApplication, QLabel, QPlainTextEdit
 
-from pyside_app_core.qt.widgets.frameless.base_dialog import (
+from pyside_app_core.frameless.base_dialog import (
     FramelessBaseDialog,
     StandardButton,
 )

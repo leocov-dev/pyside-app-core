@@ -1,11 +1,11 @@
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel
 
-from pyside_app_core.qt.widgets.frameless.base_dialog import (
+from pyside_app_core.frameless.base_dialog import (
     FramelessBaseDialog,
     StandardButton,
 )
-from pyside_app_core.services import application_service
+from pyside_app_core.qt import application_service
 
 
 class AboutDialog(FramelessBaseDialog):

@@ -1,3 +1,5 @@
+from typing import TypeAlias
+
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -11,10 +13,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.qt.widgets.frameless.base_window import FramelessBaseMixin
+from pyside_app_core.frameless.base_window import FramelessBaseMixin
 
-StandardButton = QDialogButtonBox.StandardButton
-ButtonRole = QDialogButtonBox.ButtonRole
+StandardButton: TypeAlias = QDialogButtonBox.StandardButton
+ButtonRole: TypeAlias = QDialogButtonBox.ButtonRole
 
 
 class FramelessBaseDialog(FramelessBaseMixin, QDialog):
@@ -66,7 +68,7 @@ class FramelessBaseDialog(FramelessBaseMixin, QDialog):
         std_button = self.button(button)
         std_button.setText(text)
 
-    def button(self, button: StandardButton) -> QPushButton | None:
+    def button(self, button: StandardButton) -> QPushButton:
         return self._button_box.button(button)
 
     def buttonRole(self, button: QAbstractButton) -> ButtonRole:

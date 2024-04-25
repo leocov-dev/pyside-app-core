@@ -12,9 +12,9 @@ class CanSetStyleSheet(Protocol):
 
 
 def apply_style_sheet(qss_file: str, widget: CanSetStyleSheet) -> None:
-    qss_file = QFile(qss_file)
-    qss_file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
-    ts = QTextStream(qss_file)
+    qfile = QFile(qss_file)
+    qfile.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
+    ts = QTextStream(qfile)
     widget.setStyleSheet(ts.readAll())
 
 

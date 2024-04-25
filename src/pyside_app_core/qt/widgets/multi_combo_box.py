@@ -2,6 +2,7 @@
 Adapted from:
 https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 """
+
 from typing import Generator, Generic, Tuple, TypeVar
 
 from PySide6.QtCore import QEvent, Qt, Signal
@@ -117,7 +118,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, Generic[DT], QComboBox):
         )
         self.lineEdit().setText(text)
 
-    def addItem(self, text, userData: DT = None, isChecked=False, **kwargs):
+    def addItem(self, text, userData: DT | None = None, isChecked=False, **kwargs):
         item = QStandardItem()
         item.setText(text)
         if userData is None:
@@ -132,10 +133,12 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, Generic[DT], QComboBox):
 
         self.model().appendRow(item)
 
-    def addItems(self, texts: list[str], dataList: list[DT] = None, allChecked=False):
+    def addItems(
+        self, texts: list[str], dataList: list[DT] | None = None, allChecked=False
+    ):
         for i, text in enumerate(texts):
             try:
-                data = dataList[i]
+                data = (dataList or [])[i]
             except (TypeError, IndexError):
                 data = None
             self.addItem(text, data, isChecked=allChecked)

@@ -8,11 +8,11 @@ from pyside_app_core import log
 from pyside_app_core.errors.serial_errors import (
     SerialConnectionError,
     SerialDisconnectedError,
+    SerialError,
     SerialReadError,
     SerialUnknownError,
     SerialWriteError,
 )
-from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 from pyside_app_core.services.serial_service.utils.abstract_decoder import (
     CommandInterface,
     TranscoderInterface,
@@ -26,7 +26,7 @@ class CanRegister(Protocol):
         ...
 
 
-class SerialService(ObjectNameMixin, QObject):
+class SerialService(QObject):
     ports = Signal(list)
     com_connect = Signal(QSerialPort)
     com_disconnect = Signal()
@@ -137,6 +137,9 @@ class SerialService(ObjectNameMixin, QObject):
         super().deleteLater()
 
     def _on_data(self, *args, **kwargs) -> None:
+        if not self._com:
+            return
+
         read: bytes = self._com.readAll()
         data = bytearray(read)
         self._buffer.extend(data)
@@ -159,6 +162,8 @@ class SerialService(ObjectNameMixin, QObject):
             self._buffer.extend(remainder)
 
     def _on_error(self, error: QSerialPort.SerialPortError | None) -> None:
+        exception: SerialError
+
         if error is None or error == QSerialPort.SerialPortError.NoError:
             return
         elif error == QSerialPort.SerialPortError.OpenError:
@@ -180,7 +185,7 @@ class SerialService(ObjectNameMixin, QObject):
         raise exception
 
     def _port_filter(self, p: QSerialPort) -> bool:
-        filters = [
+        filters: list[bool] = [
             # p.portName().startswith("cu."),
             # "bluetooth" not in p.portName().lower()
         ]

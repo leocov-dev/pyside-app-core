@@ -4,8 +4,8 @@ import os.path
 import sys
 from pathlib import Path
 
-from pyside_app_core.generator_utils import compile_qrc_to_resources
-from pyside_app_core.qt.style import DEFAULT_THEME
+from pyside_app_core.theme_generator import compile_qrc_to_resources
+from pyside_app_core.style.theme import DEFAULT_THEME
 
 
 def main():

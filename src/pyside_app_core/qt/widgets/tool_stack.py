@@ -8,7 +8,7 @@ from pyside_app_core.qt.widgets.dynamic_stacked_widget import DynamicStackedWidg
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.qt.widgets.tool_button import ToolButton
-from pyside_app_core.qt.style import QssTheme
+from pyside_app_core.style.theme import QssTheme
 
 ToolStackSide = Literal["right", "left"]
 

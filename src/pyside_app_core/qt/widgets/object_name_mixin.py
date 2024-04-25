@@ -1,3 +1,5 @@
+from typing import cast
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 
@@ -13,8 +15,8 @@ class ObjectNameMixin:
         if hasattr(self, "OBJECT_NAME"):
             obj_name = self.OBJECT_NAME.replace(" ", "_")
 
-        self.setObjectName(obj_name)
+        cast(QWidget, self).setObjectName(obj_name)
 
     @property
     def obj_name(self):
-        return self.objectName()
+        return cast(QWidget, self).objectName()

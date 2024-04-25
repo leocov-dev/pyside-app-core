@@ -48,8 +48,8 @@ class FloatMap(Mapping[K, float]):
     def __str__(self):
         return self._data.__str__()
 
-    def __eq__(self, other: Self) -> bool:
-        val_eq: List[bool] = []
+    def __eq__(self, other: Self) -> bool:  # type: ignore[override]
+        val_eq: list[bool] = []
         for k, v in self.items():
             other_v = other.get(k)
             if other_v:
