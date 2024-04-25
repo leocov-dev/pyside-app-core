@@ -1,7 +1,7 @@
 import logging
-from typing import List, Protocol
+from typing import Generic, List
 
-from PySide6.QtCore import QIODevice, QObject, Qt, QTimer, Signal
+from PySide6.QtCore import QIODevice, QObject, QTimer, Signal
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 
 from pyside_app_core import log
@@ -13,28 +13,37 @@ from pyside_app_core.errors.serial_errors import (
     SerialUnknownError,
     SerialWriteError,
 )
-from pyside_app_core.services.serial_service.utils.abstract_decoder import (
-    CommandInterface,
+from pyside_app_core.services.serial_service.types import (
+    _TC,
+    _TR,
+    CanRegister,
+    Encodable,
+    PortFilter,
+    SerialReader,
     TranscoderInterface,
 )
+from pyside_app_core.utils.time_ms import SECONDS
 
-log.set_level(lvl=logging.DEBUG)
-
-
-class CanRegister(Protocol):
-    def bind_serial_service(self, serial_service: "SerialService"):
-        ...
+log.set_level(logging.DEBUG)
 
 
-class SerialService(QObject):
+def _noop(ports):
+    return ports
+
+
+class SerialService(QObject, Generic[_TC, _TR]):
     ports = Signal(list)
     com_connect = Signal(QSerialPort)
     com_disconnect = Signal()
     data = Signal(object)
     error = Signal(Exception)
 
-    def __init__(self, transcoder: TranscoderInterface, parent: QObject):
+    def __init__(
+        self, transcoder: type[TranscoderInterface[_TC, _TR]], parent: QObject
+    ):
         super(SerialService, self).__init__(parent=parent)
+
+        self._port_filter: PortFilter = _noop
 
         self._transcoder = transcoder
         self._com: QSerialPort | None = None
@@ -48,6 +57,9 @@ class SerialService(QObject):
         open_ok = com.open(QIODevice.OpenModeFlag.ReadWrite)
 
         return com, None if open_ok else com.error()
+
+    def set_port_filter(self, func: PortFilter):
+        self._port_filter = func
 
     def open_connection(self, port_info: QSerialPortInfo) -> bool:
         self.close_connection()
@@ -64,32 +76,13 @@ class SerialService(QObject):
 
         return True
 
-    def register_reader(self, reader: QObject) -> None:
-        if hasattr(reader, "handle_serial_connect"):
-            self.com_connect[QSerialPort].connect(
-                reader.handle_serial_connect,
-                type=Qt.ConnectionType.UniqueConnection,
-            )
-        if hasattr(reader, "handle_serial_disconnect"):
-            self.com_disconnect.connect(
-                reader.handle_serial_disconnect,
-                type=Qt.ConnectionType.UniqueConnection,
-            )
-        if hasattr(reader, "handle_serial_ports"):
-            self.ports[list].connect(
-                reader.handle_serial_ports,
-                type=Qt.ConnectionType.UniqueConnection,
-            )
-        if hasattr(reader, "handle_serial_data"):
-            self.data[bytearray].connect(
-                reader.handle_serial_data,
-                type=Qt.ConnectionType.UniqueConnection,
-            )
-        if hasattr(reader, "handle_serial_error"):
-            self.error[Exception].connect(
-                reader.handle_serial_error,
-                type=Qt.ConnectionType.UniqueConnection,
-            )
+    def register_reader(self, reader: SerialReader) -> None:
+        self.com_connect[QSerialPort].connect(reader.handle_serial_connect)
+        self.com_disconnect.connect(reader.handle_serial_disconnect)
+        self.ports.connect(reader.handle_serial_ports)
+        self.data.connect(reader.handle_serial_data)
+        self.error.connect(reader.handle_serial_error)
+        reader.refresh_ports.connect(self.scan_for_ports)
 
     def link(self, *can_register: CanRegister):
         for item in can_register:
@@ -103,14 +96,14 @@ class SerialService(QObject):
 
         self.ports.emit([p for p in ports if self._port_filter(p)])
 
-    def send_command(self, command: CommandInterface) -> None:
-        log.debug(f"sending cmd: {command}")
+    def send_data(self, data: Encodable) -> None:
+        log.debug(f"sending data: {data}")
 
         if not self._com:
             log.debug("com port not connected")
             return
 
-        self._com.write(command.encode())
+        self._com.write(self._transcoder.encode(data))
 
     def close_connection(self) -> None:
         if not self._com:
@@ -140,26 +133,22 @@ class SerialService(QObject):
         if not self._com:
             return
 
-        read: bytes = self._com.readAll()
-        data = bytearray(read)
-        self._buffer.extend(data)
+        self._buffer.extend(bytearray(self._com.readAll()))
 
-        if b"\x00" in self._buffer:
-            chunks: list[bytearray]
-            remainder: bytearray
-            *chunks, remainder = self._buffer.split(b"\x00")
+        chunks, remainder = self._transcoder.process_buffer(self._buffer)
 
-            for chunk in chunks:
-                try:
-                    command = self._transcoder.decode_data(chunk)
-                except Exception as e:
-                    log.exception(e)
-                    command = self._transcoder.format_error(e)
-
-                self.data.emit(command)
+        for chunk in chunks:
+            try:
+                result = self._transcoder.decode(chunk)
+                log.debug(f"received data: {result}")
+                self.data.emit(result)
+            except Exception as e:
+                log.exception(e)
+                self.error.emit(e)
 
             self._buffer.clear()
-            self._buffer.extend(remainder)
+            if remainder is not None:
+                self._buffer.extend(remainder)
 
     def _on_error(self, error: QSerialPort.SerialPortError | None) -> None:
         exception: SerialError
@@ -179,18 +168,10 @@ class SerialService(QObject):
 
         self.close_connection()
 
-        QTimer.singleShot(3000, self.scan_for_ports)
+        QTimer.singleShot(3 * SECONDS, self.scan_for_ports)
 
         self.error.emit(exception)
         raise exception
-
-    def _port_filter(self, p: QSerialPort) -> bool:
-        filters: list[bool] = [
-            # p.portName().startswith("cu."),
-            # "bluetooth" not in p.portName().lower()
-        ]
-
-        return all(filters)
 
     def _debug_ports(self, ports: List[QSerialPortInfo]) -> None:
         for p in ports:

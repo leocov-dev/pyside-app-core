@@ -1,12 +1,10 @@
-from typing import Type
-
 from pyside_app_core.errors.basic_errors import ApplicationError
 from pyside_app_core.style.theme import QssTheme
 
-__app_name: str
-__app_id: str
-__app_version: str
-__app_theme: QssTheme
+__app_name: str = ""
+__app_id: str = ""
+__app_version: str = ""
+__app_theme: QssTheme | None = None
 
 
 def set_app_name(app_name: str) -> None:

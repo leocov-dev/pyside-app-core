@@ -1,6 +1,6 @@
 import pytest
 
-from pyside_app_core.services.serial_service.utils.conversion_utils import (
+from pyside_app_core.services.serial_service.conversion_utils import (
     decode_float_list,
     encode_float_list,
 )

@@ -41,7 +41,7 @@ dev = [
 Homepage = "https://github.com/leocov-dev/pyside-app-core"
 
 [project.scripts]
-compile-pyside-theme = "pyside_app_core.generator_utils.__main__:main"
+compile-pyside-theme = "pyside_app_core.theme_generator.__main__:main"
 
 [tool.setuptools.package-data]
 "pyside_app_core" = ["py.typed"]

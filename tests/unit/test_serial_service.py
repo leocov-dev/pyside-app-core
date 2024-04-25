@@ -2,7 +2,7 @@ from typing import Self
 
 from pytest_mock import MockerFixture
 
-from pyside_app_core.services.serial_service.serial_service import SerialService
+from pyside_app_core.services.serial_service.service import SerialService
 
 
 class MockCommand:

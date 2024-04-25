@@ -8,7 +8,7 @@ from pyside_app_core.constants import (
     FLOAT_PRECISION,
     STRUCT_FLOAT_FMT,
 )
-from pyside_app_core.services.serial_service.utils import conversion_utils
+from pyside_app_core.services.serial_service import conversion_utils
 
 K = TypeVar("K", bound=int)
 

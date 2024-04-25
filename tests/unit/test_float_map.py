@@ -1,6 +1,6 @@
 import pytest
 
-from pyside_app_core.services.serial_service.utils.float_map import FloatMap
+from pyside_app_core.services.serial_service.float_map import FloatMap
 
 
 def test_float_map__init():

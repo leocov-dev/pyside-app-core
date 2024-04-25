@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
@@ -28,9 +29,13 @@ class BaseApp(QApplication):
     def launch(self) -> int:
         if not self._main_window:
             raise ApplicationError(
-                f"Must subclass {self.__class__.__name__} and define a main window"
+                f"Must subclass {BaseApp.__name__} and define a main window"
             )
 
         self._main_window.show()
         self._main_window.devicePixelRatio()
-        return self.exec()
+
+        sys.exit(self.about_to_exit(self.exec()))
+
+    def about_to_exit(self, ret_code: int) -> int:
+        return ret_code

@@ -5,6 +5,8 @@ from typing import Protocol
 
 from PySide6.QtCore import QFile, QResource, QTextStream
 
+from pyside_app_core import log
+
 
 class CanSetStyleSheet(Protocol):
     def setStyleSheet(self, stylesheet: str) -> None:
@@ -38,7 +40,7 @@ def assert_resources_file(rcc: Path | None) -> Path:
             # ignore caller frame depth index errors
             pass
     else:
-        print(
+        log.error(
             f"No resource.rcc file given or found, attempted:\n"
             f'{pprint.pformat([t for t in sorted(set(tried)) if "/" in t], compact=False)}\n'
             f"Will now exit.",
