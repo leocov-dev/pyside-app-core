@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyside-app-core"
-version = "0.1.9"
+version = "0.1.10"
 description = "Framework for PySide Applications"
 readme = "README.md"
 authors = [{ name = "Leo Covarrubias", email = "leo@leocov.com" }]
@@ -70,7 +70,7 @@ check_untyped_defs = true
 # ------------------------------
 # version managment
 [tool.bumpver]
-current_version = "0.1.9"
+current_version = "0.1.10"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version {old_version} -> {new_version}"
 commit = true
