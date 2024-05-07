@@ -9,4 +9,3 @@ class SimpleApp(BaseApp):
         super(SimpleApp, self).__init__(resources_rcc=resources_rcc)
 
         self._main_window = SimpleMainWindow()
-        self._main_window.close_window.connect(lambda: self.exit(0))

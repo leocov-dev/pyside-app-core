@@ -18,8 +18,6 @@ from pyside_app_core.qt import application_service
 
 
 class FramelessBaseMixin:
-    close_window = Signal()
-
     def __init__(
         self,
         *args,
