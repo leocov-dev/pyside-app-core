@@ -24,9 +24,8 @@ classifiers = [
 ]
 keywords = ["pyside", "pyside6", "frameless", "app", "style"]
 include = [
-    "py.typed",
-    "icons",
-    "templates"
+    "resources/icons",
+    "resources/templates"
 ]
 
 [tool.poetry.dependencies]
