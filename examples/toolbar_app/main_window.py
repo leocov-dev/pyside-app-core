@@ -1,33 +1,71 @@
 from PySide6.QtCore import QSize
-from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from pyside_app_core.frameless.main_toolbar_window import FramelessMainToolbarWindow
+from pyside_app_core.qt.widgets.connection_manager import ConnectionManager
+from pyside_app_core.qt.widgets.core_icon import CoreIcon
+from pyside_app_core.qt.widgets.multi_combo_box import MultiComboBox
+from pyside_app_core.qt.standard import MainWindow
 
 
-class SimpleMainWindow(FramelessMainToolbarWindow):
-    def __init__(self):
+class SimpleMainWindow(MainWindow):
+    def __init__(self) -> None:
         super(SimpleMainWindow, self).__init__()
 
         # ------------------------------------------------------------------------------
         self.setMinimumSize(QSize(480, 240))
 
+        _tool_bar = self.addToolBar("main")
+        _tool_bar.setObjectName("main-tool-bar")
+        plug_action = _tool_bar.addAction(
+            CoreIcon(
+                ":/core/iconoir/ev-plug-charging.svg",
+                ":/core/iconoir/ev-plug-xmark.svg",
+            ),
+            "Connect",
+        )
+        plug_action.setCheckable(True)
+        plug_action2 = _tool_bar.addAction(
+            CoreIcon(
+                ":/core/iconoir/ev-plug-charging.svg",
+                ":/core/iconoir/ev-plug-xmark.svg",
+            ),
+            "Connect",
+        )
+        plug_action2.setCheckable(True)
+        plug_action2.setChecked(True)
+        reload_action = _tool_bar.addAction(
+            CoreIcon(
+                ":/core/iconoir/refresh-circle.svg",
+            ),
+            "Reload",
+        )
+        reload_action.setDisabled(True)
+        _raise_action = _tool_bar.addAction(
+            CoreIcon(
+                ":/core/iconoir/floppy-disk.svg",
+            ),
+            "Save",
+        )
+
+        def _raise():
+            raise Exception("This is a test error")
+
+        _raise_action.triggered.connect(_raise)
+
+        # -----
         _central_layout = QVBoxLayout()
         self.centralWidget().setLayout(_central_layout)
 
-        _heading = QLabel(self.tr("Examples"))
+        _heading = QLabel("Examples")
         _central_layout.addWidget(_heading)
+
+        _multi_combo = MultiComboBox[str](placeholder_text="Options", parent=self)
+        _multi_combo.addItems(["one", "two", "three", "four"])
+        _central_layout.addWidget(_multi_combo)
+
+        _con_mgr = ConnectionManager(parent=self)
+        _central_layout.addWidget(_con_mgr)
 
         _central_layout.addStretch()
 
-        for _ in range(15):
-            with self._tool_bar.add_action(
-                self.tr("error dialog"), QIcon(":/std/icons/console")
-            ) as ed:
-
-                def _show_ed():
-                    raise ValueError("A simulated error")
-
-                ed.triggered.connect(_show_ed)
-
-        self.statusBar().showMessage(self.tr("Hi There"))
+        self.statusBar().showMessage("Hi There")

@@ -1,75 +1,72 @@
 import abc
-from typing import Generic, Protocol, Self, Sequence, TypeVar
+from typing import Protocol, Sequence
+
+from PySide6.QtCore import Slot
+from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 from pyside_app_core.services import serial_service
 
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 
-
-class Encodable(Protocol):
-    def encode(self) -> bytearray:
-        ...
+class Encodable(abc.ABC):
+    @abc.abstractmethod
+    def encode(self) -> bytes:
+        return NotImplementedError
 
     def __str__(self) -> str:
-        ...
+        return f"<{self.__class__.__name__}>"
 
 
-class Decodable(Protocol):
+class Decodable(abc.ABC):
     @classmethod
-    def decode(cls, data: bytes) -> Self:
-        ...
+    @abc.abstractmethod
+    def decode(cls, data: bytes) -> "Decodable":
+        raise NotImplementedError
 
     def __str__(self) -> str:
-        ...
+        return f"<{self.__class__.__name__}>"
 
-
-_TC = TypeVar("_TC", bound=Encodable, covariant=True)
-_TR = TypeVar("_TR", bound=Decodable, covariant=True)
 
 ChunkedData = tuple[Sequence[bytearray], bytearray | None]
 
 
-class TranscoderInterface(Protocol[_TC, _TR]):
+class TranscoderInterface(Protocol):
     @classmethod
     def process_buffer(cls, buffer: bytearray) -> ChunkedData:
         ...
 
     @classmethod
-    def encode(cls, data: Encodable) -> bytearray:
+    def encode(cls, data: Encodable) -> bytes:
         ...
 
     @classmethod
-    def decode(cls, raw: bytearray) -> _TR:
+    def decode(cls, raw: bytearray) -> Decodable:
         ...
 
 
 class CanRegister(Protocol):
-    def bind_serial_service(self, service: "serial_service.SerialService"):
+    def bind_serial_service(self, service: "serial_service.SerialService") -> None:
         ...
 
 
-class SerialReader(abc.ABC, Generic[_TR]):
-    refresh_ports: Signal
-
+class SerialReader(Protocol):
     @Slot()
     def handle_serial_connect(self, com: QSerialPort) -> None:
-        pass
+        ...
 
     @Slot()
     def handle_serial_disconnect(self) -> None:
-        pass
+        ...
 
     @Slot()
     def handle_serial_ports(self, ports: list[QSerialPortInfo]) -> None:
-        pass
+        ...
 
     @Slot()
     def handle_serial_data(self, data: Decodable) -> None:
-        pass
+        ...
 
     @Slot()
     def handle_serial_error(self, error: Exception) -> None:
-        pass
+        ...
 
 
 class PortFilter(Protocol):

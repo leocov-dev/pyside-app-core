@@ -15,7 +15,9 @@ $ pip install pyside-app-core
 ## Local Development
 
 ```shell
-$ poetry install
+$ poetry env use 3.11
+$ poetry install --no-root --with dev
+$ poetry run pre-commit install
 ```
 
 
@@ -27,20 +29,9 @@ $ poetry run python -m examples.toolbar_app --generate-rcc
 
 ### Generate resources files
 
-Resource files MUST be generated at least once for stylesheets and icons to function.
+Resource files MUST be generated at least once in the project using this library for icons to function.
 
 ```shell
 # from repo with this lib installed
-poetry run compile-pyside-theme a/target/directory
-
-# custom QssTheme subclass where `./theme.py` has `THEME = CustomTheme()`
-poetry run compile-pyside-theme \
-    --custom-theme-pypath theme.THEME \
-    a/target/directory
-
-# if needed to resolve python modules you can include pypath updates
-poetry run compile-pyside-theme \
-    --extra-python-path ./src \
-    --custom-theme-pypath src.example_app.theme.THEME \
-    a/target/directory
+poetry run pyside-app-core-compile-rcc a/target/directory
 ```

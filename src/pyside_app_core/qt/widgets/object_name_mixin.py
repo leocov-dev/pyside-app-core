@@ -1,11 +1,11 @@
-from typing import cast
+from typing import Any, cast
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 
 
 class ObjectNameMixin:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
         super(ObjectNameMixin, self).__init__(*args, **kwargs)
 
         if isinstance(self, QWidget):
@@ -18,5 +18,5 @@ class ObjectNameMixin:
         cast(QWidget, self).setObjectName(obj_name)
 
     @property
-    def obj_name(self):
+    def obj_name(self) -> str:
         return cast(QWidget, self).objectName()

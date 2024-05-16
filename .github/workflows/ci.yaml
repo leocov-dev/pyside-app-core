@@ -28,12 +28,12 @@ jobs:
           x11-utils 
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version-file: 'pyproject.toml'
 
       - name: Setup Development Env
         run: bin/setup
@@ -46,15 +46,12 @@ jobs:
     name: Build Smoke Test
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version-file: 'pyproject.toml'
 
       - name: Check Build
-        run: >
-          python3 -m pip install -U build twine 
-          && python3 -m build 
-          && twine check dist/**
+        run: poetry build -n

@@ -8,7 +8,7 @@ class SerialError(CoreError):
         self,
         port: QtSerialPort.QSerialPort | None,
         error: QtSerialPort.QSerialPort.SerialPortError,
-        internal=False,
+        internal: bool = False,
     ):
         if port:
             msg = f"Serial error{f' {error} ' if error else ' '}on port: {port.portName()}"

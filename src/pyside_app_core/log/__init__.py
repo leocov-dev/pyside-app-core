@@ -1,17 +1,13 @@
 import inspect
 import logging
-from typing import Callable, Dict
-
-from pyside_app_core.log.logger import PACLogger
+from typing import Callable, Dict, Protocol
 
 __logger_cache: Dict[str, logging.Logger] = {}
-
-# logging.setLoggerClass(PACLogger)
 
 __pac_name = "pyside_app_core"
 
 
-def _get_caller_name():
+def _get_caller_name() -> str:
     try:
         stack = inspect.stack()
         frame = stack[2][0]
@@ -27,7 +23,7 @@ def _get_caller_name():
     return name
 
 
-def _get_cached_logger(name):
+def _get_cached_logger(name: str) -> logging.Logger:
     if name in __logger_cache:
         lg = __logger_cache[name]
     else:
@@ -37,65 +33,72 @@ def _get_cached_logger(name):
     return lg
 
 
-def __default_get_logger():
+class _Logger(Protocol):
+    def debug(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+    def info(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+    def warning(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+    def error(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+    def critical(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+    def exception(self, msg: str, /, *args: object, **kwargs: object) -> None:
+        ...
+
+
+def __default_get_logger() -> logging.Logger:
     name = _get_caller_name()
     return _get_cached_logger(name)
 
 
-__get_logger_func = __default_get_logger
+GetLogger = Callable[[], _Logger]
+
+__get_logger_func: GetLogger = __default_get_logger  # type: ignore[assignment]
 
 
-def configure_get_logger_func(func: Callable):
+def configure_get_logger_func(func: GetLogger) -> None:
     global __get_logger_func
     __get_logger_func = func
 
 
-def set_level(lvl: int):
-    """set the logger level"""
-    lg = __get_logger_func()
-    lg.setLevel(lvl)
-
-
-def debug(msg, *args, **kwargs):
+def debug(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's debug"""
     lg = __get_logger_func()
     lg.debug(msg, *args, **kwargs)
 
 
-def info(msg, *args, **kwargs):
+def info(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's info"""
     lg = __get_logger_func()
     lg.info(msg, *args, **kwargs)
 
 
-def warning(msg, *args, **kwargs):
+def warning(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's warning"""
     lg = __get_logger_func()
     lg.warning(msg, *args, **kwargs)
 
 
-def error(msg, *args, **kwargs):
+def error(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's error"""
     lg = __get_logger_func()
     lg.error(msg, *args, **kwargs)
 
 
-def critical(msg, *args, **kwargs):
+def critical(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's critical"""
     lg = __get_logger_func()
     lg.critical(msg, *args, **kwargs)
 
 
-def exception(msg, *args, **kwargs):
+def exception(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's exception"""
     lg = __get_logger_func()
     lg.exception(msg, *args, **kwargs)
-
-
-# def set_all_level(lvl: int):
-#     """set level of all loggers"""
-#     for key in sorted(__logger_cache.keys()):
-#         lg = __logger_cache[key]
-#         if not isinstance(lg, PACLogger):
-#             continue
-#         lg.setLevel(lvl)

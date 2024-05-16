@@ -1,5 +1,5 @@
 import contextlib
-from typing import ContextManager, List, Literal
+from typing import ContextManager, Iterator, List, Literal
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
@@ -19,9 +19,10 @@ _TOOL_BAR_AREA_MAP = {
 
 
 class ToolBarContext(ObjectNameMixin, QToolBar):
-    def __init__(self, area: ToolBarArea, parent: QMainWindow, movable=False):
+    def __init__(
+        self, area: ToolBarArea, parent: QMainWindow, movable: bool = False
+    ) -> None:
         self._area = area
-        self._theme = application_service.get_app_theme()
         self._actions: List[QAction] = []
 
         if area == "left":
@@ -43,12 +44,8 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
 
         parent.addToolBar(_TOOL_BAR_AREA_MAP[self._area], self)
 
-        self._setup_style()
-
     @contextlib.contextmanager
-    def add_action(
-        self, name: str, icon: QIcon | None = None
-    ) -> ContextManager[QAction]:
+    def add_action(self, name: str, icon: QIcon | None = None) -> Iterator[QAction]:
         action = QAction(text=name, parent=self)
         action.setObjectName(f"ToolBarAction_{name}")
         if icon:
@@ -59,21 +56,3 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
             _ = [c for c in self.children() if isinstance(c, QToolButton)][0]
         yield action
         self.addAction(action)
-
-    def _setup_style(self):
-        self.setStyleSheet(
-            f"""
-QToolBar#{self.obj_name} {{
-    border-{self._border_side}: {self._theme.win_divider_width} solid {self._theme.win_divider_color};
-}}
-QToolBar#{self.obj_name} > QToolButton {{
-    margin-left: 0px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    spacing: 0;
-}}
-QToolButton:first {{
-    background-color: red;
-}}
-"""
-        )

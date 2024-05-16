@@ -10,14 +10,16 @@
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/.import_linter_cache" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/src/_disabled" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (pyside-app-core)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Poetry (pyside-app-core)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/src/pyside_app_core/generator_utils/templates" />
+        <option value="$MODULE_DIR$/src/pyside_app_core/resources/templates" />
       </list>
     </option>
   </component>

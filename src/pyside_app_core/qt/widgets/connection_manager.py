@@ -1,51 +1,101 @@
-from PySide6 import QtGui, QtWidgets
-from PySide6.QtCore import Qt, Signal, Slot
+from typing import cast
+
+from PySide6.QtCore import QSize, Qt, Signal, Slot, QTimer
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
+
 from pyside_app_core import log
+from pyside_app_core.qt.widgets.core_icon import CoreIcon
+from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.utils.time_ms import SECONDS
 
 
-class ConnectionManager(QtWidgets.QWidget):
+class ConnectionManager(SettingsMixin, QWidget):
     refresh_ports = Signal()
     request_connect = Signal(QSerialPortInfo)
     request_disconnect = Signal()
 
-    def __init__(self, parent: QtWidgets.QWidget):
+    SIZE = QSize(30, 30)
+    ICON_SIZE = QSize(20, 20)
+
+    def __init__(
+        self,
+        remember_last_connection: bool = False,
+        parent: QWidget | None = None,
+    ):
         super(ConnectionManager, self).__init__(parent=parent)
 
-        _ly = QtWidgets.QVBoxLayout()
+        self._remember_last_connection = remember_last_connection
+
+        _ly = QVBoxLayout()
         _ly.setSpacing(0)
         _ly.setContentsMargins(5, 5, 5, 5)
         self.setLayout(_ly)
 
-        _ly_list = QtWidgets.QHBoxLayout()
+        _ly_list = QHBoxLayout()
+        _ly_list.setSpacing(5)
         _ly.addLayout(_ly_list)
 
-        _ly_actions = QtWidgets.QHBoxLayout()
+        _ly_actions = QHBoxLayout()
         _ly.addLayout(_ly_actions)
 
-        self._refresh_btn = QtWidgets.QPushButton(
-            icon=QtGui.QIcon(":/std/icons/reload"),
+        # -------
+        # refresh button
+        self._refresh_btn = QPushButton(
+            icon=CoreIcon(":/core/iconoir/refresh-circle.svg"),
+            text="",
             parent=self,
         )
+        self._refresh_btn.setFixedSize(self.SIZE)
+        self._refresh_btn.setIconSize(self.ICON_SIZE)
         self._refresh_btn.setContentsMargins(0, 0, 0, 0)
-        self._refresh_btn.setToolTip(self.tr("Refresh Device List"))
+        self._refresh_btn.setToolTip("Refresh Device List")
         _ly_list.addWidget(self._refresh_btn)
 
-        self._port_list = QtWidgets.QComboBox(self)
-        self._port_list.setPlaceholderText(self.tr("Choose A Device"))
+        # -------
+        # port selection list
+        self._port_list = QComboBox(self)
+        self._port_list.setPlaceholderText("Choose A Device")
+        self._port_list.setFixedHeight(self.SIZE.height())
         _ly_list.addWidget(self._port_list, stretch=9)
 
-        # ------------------------------------------------------------------------------\
-        self._refresh_btn.clicked.connect(self._request_port_refresh)
+        # --------
+        # connect/disconnect button
+        self._connect_btn = QPushButton(
+            icon=CoreIcon(
+                ":/core/iconoir/ev-plug-charging.svg",
+                ":/core/iconoir/ev-plug-xmark.svg",
+            ),
+            text="",
+            parent=self,
+        )
+        self._connect_btn.setCheckable(True)
+        self._connect_btn.setFixedSize(self.SIZE)
+        self._connect_btn.setIconSize(self.ICON_SIZE)
+        self._connect_btn.setContentsMargins(0, 0, 0, 0)
+        self._connect_btn.setToolTip("Refresh Device List")
+        _ly_list.addWidget(self._connect_btn)
+
+        # ------------------------------------------------------------------------------
+        # signals
+        self._refresh_btn.clicked.connect(self.request_port_refresh)
         self._port_list.currentIndexChanged.connect(self._on_port_selected)
+
+    @property
+    def current_port(self) -> QSerialPortInfo | None:
+        return cast(
+            QSerialPortInfo | None,
+            self._port_list.currentData(Qt.ItemDataRole.UserRole),
+        )
 
     @Slot()
     def handle_serial_connect(self, com: QSerialPort) -> None:
-        pass
+        log.debug(f"Connected to serial port {com.portName()}")
 
     @Slot()
     def handle_serial_disconnect(self) -> None:
-        pass
+        log.debug("Com port disconnected")
+        self.request_port_refresh()
 
     @Slot()
     def handle_serial_ports(self, ports: list[QSerialPortInfo]) -> None:
@@ -54,22 +104,51 @@ class ConnectionManager(QtWidgets.QWidget):
 
         for port in ports:
             name = port.portName()
+            log.debug(f"Adding port {name}")
 
             self._port_list.addItem(name, port)
 
     @Slot()
     def handle_serial_data(self, data: object) -> None:
-        pass
+        log.debug(f"Received data: {data}")
 
     @Slot()
     def handle_serial_error(self, error: Exception) -> None:
         pass
 
-    def _request_port_refresh(self):
+    def request_port_refresh(self) -> None:
         log.debug("Requesting Port Refresh")
         self.setDisabled(True)
-        self.refresh_ports.emit()
+        QTimer.singleShot(1 * SECONDS, self.refresh_ports.emit)
 
-    def _on_port_selected(self, index: int):
+    def _on_port_selected(self, index: int) -> None:
         port = self._port_list.itemData(index, Qt.ItemDataRole.UserRole)
         log.debug(f"Port Selected: {port}")
+        self.request_connect.emit(port)
+
+    def _format_port_name(self, port: QSerialPortInfo) -> str:
+        name: str = port.portName()
+        extra = ""
+        if mfc := port.manufacturer():
+            if prod_id := port.productIdentifier():
+                extra = f"{mfc}/{prod_id}"
+            else:
+                extra = mfc
+
+        if extra:
+            return f"{name} ({extra})"
+
+        return name
+
+    def _store_state(self) -> None:
+        if not self._remember_last_connection:
+            return
+
+        if self.current_port and self.current_port.serialNumber():
+            self._settings.setValue(
+                "last_port_serial", self.current_port.serialNumber()
+            )
+
+    def _restore_state(self) -> None:
+        if not self._remember_last_connection:
+            return None

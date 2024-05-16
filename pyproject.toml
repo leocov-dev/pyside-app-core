@@ -29,21 +29,20 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.11"
-pyside6 = { version = "^6.6.3.1", python = ">=3.11,<3.13" }
+python = ">=3.11,<3.13"
+pyside6 = "6.*"
 jinja2 = "^3.1.3"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^1.9.0"
-black = "^24.3.0"
+mypy = "*"
+black = "*"
 pytest = "*"
 pytest_mock = "*"
 pre-commit = "*"
-import-linter = "2.0.x"
-bumpver = "2023.1121"
+import-linter = "2.*"
 
 [tool.poetry.scripts]
-compile-pyside-theme = "pyside_app_core.theme_generator.__main__:main"
+pyside-app-core-compile-rcc = "pyside_app_core.resource_generator.__main__:main"
 
 # ------------------------------
 # testing
@@ -53,33 +52,12 @@ pythonpath = ["src"]
 # ------------------------------
 # linting
 [tool.black]
-line-length = 88
 
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 packages = ["pyside_app_core"]
-follow_imports = "skip"
-follow_imports_for_stubs = true
-check_untyped_defs = true
-
-# ------------------------------
-# version managment
-[tool.bumpver]
-current_version = "0.3.0"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "Bump version {old_version} -> {new_version}"
-commit = true
-tag = true
-push = true
-
-[tool.bumpver.file_patterns]
-"pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{version}"',
-]
-"src/pyside_app_core/__init__.py" = [
-    "{version}"
-]
+strict = true
+implicit_reexport = true
 
 # ------------------------------
 # import linter config and rules
@@ -93,11 +71,8 @@ include_external_packages = true
 name = "Module Layering"
 type = "layers"
 layers = [
-    "frameless",
-    "standard",
     "qt",
-    "theme_generator",
-    "style",
+    "resource_generator",
     "services",
     "utils",
     "errors",
@@ -107,6 +82,16 @@ layers = [
 ]
 containers = ["pyside_app_core"]
 exhaustive = true
+
+
+[[tool.importlinter.contracts]]
+name = "Widget Layering"
+type = "layers"
+layers = [
+    "standard",
+    "widgets",
+]
+containers = ["pyside_app_core.qt"]
 
 
 # ------------------------------

@@ -1,5 +1,5 @@
 import contextlib
-from typing import ContextManager
+from typing import Iterator
 
 from PySide6 import QtGui
 from PySide6.QtGui import QAction
@@ -12,89 +12,45 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.style.pixel_val import PixelVal
-from pyside_app_core.style.s_color import SColor
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 
 
 class MenuContext(QMenu):
-    @contextlib.contextmanager
-    def add_menu(self, name: str) -> ContextManager["MenuContext"]:
-        menu = MenuContext(name, self)
-        menu.setObjectName(f"Menu{name.replace(' ', '_')}")
-        yield menu
-        self.addMenu(menu)
+    def __init__(self, name: str, parent: QWidget):
+        super().__init__(name, parent)
+        self._menu_map: dict[str, MenuContext] = {}
+        self._action_map: dict[str, QAction] = {}
 
     @contextlib.contextmanager
-    def add_action(self, name: str) -> ContextManager[QAction]:
-        action = QtGui.QAction(name, self)
-        action.setObjectName(f"MenuAction{name.replace(' ', '_')}")
-        yield action
-        self.addAction(action)
+    def menu(self, name: str) -> Iterator["MenuContext"]:
+        if name not in self._menu_map:
+            self._menu_map[name] = MenuContext(name, self)
+            self._menu_map[name].setObjectName(f"Menu_{name.replace(' ', '_')}")
+            self.addMenu(self._menu_map[name])
+
+        yield self._menu_map[name]
+
+    @contextlib.contextmanager
+    def action(self, name: str) -> Iterator[QAction]:
+        if name not in self._action_map:
+            self._action_map[name] = QtGui.QAction(name, self)
+            self._action_map[name].setObjectName(f"MenuAction_{name.replace(' ', '_')}")
+            self.addAction(self._action_map[name])
+
+        yield self._action_map[name]
 
 
-class MenuBarContext(ObjectNameMixin, QWidget):
-    def __init__(
-        self, parent: QWidget, border_width=PixelVal(2), border_color=SColor(20, 20, 20)
-    ):
+class MenuBarContext(QMenuBar):
+    def __init__(self, parent: QWidget):
         super(MenuBarContext, self).__init__(parent=parent)
 
-        self._border_width = border_width
-        self.setStyleSheet(
-            f"""
-            #{self.obj_name} {{
-                border-bottom: {border_width} solid {border_color};
-            }}
-            """
-        )
-
-        self.setContentsMargins(0, 0, 0, 0)
-
-        self._layout = QVBoxLayout()
-        self._layout.setSpacing(0)
-        self._layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(self._layout)
-
-        self._layout.addStretch()
-
-        self._menu_layout = QHBoxLayout()
-        self._menu_layout.setSpacing(0)
-        self._menu_layout.setContentsMargins(0, 0, 0, 0)
-        self._layout.addLayout(self._menu_layout)
-
-        self._shift = QWidget(self)
-        self._menu_layout.addWidget(self._shift)
-        self._shift.setFixedWidth(0)
-
-        self._menu_bar = QMenuBar(parent=parent)
-        self._menu_bar.setSizePolicy(
-            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding
-        )
-        self._menu_layout.addWidget(self._menu_bar)
-
-        self._menu_layout.addStretch()
-
-        self._layout.addStretch()
-
-    def setNativeMenuBar(self, val: bool):
-        self._menu_bar.setNativeMenuBar(val)
+        self._menu_map: dict[str, MenuContext] = {}
 
     @contextlib.contextmanager
-    def add_menu(self, name: str) -> ContextManager[MenuContext]:
-        menu = MenuContext(name, self)
-        menu.setObjectName(f"Menu{name.replace(' ', '_')}")
-        yield menu
-        self._menu_bar.addMenu(menu)
+    def menu(self, name: str) -> Iterator[MenuContext]:
+        if name not in self._menu_map:
+            self._menu_map[name] = MenuContext(name, self)
+            self._menu_map[name].setObjectName(f"Menu_{name.replace(' ', '_')}")
+            self.addMenu(self._menu_map[name])
 
-    @contextlib.contextmanager
-    def add_action(self, name: str) -> ContextManager[QAction]:
-        action = QtGui.QAction(name, self)
-        action.setObjectName(f"MenuBarAction{name.replace(' ', '_')}")
-        yield action
-        self._menu_bar.addAction(action)
-
-    def set_offset(self, val: int):
-        self.setFixedHeight(val + self._border_width)
-
-    def set_shift(self, val: int):
-        self._shift.setFixedWidth(val)
+        yield self._menu_map[name]

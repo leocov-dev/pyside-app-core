@@ -8,4 +8,5 @@ class SimpleApp(BaseApp):
     def __init__(self, resources_rcc: Path | None = None):
         super(SimpleApp, self).__init__(resources_rcc=resources_rcc)
 
-        self._main_window = SimpleMainWindow()
+    def build_main_window(self):
+        return SimpleMainWindow()

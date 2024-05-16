@@ -16,7 +16,9 @@ class ToolButton(ObjectNameMixin, QPushButton):
         self.setToolTip(tooltip)
         self.setContentsMargins(0, 0, 0, 0)
 
-    def setFixedSize(self, size: QSize | Tuple[int, int]) -> None:
+    def setFixedSize(  # type: ignore[override]
+        self, size: QSize | Tuple[int, int]
+    ) -> None:
         if isinstance(size, tuple):
             size = QSize(size[0], size[1])
         super().setFixedSize(size + QSize(10, 10))

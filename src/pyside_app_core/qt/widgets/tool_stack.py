@@ -8,7 +8,6 @@ from pyside_app_core.qt.widgets.dynamic_stacked_widget import DynamicStackedWidg
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.qt.widgets.tool_button import ToolButton
-from pyside_app_core.style.theme import QssTheme
 
 ToolStackSide = Literal["right", "left"]
 
@@ -18,23 +17,11 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
         self,
         side: ToolStackSide,
         parent: QWidget,
-        theme: QssTheme,
         menu: QMenu | None = None,
     ):
         super(ToolStack, self).__init__(parent=parent)
 
         opposite_side = "left" if side == "right" else "right"
-
-        self.setStyleSheet(
-            f"""
-            #{self.obj_name}_CONTAINER {{
-                border-{opposite_side}: {theme.win_divider_width} solid {theme.win_divider_color};
-            }}
-            #{self.obj_name}_BUTTON_CONTAINER {{
-                border-{opposite_side}: {theme.win_divider_width} solid {theme.win_divider_color};
-            }}
-            """
-        )
 
         self._menu = menu
 
@@ -64,7 +51,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
             container_layout.addWidget(_button_container)
             container_layout.addWidget(self._stack)
 
-    def add_widget(self, icon: QIcon, widget: QWidget, tooltip: str):
+    def add_widget(self, icon: QIcon, widget: QWidget, tooltip: str) -> None:
         container = QWidget(self)
         container.setObjectName(f"{self.obj_name}_CONTAINER")
         container_layout = QVBoxLayout()
@@ -96,7 +83,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
             self._menu.addAction(action)
 
     @Slot(int, bool)
-    def _on_click(self, index: int, checked: bool):
+    def _on_click(self, index: int, checked: bool) -> None:
         for i, button in enumerate(self._button_group.buttons()):
             self._stack.setCurrentIndex(index)
 
@@ -108,5 +95,5 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
                 button.setChecked(False)
 
     @Slot(int, bool)
-    def _on_menu_click(self, index: int):
+    def _on_menu_click(self, index: int) -> None:
         self._on_click(index, True)

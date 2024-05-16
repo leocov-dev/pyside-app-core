@@ -2,40 +2,53 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QApplication, QMainWindow, QStyle
 
+from pyside_app_core import log
 from pyside_app_core.errors.basic_errors import ApplicationError
-from pyside_app_core.qt.util.style_sheet import (
-    apply_style_sheet,
-    register_resource_file,
-)
+from pyside_app_core.qt import register_resource_file
+from pyside_app_core.qt.application_service import AppMetadata
 
 
 class BaseApp(QApplication):
-    def __init__(self, resources_rcc: Path | None = None, *args, **kwargs):
+    def __init__(
+        self, resources_rcc: Path | None = None, *args: object, **kwargs: object
+    ) -> None:
         super(BaseApp, self).__init__(*args, **kwargs)
-        self.setStyle("Fusion")
+        self.setStyle("fusion")
         self.setAttribute(
             Qt.ApplicationAttribute.AA_UseStyleSheetPropagationInWidgetStyles
         )
 
         register_resource_file(resources_rcc)
 
-        apply_style_sheet(":/style.qss", self)
+        self.setWindowIcon(
+            QIcon(AppMetadata.icon)
+            if AppMetadata.icon
+            else self.style().standardIcon(
+                QStyle.StandardPixmap.SP_FileDialogDetailedView
+            )
+        )
 
-        # override in subclass
-        self._main_window: QMainWindow = None
+        self._main_window = self.build_main_window()
 
-    def launch(self) -> int:
+    def build_main_window(self) -> QMainWindow:
+        raise NotImplementedError
+
+    def launch(self) -> None:
         if not self._main_window:
             raise ApplicationError(
                 f"Must subclass {BaseApp.__name__} and define a main window"
             )
 
         self._main_window.show()
-        self._main_window.devicePixelRatio()
 
-        sys.exit(self.about_to_exit(self.exec()))
+        try:
+            self.about_to_exit(self.exec())
+        except Exception as e:
+            log.exception(e)
+            sys.exit(1)
 
     def about_to_exit(self, ret_code: int) -> int:
         return ret_code

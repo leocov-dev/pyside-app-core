@@ -42,10 +42,10 @@ class FloatMap(Mapping[K, float]):
     def __iter__(self) -> Iterator[K]:
         return iter(self._data)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self._data.__repr__()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._data.__str__()
 
     def __eq__(self, other: Self) -> bool:  # type: ignore[override]

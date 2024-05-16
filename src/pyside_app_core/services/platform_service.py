@@ -2,10 +2,10 @@ import os
 import platform
 
 __valid_platforms = ["Darwin", "Windows", "Linux"]
-__platform = None
+__platform: str | None = None
 
 
-def _platform():
+def _platform() -> str:
     global __platform
 
     system_platform = platform.system()
