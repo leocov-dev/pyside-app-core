@@ -1,11 +1,15 @@
 # pyside-app-core
 
-Custom style, widgets, and utilities for cross-platform PySide6 applications with a focus on 'frameless' styling.
+Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
+> NOTICE:
+>
 > This project should be considered experimental and subject to breaking changes until a 1.0.0 release.
 
 
 ### Install
+
+To use `pyside-app-core` as a library in your own projects install the [wheel distribution](https://pypi.org/project/pyside-app-core/) from PyPi
 
 ```shell
 $ pip install pyside-app-core
@@ -14,24 +18,36 @@ $ pip install pyside-app-core
 
 ## Local Development
 
-```shell
-$ poetry env use 3.11
-$ poetry install --no-root --with dev
-$ poetry run pre-commit install
-```
+Requirements:
+- Hatch ([installation instructions](https://hatch.pypa.io/latest/install/))
 
+```shell
+hatch env create
+```
 
 ### Run example application
 
+You must run the examples from the repository root directory.
+
 ```shell
-$ poetry run python -m examples.toolbar_app --generate-rcc
+hatch run examples:toolbar_app
+```
+
+### Run tests
+
+Hatch can run tests across multiple versions of python.
+
+```shell
+hatch test -a -p
 ```
 
 ### Generate resources files
 
 Resource files MUST be generated at least once in the project using this library for icons to function.
 
+When installed this library provides a cli tool `pyside-app-core-compile-rcc` that aids in generating a `resources.rcc` file.
+
 ```shell
 # from repo with this lib installed
-poetry run pyside-app-core-compile-rcc a/target/directory
+pyside-app-core-compile-rcc a/target/directory
 ```

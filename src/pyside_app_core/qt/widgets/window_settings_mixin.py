@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import cast
 
 from PySide6.QtCore import QByteArray, QObject
 from PySide6.QtWidgets import QMainWindow, QWidget

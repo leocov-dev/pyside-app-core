@@ -1,18 +1,13 @@
 import contextlib
-from typing import Iterator
+from collections.abc import Iterator
 
 from PySide6 import QtGui
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QMenu,
     QMenuBar,
-    QSizePolicy,
-    QVBoxLayout,
     QWidget,
 )
-
-from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 
 
 class MenuContext(QMenu):

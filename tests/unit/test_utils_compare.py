@@ -17,6 +17,6 @@ from pyside_app_core.utils import compare
         (100000000.0, 100000000.00001, False),
     ],
 )
-def test_utils_compare_float_approx(a: float, b: float, expected: bool):
+def test_utils_compare_float_approx(a: float, b: float, expected: bool) -> None:
     result = compare.float_approx(a, b)
     assert result == expected

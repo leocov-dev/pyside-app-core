@@ -11,9 +11,7 @@ _std_resource_root = Path(__file__).parent.parent / "resources" / "core"
 
 
 def _compile_qrc_template(resources: list[QtResourceGroup]) -> str:
-    env = Environment(
-        loader=PackageLoader("pyside_app_core.resources"), autoescape=False
-    )
+    env = Environment(loader=PackageLoader("pyside_app_core.resources"))
     qrc_template = env.get_template("resources.qrc.jinja2")
     return qrc_template.render(qresources=resources)
 

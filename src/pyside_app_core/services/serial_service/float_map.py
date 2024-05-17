@@ -1,14 +1,15 @@
 import struct
+from collections.abc import Iterator, Mapping
 from decimal import Decimal
-from typing import Any, Iterator, Mapping, Self, TypeVar
+from typing import Any, TypeVar
 
-from pyside_app_core.utils import compare
 from pyside_app_core.constants import (
     DATA_STRUCT_ENDIAN,
     FLOAT_PRECISION,
     STRUCT_FLOAT_FMT,
 )
 from pyside_app_core.services.serial_service import conversion_utils
+from pyside_app_core.utils import compare
 
 K = TypeVar("K", bound=int)
 
@@ -48,7 +49,7 @@ class FloatMap(Mapping[K, float]):
     def __str__(self) -> str:
         return self._data.__str__()
 
-    def __eq__(self, other: Self) -> bool:  # type: ignore[override]
+    def __eq__(self, other: "FloatMap[K]") -> bool:  # type: ignore[override]
         val_eq: list[bool] = []
         for k, v in self.items():
             other_v = other.get(k)
@@ -101,7 +102,7 @@ class FloatMap(Mapping[K, float]):
         return bytearray(raw)
 
     @classmethod
-    def unpack(cls, raw_data: bytes) -> Self:
+    def unpack(cls, raw_data: bytes) -> "FloatMap[K]":
         count_bytes = 2
         raw_pair_count = raw_data[:count_bytes]
         raw_key_val = raw_data[count_bytes:]

@@ -3,7 +3,8 @@ Adapted from:
 https://gis.stackexchange.com/questions/350148/qcombobox-multiple-selection-pyqt5
 """
 
-from typing import Any, cast, Generator, Generic, Tuple, TypeVar
+from collections.abc import Generator
+from typing import Generic, TypeVar, cast
 
 from PySide6.QtCore import (
     QEvent,
@@ -201,7 +202,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
                 res.append(item.data(role))
         return res
 
-    def currentOptions(self) -> list[Tuple[str, DT]]:
+    def currentOptions(self) -> list[tuple[str, DT]]:
         res = []
         for item in self.modelItems():
             if item.checkState() == Qt.CheckState.Checked:

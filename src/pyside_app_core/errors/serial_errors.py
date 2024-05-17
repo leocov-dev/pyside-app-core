@@ -13,7 +13,7 @@ class SerialError(CoreError):
         if port:
             msg = f"Serial error{f' {error} ' if error else ' '}on port: {port.portName()}"
         else:
-            msg = f"Serial port not configured"
+            msg = "Serial port not configured"
         super(SerialError, self).__init__(msg, internal=internal)
 
 

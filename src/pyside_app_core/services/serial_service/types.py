@@ -1,28 +1,25 @@
-import abc
-from typing import Protocol, Sequence
+from collections.abc import Sequence
+from typing import Protocol
 
 from PySide6.QtCore import Slot
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
-from pyside_app_core.services import serial_service
 
 
-class Encodable(abc.ABC):
-    @abc.abstractmethod
+class Encodable(Protocol):
     def encode(self) -> bytes:
-        return NotImplementedError
+        ...
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__}>"
+        ...
 
 
-class Decodable(abc.ABC):
+class Decodable(Protocol):
     @classmethod
-    @abc.abstractmethod
     def decode(cls, data: bytes) -> "Decodable":
-        raise NotImplementedError
+        ...
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__}>"
+        ...
 
 
 ChunkedData = tuple[Sequence[bytearray], bytearray | None]
@@ -39,11 +36,6 @@ class TranscoderInterface(Protocol):
 
     @classmethod
     def decode(cls, raw: bytearray) -> Decodable:
-        ...
-
-
-class CanRegister(Protocol):
-    def bind_serial_service(self, service: "serial_service.SerialService") -> None:
         ...
 
 

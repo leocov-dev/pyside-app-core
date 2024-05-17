@@ -1,12 +1,11 @@
 import struct
-from typing import List
 
 from pyside_app_core.constants import (
     DATA_ENCODING_ENDIAN,
-    LIST_DATA_LEN_MAX,
     DATA_STRUCT_ENDIAN,
-    LIST_DATA_LEN_BYTES,
     FLOAT_PRECISION,
+    LIST_DATA_LEN_BYTES,
+    LIST_DATA_LEN_MAX,
 )
 from pyside_app_core.errors.encode_errors import EncodingListError
 from pyside_app_core.types.numeric import FloatPrecision
@@ -21,7 +20,7 @@ def int_from_bytes(val: bytes, signed: bool) -> int:
 
 
 def encode_float_list(
-    floats: List[float], precision: FloatPrecision = FLOAT_PRECISION
+    floats: list[float], precision: FloatPrecision = FLOAT_PRECISION
 ) -> bytearray:
     data_len = len(floats)
     if data_len > LIST_DATA_LEN_MAX:
@@ -40,7 +39,7 @@ def encode_float_list(
 
 def decode_float_list(
     raw_data: bytes, precision: FloatPrecision = FLOAT_PRECISION
-) -> List[float]:
+) -> list[float]:
     len_bytes = raw_data[:LIST_DATA_LEN_BYTES]
     data_bytes = raw_data[LIST_DATA_LEN_BYTES:]
 

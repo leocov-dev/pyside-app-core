@@ -1,6 +1,4 @@
-from typing import Generic, NamedTuple, Type, TypeAlias, TypeVar
-
-from PySide6.QtGui import QIcon
+from typing import Generic, NamedTuple, TypeVar
 
 from pyside_app_core.errors.basic_errors import ApplicationError
 

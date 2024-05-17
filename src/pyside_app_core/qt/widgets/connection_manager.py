@@ -1,6 +1,6 @@
 from typing import cast
 
-from PySide6.QtCore import QSize, Qt, Signal, Slot, QTimer
+from PySide6.QtCore import QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 

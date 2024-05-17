@@ -1,12 +1,12 @@
 import contextlib
-from typing import ContextManager, Iterator, List, Literal
+from collections.abc import Iterator
+from typing import Literal
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMainWindow, QToolBar, QToolButton
 
 from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.qt import application_service
 
 ToolBarArea = Literal["top", "bottom", "left", "right"]
 
@@ -23,7 +23,7 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
         self, area: ToolBarArea, parent: QMainWindow, movable: bool = False
     ) -> None:
         self._area = area
-        self._actions: List[QAction] = []
+        self._actions: list[QAction] = []
 
         if area == "left":
             self._border_side = "right"

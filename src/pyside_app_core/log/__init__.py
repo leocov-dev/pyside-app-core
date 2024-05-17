@@ -1,8 +1,9 @@
 import inspect
 import logging
-from typing import Callable, Dict, Protocol
+from collections.abc import Callable
+from typing import Dict, Protocol
 
-__logger_cache: Dict[str, logging.Logger] = {}
+__logger_cache: dict[str, logging.Logger] = {}
 
 __pac_name = "pyside_app_core"
 
@@ -71,34 +72,34 @@ def configure_get_logger_func(func: GetLogger) -> None:
 def debug(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's debug"""
     lg = __get_logger_func()
-    lg.debug(msg, *args, **kwargs)
+    lg.debug(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def info(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's info"""
     lg = __get_logger_func()
-    lg.info(msg, *args, **kwargs)
+    lg.info(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def warning(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's warning"""
     lg = __get_logger_func()
-    lg.warning(msg, *args, **kwargs)
+    lg.warning(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def error(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's error"""
     lg = __get_logger_func()
-    lg.error(msg, *args, **kwargs)
+    lg.error(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def critical(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's critical"""
     lg = __get_logger_func()
-    lg.critical(msg, *args, **kwargs)
+    lg.critical(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
 def exception(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's exception"""
     lg = __get_logger_func()
-    lg.exception(msg, *args, **kwargs)
+    lg.exception(msg, *args, **kwargs)  # type: ignore[arg-type]

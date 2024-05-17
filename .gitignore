@@ -21,3 +21,5 @@ resources.rcc
 resoruces.py
 
 .DS_Store
+
+.disabled/

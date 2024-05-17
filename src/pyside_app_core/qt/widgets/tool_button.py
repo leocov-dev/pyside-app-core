@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QPushButton, QWidget
@@ -17,7 +15,7 @@ class ToolButton(ObjectNameMixin, QPushButton):
         self.setContentsMargins(0, 0, 0, 0)
 
     def setFixedSize(  # type: ignore[override]
-        self, size: QSize | Tuple[int, int]
+        self, size: QSize | tuple[int, int]
     ) -> None:
         if isinstance(size, tuple):
             size = QSize(size[0], size[1])

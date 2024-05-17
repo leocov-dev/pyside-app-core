@@ -1,11 +1,9 @@
-import os
 from typing import cast
 
 from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.qt import application_service
 from pyside_app_core.qt.application_service import AppMetadata
 
 

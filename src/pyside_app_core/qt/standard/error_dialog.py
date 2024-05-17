@@ -1,5 +1,3 @@
-from typing import Type
-
 from PySide6 import QtWidgets
 
 from pyside_app_core.utils import strings
@@ -10,7 +8,7 @@ class ErrorDialog(QtWidgets.QMessageBox):
 
     def __init__(
         self,
-        etype: Type[BaseException],
+        etype: type[BaseException],
         msg: str,
         details: str,
         parent: QtWidgets.QWidget | None = None,

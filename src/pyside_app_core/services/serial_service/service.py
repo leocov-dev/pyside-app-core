@@ -1,5 +1,4 @@
-import logging
-from typing import Any, Generic, List
+from typing import cast
 
 from PySide6.QtCore import QIODevice, QObject, QTimer, Signal
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
@@ -14,7 +13,6 @@ from pyside_app_core.errors.serial_errors import (
     SerialWriteError,
 )
 from pyside_app_core.services.serial_service.types import (
-    CanRegister,
     Encodable,
     PortFilter,
     SerialReader,
@@ -40,7 +38,7 @@ class SerialService(QObject):
 
         self._port_filter: PortFilter = _noop
 
-        self._transcoder = transcoder
+        self._transcoder: type[TranscoderInterface] = transcoder
         self._com: QSerialPort | None = None
         self._buffer = bytearray()
 
@@ -80,12 +78,8 @@ class SerialService(QObject):
         self.data.connect(reader.handle_serial_data)
         self.error.connect(reader.handle_serial_error)
 
-    def link(self, *can_register: CanRegister) -> None:
-        for item in can_register:
-            item.bind_serial_service(self)
-
     def scan_for_ports(self) -> None:
-        log.debug(f"Scanning for ports...")
+        log.debug("Scanning for ports...")
         ports = QSerialPortInfo.availablePorts()
 
         self._debug_ports(ports)
@@ -115,7 +109,6 @@ class SerialService(QObject):
             self._com.readyRead.disconnect()
         except Exception as e:
             log.exception(e)
-            pass
 
         if self._com and self._com.isOpen():
             self._com.flush()
@@ -132,7 +125,7 @@ class SerialService(QObject):
         if not self._com:
             return
 
-        self._buffer.extend(bytearray(self._com.readAll().data()))
+        self._buffer.extend(cast(bytearray, self._com.readAll()))
 
         chunks, remainder = self._transcoder.process_buffer(self._buffer)
 
@@ -154,7 +147,7 @@ class SerialService(QObject):
 
         if error is None or error == QSerialPort.SerialPortError.NoError:
             return
-        elif error == QSerialPort.SerialPortError.OpenError:
+        if error == QSerialPort.SerialPortError.OpenError:
             exception = SerialConnectionError(self._com, error)
         elif error == QSerialPort.SerialPortError.ReadError:
             exception = SerialReadError(self._com, error)
@@ -172,7 +165,7 @@ class SerialService(QObject):
         self.error.emit(exception)
         raise exception
 
-    def _debug_ports(self, ports: List[QSerialPortInfo]) -> None:
+    def _debug_ports(self, ports: list[QSerialPortInfo]) -> None:
         for p in ports:
             log.debug("-----------------------------")
             log.debug(f"name:         {p.portName()}")

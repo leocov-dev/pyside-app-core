@@ -2,14 +2,13 @@ import argparse
 import os
 from pathlib import Path
 
-
 _root = Path(__file__).parent
 
 
 def compile_rcc() -> None:
     from pyside_app_core import resource_generator
 
-    print(f"Generating resources...")
+    print("Generating resources...")
 
     resource_generator.compile_qrc_to_resources(target_dir=_root, debug=True)
 

@@ -1,7 +1,7 @@
 import sys
 import traceback
 from types import TracebackType
-from typing import Protocol, Type
+from typing import Protocol
 
 from PySide6.QtWidgets import QDialog
 
@@ -10,7 +10,7 @@ from pyside_app_core import log
 
 class ErrorDialogInterface(Protocol):
     def __init__(
-        self, etype: Type[BaseException], message: str, details: str | None = None
+        self, etype: type[BaseException], message: str, details: str | None = None
     ):
         ...
 
@@ -18,17 +18,17 @@ class ErrorDialogInterface(Protocol):
         ...
 
 
-_error_dialog_class: Type[ErrorDialogInterface] | None = None
+_error_dialog_class: type[ErrorDialogInterface] | None = None
 
 
-def install_excepthook(error_dialog: Type[QDialog] | None) -> None:
+def install_excepthook(error_dialog: type[QDialog] | None) -> None:
     global _error_dialog_class
     _error_dialog_class = error_dialog
     sys.excepthook = __custom_excepthook
 
 
 def __custom_excepthook(
-    etype: Type[BaseException],
+    etype: type[BaseException],
     evalue: BaseException,
     tb: TracebackType | None,
 ) -> None:

@@ -1,8 +1,6 @@
-from typing import Any, cast
+from typing import cast
 
 from PySide6.QtWidgets import QWidget
-
-from pyside_app_core.qt import application_service
 
 
 class BaseMixin:

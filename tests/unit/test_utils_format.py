@@ -1,9 +1,10 @@
 import pytest
+
 from pyside_app_core.utils import strings
 
 
 @pytest.mark.parametrize(
-    "width,padded,input,expected",
+    ("width", "padded", "input", "expected"),
     [
         (80, False, "", ""),
         (10, False, "12345", "12345"),

@@ -3,8 +3,8 @@ import pytest
 from pyside_app_core.services.serial_service.float_map import FloatMap
 
 
-def test_float_map__init():
-    fm = FloatMap(
+def test_float_map__init() -> None:
+    fm = FloatMap[int](
         {
             1: 1.0,
             2: 2.0,
@@ -25,11 +25,11 @@ def test_float_map__init():
     assert str(ee.value) == "can't create an empty FloatMap"
 
     with pytest.raises(ValueError) as ve:
-        FloatMap({key: 1.0 for key in range(65536)})
+        FloatMap(dict.fromkeys(range(65536), 1.0))
     assert str(ve.value) == "data has too many values, must fit in 2 bytes"
 
     with pytest.raises(ValueError) as ke:
-        FloatMap({key: 1.0 for key in range(60000, 70000)})
+        FloatMap(dict.fromkeys(range(60000, 70000), 1.0))
     assert str(ke.value) == 'key: "65536" does not fit in 2 bytes'
 
     with pytest.raises(ValueError) as se:
@@ -43,13 +43,13 @@ def test_float_map__init():
 @pytest.mark.parametrize(
     "count, expected",
     [
-        (1, f"<HHf"),
-        (2, f"<HHfHf"),
-        (3, f"<HHfHfHf"),
+        (1, "<HHf"),
+        (2, "<HHfHf"),
+        (3, "<HHfHfHf"),
         (0, None),
     ],
 )
-def test_float_map__pack_format(count, expected):
+def test_float_map__pack_format(count: int, expected: str | None) -> None:
     if count < 1:
         with pytest.raises(ValueError):
             FloatMap.pack_format(count)
@@ -69,8 +69,8 @@ def test_float_map__pack_format(count, expected):
         ),
     ],
 )
-def test_float_map__pack(data, expected):
-    result = FloatMap(data).pack()
+def test_float_map__pack(data: dict[int, float], expected: bytes) -> None:
+    result = FloatMap[int](data).pack()
     assert result == expected
 
 
@@ -85,6 +85,6 @@ def test_float_map__pack(data, expected):
         ),
     ],
 )
-def test_float_map__unpack(raw, expected):
-    result = FloatMap.unpack(raw)
+def test_float_map__unpack(raw: bytes, expected: dict[int, float]) -> None:
+    result = FloatMap[int].unpack(raw)
     assert result == expected
