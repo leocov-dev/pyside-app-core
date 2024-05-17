@@ -13,6 +13,8 @@ from pyside_app_core.utils import compare
 
 K = TypeVar("K", bound=int)
 
+_TWO_BYTE_LEN = 65535
+
 
 class FloatMap(Mapping[K, float]):
     _count_fmt = "H"  # unsigned short, 2 bytes
@@ -24,11 +26,11 @@ class FloatMap(Mapping[K, float]):
         if not data:
             raise ValueError(f"can't create an empty {self.__class__.__name__}")
 
-        if len(data) > 65535:
+        if len(data) > _TWO_BYTE_LEN:
             raise ValueError("data has too many values, must fit in 2 bytes")
 
-        for k in data.keys():
-            if k > 65535:
+        for k in data:
+            if k > _TWO_BYTE_LEN:
                 raise ValueError(f'key: "{k}" does not fit in 2 bytes')
 
             if k < 0:
@@ -110,9 +112,7 @@ class FloatMap(Mapping[K, float]):
         pair_count = conversion_utils.int_from_bytes(raw_pair_count, signed=False)
         fmt_chars = [cls._key_fmt, STRUCT_FLOAT_FMT] * pair_count
 
-        flat_pairs = struct.unpack(
-            f"{DATA_STRUCT_ENDIAN}{''.join(fmt_chars)}", raw_key_val
-        )
+        flat_pairs = struct.unpack(f"{DATA_STRUCT_ENDIAN}{''.join(fmt_chars)}", raw_key_val)
 
         data = {}
         iterable = iter(flat_pairs)

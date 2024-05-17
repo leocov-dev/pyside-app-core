@@ -50,7 +50,8 @@ extra-dependencies = [
 python = [ "3.10", "3.11", "3.12" ]
 
 [tool.hatch.envs.hatch-static-analysis]
-dependencies = [
+template = "default"
+extra-dependencies = [
     "ruff",
     "mypy",
     "import-linter==2.*",
@@ -86,6 +87,31 @@ pythonpath = ["src"]
 
 # ------------------------------
 # linting
+[tool.ruff.lint]
+extend-ignore = [
+    "EM101",
+    "EM102",
+    "TRY003",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = [
+    "F401",
+    "TID252",
+]
+"tests/*" = [
+    "S101",
+    "INP001",
+    "FBT001",
+    "PT006", "PLR2004",
+    "SLF001",
+    "PT011",
+]
+"*/resource_generator/*" = [
+    "T201",
+    "S607",
+]
+
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
 packages = ["pyside_app_core"]

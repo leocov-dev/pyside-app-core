@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from . import compile_qrc_to_resources
+from pyside_app_core.resource_generator import compile_qrc_to_resources
 
 
 def main() -> None:
@@ -10,8 +10,7 @@ def main() -> None:
     parser.add_argument(
         "-r",
         "--extra-resource-root",
-        help="Provide a root path to search for additional QResource files "
-        "(Can specify this flag multiple times)",
+        help="Provide a root path to search for additional QResource files " "(Can specify this flag multiple times)",
         action="append",
     )
 

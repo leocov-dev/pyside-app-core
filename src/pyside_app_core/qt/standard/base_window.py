@@ -9,7 +9,7 @@ class BaseMixin:
         *args: object,
         **kwargs: object,
     ):
-        super(BaseMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         cast(QWidget, self).setMouseTracking(True)
         cast(QWidget, self).setMinimumSize(256, 128)

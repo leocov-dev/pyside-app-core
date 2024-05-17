@@ -34,7 +34,7 @@ class SerialService(QObject):
     error = Signal(Exception)
 
     def __init__(self, transcoder: type[TranscoderInterface], parent: QObject):
-        super(SerialService, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         self._port_filter: PortFilter = _noop
 
@@ -42,9 +42,7 @@ class SerialService(QObject):
         self._com: QSerialPort | None = None
         self._buffer = bytearray()
 
-    def _new_com(
-        self, port_info: QSerialPortInfo
-    ) -> tuple[QSerialPort, QSerialPort.SerialPortError | None]:
+    def _new_com(self, port_info: QSerialPortInfo) -> tuple[QSerialPort, QSerialPort.SerialPortError | None]:
         com = QSerialPort(port_info, parent=self)
         com.setBaudRate(QSerialPort.BaudRate.Baud115200)
         open_ok = com.open(QIODevice.OpenModeFlag.ReadWrite)
@@ -107,7 +105,7 @@ class SerialService(QObject):
         try:
             self._com.errorOccurred.disconnect()
             self._com.readyRead.disconnect()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             log.exception(e)
 
         if self._com and self._com.isOpen():
@@ -117,11 +115,11 @@ class SerialService(QObject):
         self._com.deleteLater()
         self._com = None
 
-    def deleteLater(self) -> None:
+    def deleteLater(self) -> None:  # noqa: N802
         self.close_connection()
         super().deleteLater()
 
-    def _on_data(self, *args: object, **kwargs: object) -> None:
+    def _on_data(self, *_: object, **__: object) -> None:
         if not self._com:
             return
 
@@ -134,7 +132,7 @@ class SerialService(QObject):
                 result = self._transcoder.decode(chunk)
                 log.debug(f"received data: {result}")
                 self.data.emit(result)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 log.exception(e)
                 self.error.emit(e)
 

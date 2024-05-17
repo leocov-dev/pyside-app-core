@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QWidget
 
 class ObjectNameMixin:
     def __init__(self, *args: object, **kwargs: object) -> None:
-        super(ObjectNameMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if isinstance(self, QWidget):
             self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground)

@@ -22,9 +22,7 @@ class MockCommand(Encodable, Decodable):
     def __eq__(self, other: object) -> bool:
         if isinstance(other, MockCommand):
             return self._data == other._data
-        raise TypeError(
-            f"Can't compare type: {type(other)} to {self.__class__.__name__}"
-        )
+        raise TypeError(f"Can't compare type: {type(other)} to {self.__class__.__name__}")
 
     def encode(self) -> bytes:
         return self._data.encode("utf-8")

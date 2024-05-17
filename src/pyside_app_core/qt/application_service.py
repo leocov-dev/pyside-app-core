@@ -1,4 +1,4 @@
-from typing import Generic, NamedTuple, TypeVar
+from typing import ClassVar, Generic, NamedTuple, TypeVar
 
 from pyside_app_core.errors.basic_errors import ApplicationError
 
@@ -10,7 +10,7 @@ class Field(Generic[_FVT]):
         self.value: _FVT | None = None
 
     def __set_name__(self, owner: type, name: str) -> None:
-        owner._fields.append(name)
+        owner._fields.append(name)  # type: ignore[attr-defined]
 
     def __get__(self, obj: object, objtype: type) -> _FVT:
         if self.value is None:
@@ -21,7 +21,7 @@ class Field(Generic[_FVT]):
         self.value = value
 
 
-class NullableField(Field):
+class NullableField(Field[_FVT | None]):
     def __get__(self, obj: object, objtype: type) -> _FVT | None:
         return self.value
 
@@ -31,7 +31,7 @@ class NullableField(Field):
 
 class MetadataMeta(type):
     _initialized = False
-    _fields: list[str] = []
+    _fields: ClassVar[list[str]] = []
 
     def __str__(cls) -> str:
         if not cls._initialized:
@@ -76,14 +76,14 @@ class AppMetadata(metaclass=MetadataMeta):
         if cls._initialized:
             raise ApplicationError("Metadata already initialized")
 
-        cls.id = app_id
-        cls.name = name
-        cls.version = version
-        cls.icon = icon_resource
-        cls.about_template = about_template
-        cls.help_url = help_url
-        cls.bug_report_url = bug_report_url
-        cls.oss_licenses = [
+        cls.id = app_id  # type: ignore[assignment]
+        cls.name = name  # type: ignore[assignment]
+        cls.version = version  # type: ignore[assignment]
+        cls.icon = icon_resource  # type: ignore[assignment]
+        cls.about_template = about_template  # type: ignore[assignment]
+        cls.help_url = help_url  # type: ignore[assignment]
+        cls.bug_report_url = bug_report_url  # type: ignore[assignment]
+        cls.oss_licenses = [  # type: ignore[assignment]
             ":/core/notices/licenses/python.md",
             ":/core/notices/licenses/qt.md",
             ":/core/notices/licenses/jinja2.md",

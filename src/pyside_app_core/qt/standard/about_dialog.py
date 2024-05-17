@@ -21,7 +21,7 @@ from pyside_app_core.utils.files import load_text_file
 
 class AboutDialog(QDialog):
     def __init__(self) -> None:
-        super(AboutDialog, self).__init__()
+        super().__init__()
 
         self.setFixedSize(640, 480)
         self.setWindowTitle(f"About {AppMetadata.name}")
@@ -49,7 +49,7 @@ class AboutDialog(QDialog):
 
 class _AboutApp(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
-        super(_AboutApp, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         _ly_split = QHBoxLayout()
         _ly_split.setContentsMargins(15, 1, 1, 2)
         _ly_split.setSpacing(10)
@@ -58,9 +58,7 @@ class _AboutApp(QWidget):
         _ly_icon = QVBoxLayout()
         _ly_icon.setContentsMargins(0, 10, 0, 0)
         icon = QLabel(parent=self)
-        icon.setPixmap(
-            cast(QApplication, QApplication.instance()).windowIcon().pixmap(64, 64)
-        )
+        icon.setPixmap(cast(QApplication, QApplication.instance()).windowIcon().pixmap(64, 64))
         _ly_icon.addWidget(icon, stretch=1, alignment=Qt.AlignmentFlag.AlignTop)
         _ly_split.addLayout(_ly_icon)
 
@@ -82,7 +80,7 @@ class _AboutApp(QWidget):
             "id": AppMetadata.id,
         }
 
-        env = Environment(loader=BaseLoader())
+        env = Environment(loader=BaseLoader(), autoescape=True)
         if template_data := AppMetadata.about_template:
             raw, data = cast(TemplateMeta, template_data)
             args = {**args, **(data or {})}
@@ -96,7 +94,7 @@ class _AboutApp(QWidget):
 
 class _Licenses(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
-        super(_Licenses, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         _ly = QVBoxLayout()
         _ly.setContentsMargins(1, 1, 1, 1)
         self.setLayout(_ly)
@@ -118,7 +116,7 @@ class _Licenses(QWidget):
 """
         for lic in AppMetadata.oss_licenses:
             markdown = f"""{markdown}
-            
+
 ---
 
 {load_text_file(lic)}"""

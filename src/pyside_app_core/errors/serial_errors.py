@@ -8,13 +8,14 @@ class SerialError(CoreError):
         self,
         port: QtSerialPort.QSerialPort | None,
         error: QtSerialPort.QSerialPort.SerialPortError,
+        *,
         internal: bool = False,
     ):
         if port:
             msg = f"Serial error{f' {error} ' if error else ' '}on port: {port.portName()}"
         else:
             msg = "Serial port not configured"
-        super(SerialError, self).__init__(msg, internal=internal)
+        super().__init__(msg, internal=internal)
 
 
 class SerialUnknownError(SerialError):

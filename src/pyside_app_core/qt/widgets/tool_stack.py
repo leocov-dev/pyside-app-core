@@ -19,9 +19,9 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
         parent: QWidget,
         menu: QMenu | None = None,
     ):
-        super(ToolStack, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
-        opposite_side = "left" if side == "right" else "right"
+        # opposite_side = "left" if side == "right" else "right"
 
         self._menu = menu
 
@@ -83,7 +83,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
             self._menu.addAction(action)
 
     @Slot(int, bool)
-    def _on_click(self, index: int, checked: bool) -> None:
+    def _on_click(self, index: int, checked: bool) -> None:  # noqa: FBT001
         for i, button in enumerate(self._button_group.buttons()):
             self._stack.setCurrentIndex(index)
 

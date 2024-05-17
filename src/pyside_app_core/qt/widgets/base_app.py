@@ -12,23 +12,17 @@ from pyside_app_core.qt.application_service import AppMetadata
 
 
 class BaseApp(QApplication):
-    def __init__(
-        self, resources_rcc: Path | None = None, *args: object, **kwargs: object
-    ) -> None:
-        super(BaseApp, self).__init__(*args, **kwargs)
+    def __init__(self, resources_rcc: Path | None = None, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
         self.setStyle("fusion")
-        self.setAttribute(
-            Qt.ApplicationAttribute.AA_UseStyleSheetPropagationInWidgetStyles
-        )
+        self.setAttribute(Qt.ApplicationAttribute.AA_UseStyleSheetPropagationInWidgetStyles)
 
         register_resource_file(resources_rcc)
 
         self.setWindowIcon(
             QIcon(AppMetadata.icon)
             if AppMetadata.icon
-            else self.style().standardIcon(
-                QStyle.StandardPixmap.SP_FileDialogDetailedView
-            )
+            else self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView)
         )
 
         self._main_window = self.build_main_window()
@@ -38,15 +32,13 @@ class BaseApp(QApplication):
 
     def launch(self) -> None:
         if not self._main_window:
-            raise ApplicationError(
-                f"Must subclass {BaseApp.__name__} and define a main window"
-            )
+            raise ApplicationError(f"Must subclass {BaseApp.__name__} and define a main window")
 
         self._main_window.show()
 
         try:
             self.about_to_exit(self.exec())
-        except Exception as e:
+        except Exception as e:  # noqa:BLE001
             log.exception(e)
             sys.exit(1)
 

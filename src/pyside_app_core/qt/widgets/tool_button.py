@@ -7,14 +7,14 @@ from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
 
 class ToolButton(ObjectNameMixin, QPushButton):
     def __init__(self, icon: QIcon, tooltip: str, parent: QWidget):
-        super(ToolButton, self).__init__(icon=icon, parent=parent)
+        super().__init__(icon=icon, parent=parent)
 
         self.setMinimumSize(24, 24)
 
         self.setToolTip(tooltip)
         self.setContentsMargins(0, 0, 0, 0)
 
-    def setFixedSize(  # type: ignore[override]
+    def setFixedSize(  # type: ignore[override] # noqa
         self, size: QSize | tuple[int, int]
     ) -> None:
         if isinstance(size, tuple):

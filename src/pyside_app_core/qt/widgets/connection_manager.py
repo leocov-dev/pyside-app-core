@@ -20,10 +20,11 @@ class ConnectionManager(SettingsMixin, QWidget):
 
     def __init__(
         self,
+        *,
         remember_last_connection: bool = False,
         parent: QWidget | None = None,
     ):
-        super(ConnectionManager, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         self._remember_last_connection = remember_last_connection
 
@@ -130,24 +131,17 @@ class ConnectionManager(SettingsMixin, QWidget):
         name: str = port.portName()
         extra = ""
         if mfc := port.manufacturer():
-            if prod_id := port.productIdentifier():
-                extra = f"{mfc}/{prod_id}"
-            else:
-                extra = mfc
+            prod_id = port.productIdentifier()
+            extra = f"{mfc}/{prod_id}" if prod_id else mfc
 
-        if extra:
-            return f"{name} ({extra})"
-
-        return name
+        return f"{name} ({extra})" if extra else name
 
     def _store_state(self) -> None:
         if not self._remember_last_connection:
             return
 
         if self.current_port and self.current_port.serialNumber():
-            self._settings.setValue(
-                "last_port_serial", self.current_port.serialNumber()
-            )
+            self._settings.setValue("last_port_serial", self.current_port.serialNumber())
 
     def _restore_state(self) -> None:
         if not self._remember_last_connection:

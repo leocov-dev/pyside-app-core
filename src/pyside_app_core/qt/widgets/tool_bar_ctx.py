@@ -19,9 +19,7 @@ _TOOL_BAR_AREA_MAP = {
 
 
 class ToolBarContext(ObjectNameMixin, QToolBar):
-    def __init__(
-        self, area: ToolBarArea, parent: QMainWindow, movable: bool = False
-    ) -> None:
+    def __init__(self, area: ToolBarArea, parent: QMainWindow, *, movable: bool = False) -> None:
         self._area = area
         self._actions: list[QAction] = []
 
@@ -35,7 +33,7 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
             self._border_side = "top"
 
         self.OBJECT_NAME = f"ToolBar_{area}"
-        super(ToolBarContext, self).__init__(self.OBJECT_NAME, parent=parent)
+        super().__init__(self.OBJECT_NAME, parent=parent)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setGeometry(10, 10, self.width(), self.height())
@@ -53,6 +51,6 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
 
         self._actions.append(action)
         if len(self._actions) == 1:
-            _ = [c for c in self.children() if isinstance(c, QToolButton)][0]
+            _ = next(c for c in self.children() if isinstance(c, QToolButton))
         yield action
         self.addAction(action)

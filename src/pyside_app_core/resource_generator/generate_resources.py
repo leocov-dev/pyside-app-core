@@ -5,13 +5,13 @@ from typing import Literal
 
 from jinja2 import Environment, PackageLoader
 
-from .resource_types import QtResourceFile, QtResourceGroup
+from pyside_app_core.resource_generator.resource_types import QtResourceFile, QtResourceGroup
 
 _std_resource_root = Path(__file__).parent.parent / "resources" / "core"
 
 
 def _compile_qrc_template(resources: list[QtResourceGroup]) -> str:
-    env = Environment(loader=PackageLoader("pyside_app_core.resources"))
+    env = Environment(loader=PackageLoader("pyside_app_core.resources"), autoescape=True)
     qrc_template = env.get_template("resources.qrc.jinja2")
     return qrc_template.render(qresources=resources)
 
@@ -36,7 +36,7 @@ def _build_resource_groups(root_paths: list[Path]) -> list[QtResourceGroup]:
 
         prefix = root_path.name
         if prefix in root_prefixes:
-            raise Exception(f"Root path {root_path} has duplicate prefix {prefix}")
+            raise ValueError(f"Root path {root_path} has duplicate prefix {prefix}")
 
         root_prefixes.append(prefix)
 
@@ -67,6 +67,7 @@ def compile_qrc_to_resources(
     target_dir: Path,
     rcc_format: ResourceFormat = "binary",
     additional_resource_roots: list[Path] | None = None,
+    *,
     debug: bool = False,
 ) -> Path:
     with tempfile.TemporaryDirectory() as tempdir:
@@ -79,9 +80,7 @@ def compile_qrc_to_resources(
             ]
         )
 
-        qrc_file = _write_file(
-            temp_path / "resources.qrc", _compile_qrc_template(resources)
-        )
+        qrc_file = _write_file(temp_path / "resources.qrc", _compile_qrc_template(resources))
 
         rcc_args = []
 
@@ -93,9 +92,7 @@ def compile_qrc_to_resources(
 
         file_target = target_dir / file_name
 
-        subprocess.check_call(
-            ["pyside6-rcc", *rcc_args, "-o", str(file_target), str(qrc_file)]
-        )
+        subprocess.check_call(["pyside6-rcc", *rcc_args, "-o", str(file_target), str(qrc_file)])
 
         if debug:
             print("-" * 80)

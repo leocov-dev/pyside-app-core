@@ -13,7 +13,7 @@ from pyside_app_core.services import platform_service
 
 class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
     def __init__(self) -> None:
-        super(MainWindow, self).__init__(parent=None)
+        super().__init__(parent=None)
 
         self._about_dialog = AboutDialog()
 
@@ -27,10 +27,9 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
         self._menu_bar.setNativeMenuBar(platform_service.is_macos)
         self.setMenuBar(self._menu_bar)
 
-        with self._menu_bar.menu("File") as file_menu:
-            with file_menu.action("Quit") as exit_action:
-                exit_action.setMenuRole(QAction.MenuRole.QuitRole)
-                exit_action.triggered.connect(self.close)
+        with self._menu_bar.menu("File") as file_menu, file_menu.action("Quit") as exit_action:
+            exit_action.setMenuRole(QAction.MenuRole.QuitRole)
+            exit_action.triggered.connect(self.close)
 
         self._build_menus()
 
@@ -48,17 +47,11 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
             if AppMetadata.help_url:
                 with help_menu.action("Get Help") as help_action:
-                    help_action.triggered.connect(
-                        lambda: QDesktopServices.openUrl(QUrl(AppMetadata.help_url))
-                    )
+                    help_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(AppMetadata.help_url)))
 
             if AppMetadata.bug_report_url:
                 with help_menu.action("Report Bug") as help_action:
-                    help_action.triggered.connect(
-                        lambda: QDesktopServices.openUrl(
-                            QUrl(AppMetadata.bug_report_url)
-                        )
-                    )
+                    help_action.triggered.connect(lambda: QDesktopServices.openUrl(QUrl(AppMetadata.bug_report_url)))
 
     @property
     def menu_bar(self) -> MenuBarContext:
@@ -70,7 +63,7 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
 class MainToolbarWindow(MainWindow):
     def __init__(self) -> None:
-        super(MainToolbarWindow, self).__init__()
+        super().__init__()
 
         self._tool_bar = ToolBarContext(area="top", parent=self, movable=False)
         self._tool_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)

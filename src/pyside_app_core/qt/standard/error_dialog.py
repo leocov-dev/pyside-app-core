@@ -13,13 +13,11 @@ class ErrorDialog(QtWidgets.QMessageBox):
         details: str,
         parent: QtWidgets.QWidget | None = None,
     ):
-        super(ErrorDialog, self).__init__(parent=parent)
+        super().__init__(parent=parent)
         self.setWindowTitle("Error")
 
         self.setText(f"Error: {etype.__name__: <{self.CHAR_WIDTH}}")
         if msg:
-            self.setInformativeText(
-                strings.wrap_text(msg, width=self.CHAR_WIDTH, padded=True) + "\n"
-            )
+            self.setInformativeText(strings.wrap_text(msg, width=self.CHAR_WIDTH, padded=True) + "\n")
         if details:
             self.setDetailedText(details)

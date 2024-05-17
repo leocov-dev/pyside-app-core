@@ -37,7 +37,7 @@ class MenuContext(QMenu):
 
 class MenuBarContext(QMenuBar):
     def __init__(self, parent: QWidget):
-        super(MenuBarContext, self).__init__(parent=parent)
+        super().__init__(parent=parent)
 
         self._menu_map: dict[str, MenuContext] = {}
 

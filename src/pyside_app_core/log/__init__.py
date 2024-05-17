@@ -1,7 +1,7 @@
 import inspect
 import logging
 from collections.abc import Callable
-from typing import Dict, Protocol
+from typing import Protocol
 
 __logger_cache: dict[str, logging.Logger] = {}
 
@@ -15,7 +15,7 @@ def _get_caller_name() -> str:
         module = inspect.getmodule(frame)
         if not module:
             return __pac_name
-    except:
+    except:  # noqa
         return __pac_name
     name = module.__name__
     if name == "__main__":
@@ -35,23 +35,17 @@ def _get_cached_logger(name: str) -> logging.Logger:
 
 
 class _Logger(Protocol):
-    def debug(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def debug(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def info(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def info(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def warning(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def warning(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def error(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def error(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def critical(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def critical(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def exception(self, msg: str, /, *args: object, **kwargs: object) -> None:
-        ...
+    def exception(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
 
 def __default_get_logger() -> logging.Logger:
@@ -65,7 +59,7 @@ __get_logger_func: GetLogger = __default_get_logger  # type: ignore[assignment]
 
 
 def configure_get_logger_func(func: GetLogger) -> None:
-    global __get_logger_func
+    global __get_logger_func  # noqa: PLW0603
     __get_logger_func = func
 
 

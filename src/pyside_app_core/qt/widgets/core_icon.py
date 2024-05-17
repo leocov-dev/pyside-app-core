@@ -32,15 +32,11 @@ class _SvgIconEngine(QIconEngine):
 
         return pixmap
 
-    def paint(
-        self, painter: QPainter, rect: QRect, mode: QIcon.Mode, state: QIcon.State
-    ) -> None:
+    def paint(self, painter: QPainter, rect: QRect, mode: QIcon.Mode, state: QIcon.State) -> None:
         app_palette = cast(QGuiApplication, QGuiApplication.instance()).palette()
 
         renderer = (
-            QSvgRenderer(self._on_file)
-            if state == QIcon.State.On
-            else QSvgRenderer(self._off_file or self._on_file)
+            QSvgRenderer(self._on_file) if state == QIcon.State.On else QSvgRenderer(self._off_file or self._on_file)
         )
 
         if mode == QIcon.Mode.Normal:
@@ -63,4 +59,4 @@ class _SvgIconEngine(QIconEngine):
 
 class CoreIcon(QIcon):
     def __init__(self, on_state: str, off_state: str | None = None):
-        super(CoreIcon, self).__init__(_SvgIconEngine(on_state, off_state))
+        super().__init__(_SvgIconEngine(on_state, off_state))

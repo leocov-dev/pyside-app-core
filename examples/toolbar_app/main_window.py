@@ -9,7 +9,7 @@ from pyside_app_core.qt.widgets.multi_combo_box import MultiComboBox
 
 class SimpleMainWindow(MainWindow):
     def __init__(self) -> None:
-        super(SimpleMainWindow, self).__init__()
+        super().__init__()
 
         # ------------------------------------------------------------------------------
         self.setMinimumSize(QSize(480, 240))
@@ -47,8 +47,8 @@ class SimpleMainWindow(MainWindow):
             "Save",
         )
 
-        def _raise():
-            raise Exception("This is a test error")
+        def _raise() -> None:
+            raise Exception("This is a test error")  # noqa
 
         _raise_action.triggered.connect(_raise)
 

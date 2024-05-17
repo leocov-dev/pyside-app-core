@@ -26,9 +26,7 @@ from pyside_app_core.types.numeric import FloatPrecision
         ),
     ],
 )
-def test_encode_float_list(
-    floats: list[float], precision: FloatPrecision, expected: bytes
-) -> None:
+def test_encode_float_list(floats: list[float], precision: FloatPrecision, expected: bytes) -> None:
     result = encode_float_list(floats, precision)
 
     assert bytes(result) == expected
@@ -51,9 +49,7 @@ def test_encode_float_list(
         ),
     ],
 )
-def test_decode_float_list(
-    encoded: bytes, precision: FloatPrecision, expected: list[float]
-) -> None:
+def test_decode_float_list(encoded: bytes, precision: FloatPrecision, expected: list[float]) -> None:
     result = decode_float_list(encoded, precision)
 
     assert len(result) == len(expected)

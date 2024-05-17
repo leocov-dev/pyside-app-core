@@ -4,7 +4,7 @@ from pyside_app_core.utils import compare
 
 
 @pytest.mark.parametrize(
-    "a, b, expected",
+    ("a", "b", "expected"),
     [
         (1, 1, True),
         (1.0, 1.0, True),

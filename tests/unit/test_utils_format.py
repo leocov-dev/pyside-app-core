@@ -4,7 +4,7 @@ from pyside_app_core.utils import strings
 
 
 @pytest.mark.parametrize(
-    ("width", "padded", "input", "expected"),
+    ("width", "padded", "text", "expected"),
     [
         (80, False, "", ""),
         (10, False, "12345", "12345"),
@@ -15,6 +15,6 @@ from pyside_app_core.utils import strings
         (5, True, "12345678\n910", "12345\n678  \n910  "),
     ],
 )
-def test_wrap_text(width: int, padded: bool, input: str, expected: str) -> None:
-    result = strings.wrap_text(input, width, padded)
+def test_wrap_text(width: int, padded: bool, text: str, expected: str) -> None:
+    result = strings.wrap_text(text, width=width, padded=padded)
     assert result == expected
