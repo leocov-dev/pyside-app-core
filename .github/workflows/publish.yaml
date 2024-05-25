@@ -2,6 +2,7 @@ name: Publish
 on:
   release:
     types: [ published ]
+
 jobs:
   pypi:
     runs-on: ubuntu-latest
@@ -23,4 +24,4 @@ jobs:
       # trusted publishing workflow:
       # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
       - name: Publish To PyPi
-        uses: pypa/gh-action-pypi-publish@v1.8
+        uses: pypa/gh-action-pypi-publish@v1.8.14
