@@ -39,13 +39,12 @@ path = "src/pyside_app_core/__init__.py"
 [project.scripts]
 pyside-app-core-compile-rcc = "pyside_app_core.resource_generator.__main__:main"
 
+# default ---------------------------------------------------------------
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".venv"
 
-[tool.hatch.envs.default.scripts]
-example-toolbar-app = 'python -m examples.toolbar_app'
-
+# testing ----------------------------------------
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
     "pytest-qt",
@@ -54,6 +53,8 @@ extra-dependencies = [
 [[tool.hatch.envs.hatch-test.matrix]]
 python = [ "3.10", "3.11", "3.12" ]
 
+
+# format/linting ---------------------------------------------------------------
 [tool.hatch.envs.hatch-static-analysis]
 dev-mode = true
 skip-install = false
@@ -85,6 +86,7 @@ lint-fix = [
     'lint-imports',
 ]
 
+# examples ---------------------------------------------------
 [tool.hatch.envs.examples]
 
 [tool.hatch.envs.examples.scripts]

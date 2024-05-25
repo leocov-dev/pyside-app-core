@@ -49,6 +49,9 @@ jobs:
       - name: Unit Tests
         run: hatch test --python ${{ matrix.python-version }}
 
+      - name: Check compile-rcc
+        run: hatch run pyside-app-core-compile-rcc --debug examples/toolbar_app
+
   build:
     runs-on: ubuntu-latest
     name: Build Smoke Test
