@@ -25,6 +25,9 @@ jobs:
         with:
           python-version-file: 'pyproject.toml'
 
+      - name: Install Hatch
+        run: pipx install hatch
+
       - name: Build Source & Wheel
         run: hatch build
 
