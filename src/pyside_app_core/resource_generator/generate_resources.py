@@ -5,7 +5,10 @@ from typing import Literal
 
 from jinja2 import Environment, PackageLoader
 
-from pyside_app_core.resource_generator.resource_types import QtResourceFile, QtResourceGroup
+from pyside_app_core.resource_generator.resource_types import (
+    QtResourceFile,
+    QtResourceGroup,
+)
 
 _std_resource_root = Path(__file__).parent.parent / "resources" / "core"
 

@@ -27,7 +27,10 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
         self._menu_bar.setNativeMenuBar(platform_service.is_macos)
         self.setMenuBar(self._menu_bar)
 
-        with self._menu_bar.menu("File") as file_menu, file_menu.action("Quit") as exit_action:
+        with (
+            self._menu_bar.menu("File") as file_menu,
+            file_menu.action("Quit") as exit_action,
+        ):
             exit_action.setMenuRole(QAction.MenuRole.QuitRole)
             exit_action.triggered.connect(self.close)
 
