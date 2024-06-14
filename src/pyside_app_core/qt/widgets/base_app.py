@@ -11,7 +11,7 @@ from pyside_app_core.qt import register_resource_file
 from pyside_app_core.qt.application_service import AppMetadata
 
 
-class BaseApp(QApplication):
+class BaseApp[M: QMainWindow](QApplication):
     def __init__(self, resources_rcc: Path | None = None, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.setStyle("fusion")
@@ -25,9 +25,9 @@ class BaseApp(QApplication):
             else self.style().standardIcon(QStyle.StandardPixmap.SP_FileDialogDetailedView)
         )
 
-        self._main_window = self.build_main_window()
+        self._main_window: M = self.build_main_window()
 
-    def build_main_window(self) -> QMainWindow:
+    def build_main_window(self) -> M:
         raise NotImplementedError
 
     def launch(self) -> None:
