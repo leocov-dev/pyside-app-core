@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from typing import Generic, TypeVar
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
@@ -10,8 +11,10 @@ from pyside_app_core.errors.basic_errors import ApplicationError
 from pyside_app_core.qt import register_resource_file
 from pyside_app_core.qt.application_service import AppMetadata
 
+M = TypeVar("M", bound=QMainWindow)
 
-class BaseApp[M: QMainWindow](QApplication):
+
+class BaseApp(QApplication, Generic[M]):
     def __init__(self, resources_rcc: Path | None = None, *args: object, **kwargs: object) -> None:
         super().__init__(*args, **kwargs)
         self.setStyle("fusion")
