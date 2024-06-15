@@ -11,7 +11,7 @@ authors = [
 ]
 license-files = { paths = ["LICENSE"] }
 classifiers = [
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Development Status :: 2 - Pre-Alpha",
     "Topic :: Desktop Environment",
     "Programming Language :: Python",
