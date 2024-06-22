@@ -31,9 +31,6 @@ jobs:
       - name: Build Source & Wheel
         run: hatch build
 
-      - name: List Files
-        run: ls ./dist
-
       - name: Draft Release
         uses: release-drafter/release-drafter@v6
         with:
@@ -41,6 +38,10 @@ jobs:
           version: ${{ steps.vars.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: sigstore/gh-action-sigstore-python@v2.1.1
+        with:
+          inputs: ./dist/*
 
       - name: Upload Release Asset
         env:

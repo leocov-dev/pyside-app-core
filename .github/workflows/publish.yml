@@ -6,12 +6,11 @@ on:
 jobs:
   pypi:
     runs-on: ubuntu-latest
-    name: PyPi Publish
+
     permissions:
       id-token: write
-    environment:
-      name: pypi
-      url: https://pypi.org/p/pyside-app-core
+
+    name: PyPi Publish
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,3 +24,7 @@ jobs:
       # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
       - name: Publish To PyPi
         uses: pypa/gh-action-pypi-publish@release/v1.8
+        env:
+          name: pypi
+          url: https://pypi.org/p/pyside-app-core
+
