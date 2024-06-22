@@ -2,7 +2,7 @@
 
 Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
-> NOTICE:
+> 🚧 🚧 🚧 NOTICE 🚧 🚧 🚧
 >
 > This project should be considered experimental and subject to breaking changes until a 1.0.0 release.
 
