@@ -22,7 +22,7 @@ jobs:
       - name: Download Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release download ${{ github.event.release.tag_name }} --dir dist
+        run: gh release download ${{ github.event.release.tag_name }} --dir dist -p "*.whl" -p "*.tar.gz"
 
       # trusted publishing workflow:
       # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
