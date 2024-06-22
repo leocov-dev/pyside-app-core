@@ -9,7 +9,7 @@ Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
 ![GitHub Release](https://img.shields.io/github/v/release/leocov-dev/pyside-app-core)
 ![GitHub License](https://img.shields.io/github/license/leocov-dev/pyside-app-core)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/leocov-dev/pyside-app-core/ci.yaml)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/leocov-dev/pyside-app-core/ci.yml)
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/pyside-app-core)
 
 
