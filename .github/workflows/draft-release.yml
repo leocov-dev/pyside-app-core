@@ -8,10 +8,13 @@ on:
 jobs:
   release-draft:
     runs-on: ubuntu-latest
-    name: Create Draft Release
+
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
+
+    name: Create Draft Release
     steps:
       - name: Get Version Tag
         id: vars
