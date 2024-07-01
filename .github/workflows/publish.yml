@@ -19,10 +19,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Release Assets
+
+
+
+
+      - uses: sigstore/gh-action-sigstore-python@v2.1.1
+        with:
+          inputs: ./dist/*
+
+      - name: Upload Release Asset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release download ${{ github.event.release.tag_name }} --dir dist -p "*.whl" -p "*.tar.gz"
+        run: gh release upload --clobber ${{ github.event.release.tag_name }} ./dist/*
 
       # trusted publishing workflow:
       # https://docs.pypi.org/trusted-publishers/adding-a-publisher/

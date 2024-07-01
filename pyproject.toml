@@ -65,8 +65,8 @@ extra-dependencies = [
     "import-linter==2.*",
 ]
 
-[tool.hatch.envs.hatch-static-analysis.env-vars]
-PYTHONPATH = "{root}/src:{env:PYTHONPATH:}"
+#[tool.hatch.envs.hatch-static-analysis.env-vars]
+#PYTHONPATH = "{root}/src:{env:PYTHONPATH:}"
 
 [tool.hatch.envs.hatch-static-analysis.scripts]
 format-check = [
