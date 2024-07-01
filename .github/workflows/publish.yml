@@ -23,7 +23,7 @@ jobs:
         id: changelog
         uses: Helmisek/conventional-changelog-generator@v1.0.6-release
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Version Up
         run: pipx run hatch version ${{ steps.semver.outputs.next }}
