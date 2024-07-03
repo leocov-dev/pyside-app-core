@@ -14,28 +14,32 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: jaywcjlove/changelog-generator@v2.1.0
+        uses: jaywcjlove/changelog-generator@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           show-emoji: false
 
+      - name: Semver
+        id: semver
+        uses: ietf-tools/semver-action@v1.8.0
+
       - run: |
-          echo "version: ${{ steps.changelog.outputs.version }} tag: ${{ steps.changelog.outputs.tag }}"
+          echo "next: ${{ steps.semver.outputs.next }}"
 
       - id: current
         run: echo "version=$(pipx run hatch version | tr -d '\n')" >> $GITHUB_OUTPUT
 
-      - if: ${{ steps.current.outputs.version == steps.changelog.outputs.version }}
+      - if: ${{ steps.current.outputs.version == steps.semver.outputs.next || !steps.current.outputs.version }}
         run: exit 1
 
       - name: Version Up
-        run: pipx run hatch version ${{ steps.changelog.outputs.version }}
+        run: pipx run hatch version ${{ steps.semver.outputs.next }}
 
       - run: |
           git config --global user.name 'GitHub Automation'
           git config --global user.email 'gh-automation@leocov.com'
           git add src/pyside_app_core/__init__.py
-          git commit -m "chore: version up to: ${{ steps.changelog.outputs.version }}"
+          git commit -m "chore: version up to: ${{ steps.semver.outputs.next }}"
           git push
 
       - name: Create Build
@@ -48,7 +52,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          tag: ${{ steps.changelog.outputs.tag }}
+          tag: ${{ steps.semver.outputs.next }}
           body: ${{ steps.changelog.outputs.changelog }}
 
 #      - name: Upload Release Asset
