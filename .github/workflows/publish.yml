@@ -14,7 +14,7 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: jaywcjlove/changelog-generator@main
+        uses: jaywcjlove/changelog-generator@v2.1.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           show-emoji: false
@@ -22,6 +22,7 @@ jobs:
       - name: Semver
         id: semver
         uses: ietf-tools/semver-action@v1.8.0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: |
           echo "next: ${{ steps.semver.outputs.next }}"
