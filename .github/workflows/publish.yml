@@ -22,6 +22,7 @@ jobs:
       - name: Semver
         id: semver
         uses: ietf-tools/semver-action@v1.8.0
+        with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: |
