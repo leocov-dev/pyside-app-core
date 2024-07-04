@@ -16,26 +16,16 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
+          # Personal Access Token enables git push in actions (repo contents permission)
           token: ${{ secrets.PAT }}
 
-      - name: Generate Changelog
-        id: changelog
-        uses: jaywcjlove/changelog-generator@v2.1.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          show-emoji: false
-
-      - name: Semver
+      - name: Calculate next version
         id: semver
         uses: ietf-tools/semver-action@v1.8.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: |
-          echo "next: ${{ steps.semver.outputs.nextStrict }}"
 
       - id: current
         run: echo "version=$(pipx run hatch version | tr -d '\n')" >> $GITHUB_OUTPUT
@@ -46,7 +36,7 @@ jobs:
       - name: Version Up
         run: pipx run hatch version ${{ steps.semver.outputs.nextStrict }}
 
-      - name: Commit version change
+      - name: Commit version change and tag
         run: |
           git config --global user.name 'GitHub Automation'
           git config --global user.email 'gh-automation@leocov.com'
@@ -59,9 +49,17 @@ jobs:
       - name: Create Build
         run: pipx run hatch build
 
-      - uses: sigstore/gh-action-sigstore-python@v2.1.1
+      - name: Generate Build Signatures
+        uses: sigstore/gh-action-sigstore-python@v2.1.1
         with:
           inputs: ./dist/*
+
+      - name: Generate Changelog
+        id: changelog
+        uses: jaywcjlove/changelog-generator@v2.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          show-emoji: false
 
       - uses: ncipollo/release-action@v1
         with:
@@ -71,7 +69,7 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
 
   pypi:
-    runs-on: ubuntu-latest
+    name: Publish to PyPi
     needs: [ release ]
 
     permissions:
@@ -81,7 +79,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/pyside-app-core
 
-    name: Publish to PyPi
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
