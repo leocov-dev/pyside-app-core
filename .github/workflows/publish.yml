@@ -50,7 +50,8 @@ jobs:
           git add src/pyside_app_core/__init__.py
           git commit -m "chore: version up to: ${{ steps.semver.outputs.nextStrict }}"
           git push
-        
+          git tag ${{ steps.semver.outputs.nextStrict }}
+          git push --tags
 
       - name: Create Build
         run: pipx run hatch build
@@ -63,6 +64,7 @@ jobs:
         with:
           artifacts: "dist/*"
           tag: ${{ steps.semver.outputs.nextStrict }}
+          name: "Release v${{ steps.semver.outputs.nextStrict }}"
           body: ${{ steps.changelog.outputs.changelog }}
 
 #      - name: Upload Release Asset
