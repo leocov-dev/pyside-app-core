@@ -9,6 +9,7 @@ jobs:
 
     permissions:
       contents: write
+      id-token: writegs
 
     runs-on: ubuntu-latest
     steps:
