@@ -7,6 +7,9 @@ jobs:
     name: Create A Release
     if: github.ref == 'refs/heads/main'
 
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,23 +29,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: |
-          echo "next: ${{ steps.semver.outputs.next }}"
+          echo "next: ${{ steps.semver.outputs.nextStrict }}"
 
       - id: current
         run: echo "version=$(pipx run hatch version | tr -d '\n')" >> $GITHUB_OUTPUT
 
-      - if: ${{ steps.current.outputs.version == steps.semver.outputs.next || !steps.current.outputs.version }}
+      - if: ${{ steps.current.outputs.version == steps.semver.outputs.nextStrict || !steps.current.outputs.version }}
         run: exit 1
 
       - name: Version Up
-        run: pipx run hatch version ${{ steps.semver.outputs.next }}
+        run: pipx run hatch version ${{ steps.semver.outputs.nextStrict }}
 
-      - run: |
+      - name: Commit version change
+
+        run: |
           git config --global user.name 'GitHub Automation'
           git config --global user.email 'gh-automation@leocov.com'
           git add src/pyside_app_core/__init__.py
-          git commit -m "chore: version up to: ${{ steps.semver.outputs.next }}"
+          git commit -m "chore: version up to: ${{ steps.semver.outputs.nextStrict }}"
           git push
+        
 
       - name: Create Build
         run: pipx run hatch build
@@ -54,7 +60,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          tag: ${{ steps.semver.outputs.next }}
+          tag: ${{ steps.semver.outputs.nextStrict }}
           body: ${{ steps.changelog.outputs.changelog }}
 
 #      - name: Upload Release Asset
