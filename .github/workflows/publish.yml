@@ -39,7 +39,7 @@ jobs:
       - name: Commit version change and tag
         run: |
           git config --global user.name 'GitHub Automation'
-          git config --global user.email 'gh-automation@leocov.com'
+          git config --global user.email 'automation[bot]@leocov.com'
           git add src/pyside_app_core/__init__.py
           git commit -m "chore: version up to: ${{ steps.semver.outputs.nextStrict }}"
           git push
@@ -60,6 +60,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           show-emoji: false
+          filter-author: (GitHub Automation|automation\\[bot\\])
 
       - uses: ncipollo/release-action@v1
         with:
