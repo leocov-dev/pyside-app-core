@@ -1,8 +1,12 @@
 name: Publish
+
 on:
   workflow_dispatch:
 
 jobs:
+
+
+  # -------------
   release:
     name: Create A Release
     if: github.ref == 'refs/heads/main'
@@ -69,6 +73,8 @@ jobs:
           name: "Release v${{ steps.semver.outputs.nextStrict }}"
           body: ${{ steps.changelog.outputs.changelog }}
 
+
+  # -------------
   pypi:
     name: Publish to PyPi
     needs: [ release ]
@@ -93,5 +99,5 @@ jobs:
       # trusted publishing workflow:
       # https://docs.pypi.org/trusted-publishers/adding-a-publisher/
       - name: Publish To PyPi
-        uses: pypa/gh-action-pypi-publish@release/v1.8
+        uses: pypa/gh-action-pypi-publish@release/v1.9
 
