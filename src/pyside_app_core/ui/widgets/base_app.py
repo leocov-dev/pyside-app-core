@@ -8,8 +8,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QStyle
 
 from pyside_app_core import log
 from pyside_app_core.errors.basic_errors import ApplicationError
-from pyside_app_core.qt import register_resource_file
-from pyside_app_core.qt.application_service import AppMetadata
+from pyside_app_core.ui import register_resource_file
+from pyside_app_core.ui.application_service import AppMetadata
 
 M = TypeVar("M", bound=QMainWindow)
 

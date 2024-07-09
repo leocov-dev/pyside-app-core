@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.qt.application_service import AppMetadata, TemplateMeta
+from pyside_app_core.ui.application_service import AppMetadata, TemplateMeta
 from pyside_app_core.utils.files import load_text_file
 
 

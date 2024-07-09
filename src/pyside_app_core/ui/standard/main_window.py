@@ -2,13 +2,13 @@ from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QAction, QDesktopServices
 from PySide6.QtWidgets import QMainWindow, QWidget
 
-from pyside_app_core.qt.application_service import AppMetadata
-from pyside_app_core.qt.standard.about_dialog import AboutDialog
-from pyside_app_core.qt.standard.base_window import BaseMixin
-from pyside_app_core.qt.widgets.menu_ctx import MenuBarContext
-from pyside_app_core.qt.widgets.tool_bar_ctx import ToolBarContext
-from pyside_app_core.qt.widgets.window_settings_mixin import WindowSettingsMixin
 from pyside_app_core.services import platform_service
+from pyside_app_core.ui.application_service import AppMetadata
+from pyside_app_core.ui.standard.about_dialog import AboutDialog
+from pyside_app_core.ui.standard.base_window import BaseMixin
+from pyside_app_core.ui.widgets.menu_ctx import MenuBarContext
+from pyside_app_core.ui.widgets.tool_bar_ctx import ToolBarContext
+from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
 
 class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):

@@ -4,10 +4,10 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QMenu, QVBoxLayout, QWidget
 
-from pyside_app_core.qt.widgets.dynamic_stacked_widget import DynamicStackedWidget
-from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
-from pyside_app_core.qt.widgets.tool_button import ToolButton
+from pyside_app_core.ui.widgets.dynamic_stacked_widget import DynamicStackedWidget
+from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.ui.widgets.tool_button import ToolButton
 
 ToolStackSide = Literal["right", "left"]
 

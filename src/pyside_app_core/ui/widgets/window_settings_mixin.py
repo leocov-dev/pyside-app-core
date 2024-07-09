@@ -3,8 +3,8 @@ from typing import cast
 from PySide6.QtCore import QByteArray, QObject
 from PySide6.QtWidgets import QMainWindow, QWidget
 
-from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 
 
 class WindowSettingsMixin(ObjectNameMixin, SettingsMixin):

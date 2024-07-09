@@ -1,13 +1,21 @@
-from typing import cast
+from typing import Protocol, cast
 
 from PySide6.QtCore import QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 from pyside_app_core import log
-from pyside_app_core.qt.widgets.core_icon import CoreIcon
-from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.ui.widgets.core_icon import CoreIcon
+from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.utils.time_ms import SECONDS
+
+
+class DisplayNameMapper(Protocol):
+    def __call__(self, port_info: QSerialPortInfo) -> str: ...
+
+
+def _default_display_name_mapper(port_info: QSerialPortInfo) -> str:
+    return port_info.portName()
 
 
 class ConnectionManager(SettingsMixin, QWidget):
@@ -21,11 +29,13 @@ class ConnectionManager(SettingsMixin, QWidget):
     def __init__(
         self,
         *,
+        display_name_mapper: DisplayNameMapper = _default_display_name_mapper,
         remember_last_connection: bool = False,
         parent: QWidget | None = None,
     ):
         super().__init__(parent=parent)
 
+        self._display_name_mapper = display_name_mapper
         self._remember_last_connection = remember_last_connection
 
         _ly = QVBoxLayout()
@@ -104,10 +114,12 @@ class ConnectionManager(SettingsMixin, QWidget):
         self._port_list.clear()
 
         for port in ports:
-            name = port.portName()
-            log.debug(f"Adding port {name}")
+            log.debug(f"Adding port {port.systemLocation()}")
 
-            self._port_list.addItem(name, port)
+            self._port_list.addItem(
+                self._display_name_mapper(port),
+                port,
+            )
 
     @Slot()
     def handle_serial_data(self, data: object) -> None:

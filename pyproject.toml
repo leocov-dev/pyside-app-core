@@ -142,7 +142,7 @@ include_external_packages = true
 name = "Module Layering"
 type = "layers"
 layers = [
-    "qt",
+    "ui",
     "resource_generator",
     "services",
     "utils",
@@ -162,4 +162,4 @@ layers = [
     "standard",
     "widgets",
 ]
-containers = ["pyside_app_core.qt"]
+containers = ["pyside_app_core.ui"]

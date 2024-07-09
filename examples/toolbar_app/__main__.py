@@ -20,12 +20,12 @@ def main() -> None:
     # set PLATFORM_OVERRIDE from code, normally you would not need
     # to do this
     from pyside_app_core.errors import excepthook
-    from pyside_app_core.qt.standard.error_dialog import ErrorDialog
+    from pyside_app_core.ui.standard.error_dialog import ErrorDialog
     from toolbar_app import __version__
     from toolbar_app.app import SimpleApp
 
     excepthook.install_excepthook(ErrorDialog)
-    from pyside_app_core.qt.application_service import AppMetadata
+    from pyside_app_core.ui.application_service import AppMetadata
 
     AppMetadata.init(
         "com.example.simple-app",

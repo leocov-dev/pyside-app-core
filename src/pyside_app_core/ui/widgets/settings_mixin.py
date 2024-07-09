@@ -4,7 +4,7 @@ from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.qt.application_service import AppMetadata
+from pyside_app_core.ui.application_service import AppMetadata
 
 
 class SettingsMixin:

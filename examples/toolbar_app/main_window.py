@@ -1,10 +1,10 @@
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from pyside_app_core.qt.standard import MainWindow
-from pyside_app_core.qt.widgets.connection_manager import ConnectionManager
-from pyside_app_core.qt.widgets.core_icon import CoreIcon
-from pyside_app_core.qt.widgets.multi_combo_box import MultiComboBox
+from pyside_app_core.ui.standard import MainWindow
+from pyside_app_core.ui.widgets.connection_manager import ConnectionManager
+from pyside_app_core.ui.widgets.core_icon import CoreIcon
+from pyside_app_core.ui.widgets.multi_combo_box import MultiComboBox
 
 
 class SimpleMainWindow(MainWindow):

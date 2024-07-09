@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pyside_app_core.qt.widgets.base_app import BaseApp
+from pyside_app_core.ui.widgets.base_app import BaseApp
 from toolbar_app.main_window import SimpleMainWindow
 
 

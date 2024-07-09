@@ -30,8 +30,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.qt.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.qt.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 
 DT = TypeVar("DT")
 
