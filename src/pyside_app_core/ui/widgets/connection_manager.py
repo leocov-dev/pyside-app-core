@@ -1,4 +1,5 @@
-from typing import Callable, Protocol, cast
+from collections.abc import Callable
+from typing import cast
 
 from PySide6.QtCore import QRect, QSize, Qt, QTimer, Signal, Slot
 from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette
@@ -9,7 +10,6 @@ from pyside_app_core import log
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
 from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.utils.time_ms import SECONDS
-
 
 DisplayNameMapper = Callable[[QSerialPortInfo], str]
 

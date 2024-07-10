@@ -45,7 +45,7 @@ jobs:
           git config --global user.name 'GitHub Automation'
           git config --global user.email 'automation[bot]@leocov.com'
           git add src/pyside_app_core/__init__.py
-          git commit -m "chore(release): version up to: ${{ steps.semver.outputs.nextStrict }}"
+          git commit -m "chore(release): version up to: ${{ steps.semver.outputs.nextStrict }} [skip ci]"
           git push
           git tag ${{ steps.semver.outputs.nextStrict }}
           git push --tags
