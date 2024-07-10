@@ -61,7 +61,7 @@ def test_serial_service_buffering(mocker: MockerFixture) -> None:
     svc = SerialService(transcoder=MockDecoder, parent=QObject())  # type: ignore[arg-type]
 
     mock_com = mocker.patch.object(svc, "_com")
-    mock_data_sig = mocker.patch.object(svc, "data")
+    mock_data_sig = mocker.patch.object(svc, "com_data")
 
     # list of individual data reads from com port
     mock_com.readAll.side_effect = [
