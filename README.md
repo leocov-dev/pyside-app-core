@@ -4,7 +4,8 @@ Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
 > 🚧 🚧 🚧 NOTICE 🚧 🚧 🚧
 >
-> This project should be considered experimental and subject to breaking changes until a 1.0.0 release.
+> This project should be considered experimental and subject to breaking changes 
+> AT ANY TIME until a v1.0.0 release.
 
 
 ![GitHub Release](https://img.shields.io/github/v/release/leocov-dev/pyside-app-core)
@@ -15,7 +16,8 @@ Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
 ### Install
 
-To use `pyside-app-core` as a library in your own projects install the [wheel distribution](https://pypi.org/project/pyside-app-core/) from PyPi
+To use `pyside-app-core` as a library in your own projects install the 
+[wheel distribution](https://pypi.org/project/pyside-app-core/) from PyPi
 
 ```shell
 $ pip install pyside-app-core
@@ -49,9 +51,11 @@ hatch test -a -p
 
 ### Generate resources files
 
-Resource files MUST be generated at least once in the project using this library for icons to function.
+Resource files MUST be generated at least once in the project using this library 
+for icons to function.
 
-When installed this library provides a cli tool `pyside-app-core-compile-rcc` that aids in generating a `resources.rcc` file.
+When installed this library provides a cli tool `pyside-app-core-compile-rcc` 
+that aids in generating a `resources.rcc` file.
 
 ```shell
 # from repo with this lib installed

@@ -45,7 +45,7 @@ jobs:
           git config --global user.name 'GitHub Automation'
           git config --global user.email 'automation[bot]@leocov.com'
           git add src/pyside_app_core/__init__.py
-          git commit -m "chore: version up to: ${{ steps.semver.outputs.nextStrict }}"
+          git commit -m "chore(release): version up to: ${{ steps.semver.outputs.nextStrict }}"
           git push
           git tag ${{ steps.semver.outputs.nextStrict }}
           git push --tags
@@ -60,11 +60,11 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: jaywcjlove/changelog-generator@v2.1.0
+        uses: requarks/changelog-action@v1.9.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          show-emoji: false
-          filter-author: (GitHub Automation|automation\\[bot\\])
+          tag: ${{ steps.semver.outputs.nextStrict }}
+          excludeScopes: "release"
 
       - uses: ncipollo/release-action@v1
         with:

@@ -83,7 +83,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
             self._menu.addAction(action)
 
     @Slot(int, bool)
-    def _on_click(self, index: int, checked: bool) -> None:  # noqa: FBT001
+    def _on_click(self, index: int, checked: bool) -> None:
         for i, button in enumerate(self._button_group.buttons()):
             self._stack.setCurrentIndex(index)
 

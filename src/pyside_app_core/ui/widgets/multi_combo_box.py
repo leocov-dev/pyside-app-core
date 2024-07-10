@@ -43,7 +43,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
     """
 
     class Delegate(QStyledItemDelegate):
-        def sizeHint(  # noqa:N802
+        def sizeHint(
             self,
             option: QStyleOptionViewItem,
             index: QModelIndex | QPersistentModelIndex,
@@ -100,12 +100,12 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
                 item.setCheckState(state)
             self.model().layoutChanged.emit()
 
-    def resizeEvent(self, event: QResizeEvent) -> None:  # noqa: N802
+    def resizeEvent(self, event: QResizeEvent) -> None:
         # Recompute text to elide as needed
         self._update_text()
         super().resizeEvent(event)
 
-    def eventFilter(self, watched: QObject, event: QEvent) -> bool:  # noqa: N802
+    def eventFilter(self, watched: QObject, event: QEvent) -> bool:
         if watched == self.lineEdit():
             if event.type() == QEvent.Type.MouseButtonRelease:
                 if self.closeOnLineEditClick:
@@ -128,19 +128,19 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
             return True
         return False
 
-    def showPopup(self) -> None:  # noqa: N802
+    def showPopup(self) -> None:
         super().showPopup()
         # When the popup is displayed, a click on the lineedit should close it
         self.closeOnLineEditClick = True
 
-    def hidePopup(self) -> None:  # noqa: N802
+    def hidePopup(self) -> None:
         super().hidePopup()
         # Used to prevent immediate reopening when clicking on the lineEdit
         self.startTimer(100)
         # Refresh the display text when closing
         self._update_text()
 
-    def timerEvent(self, event: QTimerEvent) -> None:  # noqa: N802
+    def timerEvent(self, event: QTimerEvent) -> None:
         # After timeout, kill timer, and re-enable click on line edit
         self.killTimer(event.timerId())
         self.closeOnLineEditClick = False
@@ -154,7 +154,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
         text = metrics.elidedText(text, Qt.TextElideMode.ElideRight, self.lineEdit().width())
         self.lineEdit().setText(text)
 
-    def addItem(  # type:ignore[override] # noqa
+    def addItem(  # type:ignore[override]
         self,
         text: str,
         user_data: DT | None = None,
@@ -173,7 +173,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
 
         self.model().appendRow(item)
 
-    def addItems(  # type:ignore[override] # noqa
+    def addItems(  # type:ignore[override]
         self,
         texts: list[str],
         data_list: list[DT] | None = None,
@@ -187,20 +187,20 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
                 data = None
             self.addItem(text, data, is_checked=all_checked)
 
-    def currentData(  # type: ignore[override] # noqa
+    def currentData(  # type: ignore[override]
         self,
         role: Qt.ItemDataRole = Qt.ItemDataRole.UserRole,
     ) -> list[DT]:
         return [i.data(role) for i in self.modelItems() if i.checkState() == Qt.CheckState.Checked]
 
-    def currentOptions(self) -> list[tuple[str, DT]]:  # noqa: N802
+    def currentOptions(self) -> list[tuple[str, DT]]:
         return [
             (i.text(), i.data(Qt.ItemDataRole.UserRole))
             for i in self.modelItems()
             if i.checkState() == Qt.CheckState.Checked
         ]
 
-    def modelItems(self) -> Generator[QStandardItem, None, None]:  # noqa: N802
+    def modelItems(self) -> Generator[QStandardItem, None, None]:
         for i in range(1, self.model().rowCount()):
             yield self.model().item(i)
 
