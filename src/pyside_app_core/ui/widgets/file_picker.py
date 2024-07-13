@@ -1,11 +1,12 @@
 from pathlib import Path
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
+
+_user_home = Path.home()
 
 
 class FilePicker(QWidget):
-
     path_updated = Signal(Path)
 
     def __init__(
@@ -13,7 +14,7 @@ class FilePicker(QWidget):
         *,
         heading: str = "",
         caption: str = "Pick a file...",
-        starting_directory: Path = Path.home(),
+        starting_directory: Path = _user_home,
         selection_filter: str = "All Files (*)",
         parent: QWidget | None = None,
     ):
