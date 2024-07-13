@@ -185,6 +185,10 @@ class ConnectionManager(SettingsMixin, QWidget):
 
     def _on_port_selected(self, index: int) -> None:
         self._connect_btn.setDisabled(index < 0)
+
+        if index < 0:
+            return
+
         port = cast(QSerialPortInfo, self._port_list.itemData(index, Qt.ItemDataRole.UserRole))
         log.debug(f"Port Selected: {port.portName()}")
 

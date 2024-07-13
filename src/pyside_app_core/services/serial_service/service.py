@@ -133,7 +133,7 @@ class SerialService(QObject):
 
         raw = self._com.readAll()
         if self.DEBUG:
-            log.debug("serial data:", raw)
+            log.debug(f"serial data: {raw!r}")
         self._buffer.extend(cast(bytearray, raw))
 
         chunks, remainder = self._transcoder.process_buffer(self._buffer)

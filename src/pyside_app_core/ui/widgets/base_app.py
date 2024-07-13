@@ -33,11 +33,15 @@ class BaseApp(QApplication, Generic[M]):
     def build_main_window(self) -> M:
         raise NotImplementedError
 
+    def on_show_main_window(self) -> None:
+        pass
+
     def launch(self) -> None:
         if not self._main_window:
             raise ApplicationError(f"Must subclass {BaseApp.__name__} and define a main window")
 
         self._main_window.show()
+        self.on_show_main_window()
 
         try:
             self.about_to_exit(self.exec())
@@ -45,5 +49,9 @@ class BaseApp(QApplication, Generic[M]):
             log.exception(e)
             sys.exit(1)
 
+    def before_exit(self) -> None:
+        pass
+
     def about_to_exit(self, ret_code: int) -> int:
+        self.before_exit()
         return ret_code
