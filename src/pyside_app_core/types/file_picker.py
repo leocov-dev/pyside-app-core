@@ -7,13 +7,13 @@ _user_home = Path.home()
 
 
 class DirConfig(NamedTuple):
-    caption: str = "Pick a directory..."
+    caption: str
     starting_directory: Path | None
     options: QFileDialog.Option | None
 
 
 class FileConfig(NamedTuple):
-    caption: str = "Pick a file..."
+    caption: str
     starting_directory: Path | None
     options: QFileDialog.Option | None
     selection_filter: str | None
