@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
@@ -63,7 +63,7 @@ class FilePicker(QWidget):
 
         if self._truncate_path > 0 and self._file_path is not None:
             parts = self._file_path.parts
-            shortened = parts[-min(len(parts), self._truncate_path):]
+            shortened = parts[-min(len(parts), self._truncate_path) :]
             if len(shortened) < len(parts):
                 shortened = ("...", *shortened)
             self._path_edit.setText(os.sep.join(shortened))
@@ -84,7 +84,7 @@ class FilePicker(QWidget):
         self._browse_btn.setHidden(val)
 
     def _on_browse_btn_clicked(self) -> None:
-        kwargs = {
+        kwargs: dict[str, Any] = {
             "caption": self._browse_config.caption,
         }
         if self._browse_config.starting_directory:
