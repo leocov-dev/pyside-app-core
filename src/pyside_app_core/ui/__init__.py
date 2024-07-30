@@ -18,7 +18,7 @@ def assert_resources_file(rcc: Path | None) -> Path:
 
     for i in range(10):
         try:
-            caller = debug_service.get_caller_file(2, i)
+            caller = debug_service.get_caller_file(i)
             rcc = caller.parent / "resources.rcc"
             tried.append(str(rcc))
             if rcc.exists():
@@ -26,12 +26,14 @@ def assert_resources_file(rcc: Path | None) -> Path:
         except IndexError:
             # ignore caller frame depth index errors
             pass
+        except StopIteration:
+            # raised in standalone Nuitka build
+            break
     else:
         log.error(
             f"No resource.rcc file given or found, attempted:\n"
             f'{pprint.pformat([t for t in sorted(set(tried)) if "/" in t], compact=False)}\n'
             f"Will now exit.",
-            file=sys.stderr,
         )
         sys.exit(1)
 
