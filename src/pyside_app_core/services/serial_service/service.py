@@ -1,6 +1,6 @@
 from typing import cast
 
-from PySide6.QtCore import QIODevice, QObject, QTimer, Signal
+from PySide6.QtCore import QIODevice, QObject, Signal
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 
 from pyside_app_core import log
@@ -18,7 +18,6 @@ from pyside_app_core.services.serial_service.types import (
     SerialReader,
     TranscoderInterface,
 )
-from pyside_app_core.utils.time_ms import SECONDS
 
 
 def _noop(ports: list[QSerialPortInfo]) -> list[QSerialPortInfo]:
@@ -43,6 +42,10 @@ class SerialService(QObject):
         self._com: QSerialPort | None = None
         self._buffer = bytearray()
 
+    @property
+    def is_connected(self) -> bool:
+        return self._com is not None and self._com.isOpen()
+
     def _new_com(self, port_info: QSerialPortInfo) -> tuple[QSerialPort, QSerialPort.SerialPortError | None]:
         com = QSerialPort(port_info, parent=self)
         com.setBaudRate(QSerialPort.BaudRate.Baud115200)
@@ -54,7 +57,7 @@ class SerialService(QObject):
         self._port_filter = func
 
     def open_connection(self, port_info: QSerialPortInfo | None) -> bool:
-        if not port_info:
+        if port_info is None:
             return False
 
         self.close_connection()
@@ -153,6 +156,9 @@ class SerialService(QObject):
                 self._buffer.extend(remainder)
 
     def _on_error(self, error: QSerialPort.SerialPortError | None) -> None:
+        if self.DEBUG:
+            log.debug(f"serial error: {error}")
+
         exception: SerialError
 
         if error is None or error == QSerialPort.SerialPortError.NoError:
@@ -170,7 +176,7 @@ class SerialService(QObject):
 
         self.close_connection()
 
-        QTimer.singleShot(3 * SECONDS, self.scan_for_ports)
+        # QTimer.singleShot(3 * SECONDS, self.scan_for_ports)
 
         self.com_error.emit(exception)
         raise exception

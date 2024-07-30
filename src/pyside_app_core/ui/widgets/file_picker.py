@@ -1,31 +1,38 @@
+import os
 from pathlib import Path
+from typing import cast
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
 
-_user_home = Path.home()
+from pyside_app_core.types.file_picker import DEFAULT_FILE_CONFIG, DirConfig, FileConfig
 
 
 class FilePicker(QWidget):
-    path_updated = Signal(Path)
+    path_updated: SignalInstance = cast(SignalInstance, Signal(Path))
+
+    @property
+    def valueChanged(self) -> SignalInstance:
+        return self.path_updated
 
     def __init__(
         self,
         *,
         heading: str = "",
-        caption: str = "Pick a file...",
-        starting_directory: Path = _user_home,
-        selection_filter: str = "All Files (*)",
+        config: DirConfig | FileConfig | None = None,
+        truncate_path: int = -1,
         parent: QWidget | None = None,
     ):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
-        self._file_dialog = QFileDialog(
-            parent=self,
-            caption=caption,
-            directory=str(starting_directory.expanduser().absolute()),
-            filter=selection_filter,
-        )
+        self._truncate_path = truncate_path
+
+        # ---
+        # true path
+        self._file_path: Path | None = None
+
+        # ---
+        self._browse_config = config or DEFAULT_FILE_CONFIG
 
         # ---
         _ly = QHBoxLayout()
@@ -36,33 +43,59 @@ class FilePicker(QWidget):
         if heading:
             _ly.addWidget(QLabel(heading))
 
-        self._file_path = QLineEdit(parent=self)
-        _ly.addWidget(self._file_path)
+        # display only
+        self._path_edit = QLineEdit(parent=self)
+        _ly.addWidget(self._path_edit)
 
-        _btn = QPushButton("Browse")
-        _ly.addWidget(_btn)
+        self._browse_btn = QPushButton("Browse")
+        _ly.addWidget(self._browse_btn)
 
         # ---
-        self._file_path.textChanged.connect(self._emit_path_change)
-        _btn.clicked.connect(self._open_browser)
+        self._path_edit.textEdited.connect(self.set_file_path)
+        self._browse_btn.clicked.connect(self._on_browse_btn_clicked)
 
     @property
     def file_path(self) -> Path | None:
-        text = self._file_path.text().strip()
-        return Path(text) if text else None
+        return self._file_path
 
-    def set_file_path(self, file_path: Path | None) -> None:
-        self._file_path.setText(str(file_path))
+    def set_file_path(self, file_path: Path | str | None) -> None:
+        self._file_path = file_path if file_path is None else Path(file_path)
+
+        if self._truncate_path > 0 and self._file_path is not None:
+            parts = self._file_path.parts
+            shortened = parts[-min(len(parts), self._truncate_path):]
+            if len(shortened) < len(parts):
+                shortened = ("...", *shortened)
+            self._path_edit.setText(os.sep.join(shortened))
+        else:
+            self._path_edit.setText(str(file_path or ""))
+
+        self.path_updated.emit(self._file_path)
+
+    def setValue(self, value: Path | str | None) -> None:
+        self.set_file_path(value)
 
     def clear(self) -> None:
-        self._file_path.clear()
+        self.set_file_path(None)
 
-    def _open_browser(self) -> None:
-        self._file_dialog.exec()
+    def setReadOnly(self, val: bool = True) -> None:  # noqa: FBT002
+        self._path_edit.setReadOnly(val)
+        self._browse_btn.setDisabled(val)
+        self._browse_btn.setHidden(val)
 
-    def _emit_path_change(self, text_path: str) -> None:
-        if not text_path:
-            self.path_updated.emit(None)
+    def _on_browse_btn_clicked(self) -> None:
+        kwargs = {
+            "caption": self._browse_config.caption,
+        }
+        if self._browse_config.starting_directory:
+            kwargs["starting_directory"] = self._browse_config.starting_directory
+        if self._browse_config.options:
+            kwargs["options"] = self._browse_config.options
 
-        path = Path(text_path)
-        self.path_updated.emit(path if path.exists() else None)
+        if isinstance(self._browse_config, FileConfig):
+            if self._browse_config.selection_filter:
+                kwargs["selection_filter"] = self._browse_config.selection_filter
+            path, _ = QFileDialog.getOpenFileName(**kwargs)
+        else:
+            path = QFileDialog.getExistingDirectory(**kwargs)
+        self._path_edit.setText(path)

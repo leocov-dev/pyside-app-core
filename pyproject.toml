@@ -147,6 +147,8 @@ layers = [
     "ui",
     "resource_generator",
     "services",
+    "mixin",
+    "app",
     "utils",
     "errors",
     "log",

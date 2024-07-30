@@ -4,7 +4,7 @@ from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
 
-from pyside_app_core.ui.application_service import AppMetadata
+from pyside_app_core.app.application_service import AppMetadata
 
 _SV = TypeVar("_SV")
 
@@ -23,7 +23,9 @@ class SettingsMixin:
 
         cast(QCoreApplication, QCoreApplication.instance()).aboutToQuit.connect(self._store_state)
 
-    def get_setting(self, key: str, default: Any | None = None, type_: type[_SV] | None = None) -> _SV:
+    def get_setting(self, key: str, default: _SV | None = None, type_: type[_SV] | None = None) -> _SV:
+        if type_ is None:
+            return cast(_SV, self._settings.value(key, default))
         return cast(_SV, self._settings.value(key, default, type_))
 
     def store_setting(self, key: str, value: Any) -> None:

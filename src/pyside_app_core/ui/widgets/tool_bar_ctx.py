@@ -6,7 +6,7 @@ from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QMainWindow, QToolBar, QToolButton
 
-from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
 ToolBarArea = Literal["top", "bottom", "left", "right"]
 

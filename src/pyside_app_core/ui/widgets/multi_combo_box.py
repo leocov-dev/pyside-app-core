@@ -30,8 +30,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
+from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
+from pyside_app_core.mixin.settings_mixin import SettingsMixin
 
 DT = TypeVar("DT")
 
@@ -205,7 +205,7 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
             yield self.model().item(i)
 
     def _restore_state(self) -> None:
-        options = cast(list[str], self._settings.value(f"{self.obj_name}_options"))
+        options = cast(list[str], self._settings.value(f"{self.object_name}_options"))
         if not options:
             return
 
@@ -214,4 +214,4 @@ class MultiComboBox(ObjectNameMixin, SettingsMixin, QComboBox, Generic[DT]):
             item.setCheckState(state)
 
     def _store_state(self) -> None:
-        self._settings.setValue(f"{self.obj_name}_options", [n for n, _ in self.currentOptions()])
+        self._settings.setValue(f"{self.object_name}_options", [n for n, _ in self.currentOptions()])

@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QSizePolicy
 
-from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
 
 class DynamicStackedWidget(ObjectNameMixin, QtWidgets.QStackedWidget):

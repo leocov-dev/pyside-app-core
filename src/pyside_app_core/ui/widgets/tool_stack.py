@@ -4,9 +4,9 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QMenu, QVBoxLayout, QWidget
 
+from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
+from pyside_app_core.mixin.settings_mixin import SettingsMixin
 from pyside_app_core.ui.widgets.dynamic_stacked_widget import DynamicStackedWidget
-from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
-from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.ui.widgets.tool_button import ToolButton
 
 ToolStackSide = Literal["right", "left"]
@@ -31,7 +31,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
         self.setLayout(container_layout)
 
         _button_container = QWidget(self)
-        _button_container.setObjectName(f"{self.obj_name}_BUTTON_CONTAINER")
+        _button_container.setObjectName(f"{self.object_name}_BUTTON_CONTAINER")
 
         self._button_layout = QVBoxLayout()
         _button_container.setLayout(self._button_layout)
@@ -53,7 +53,7 @@ class ToolStack(SettingsMixin, ObjectNameMixin, QWidget):
 
     def add_widget(self, icon: QIcon, widget: QWidget, tooltip: str) -> None:
         container = QWidget(self)
-        container.setObjectName(f"{self.obj_name}_CONTAINER")
+        container.setObjectName(f"{self.object_name}_CONTAINER")
         container_layout = QVBoxLayout()
         container.setLayout(container_layout)
         container_layout.addWidget(widget)

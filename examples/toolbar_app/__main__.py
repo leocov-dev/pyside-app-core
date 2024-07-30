@@ -25,7 +25,7 @@ def main() -> None:
     from toolbar_app.app import SimpleApp
 
     excepthook.install_excepthook(ErrorDialog)
-    from pyside_app_core.ui.application_service import AppMetadata
+    from pyside_app_core.app.application_service import AppMetadata
 
     AppMetadata.init(
         "com.example.simple-app",

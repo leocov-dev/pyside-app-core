@@ -1,37 +1,43 @@
 from collections.abc import Callable
-from typing import cast
+from typing import NamedTuple, cast
 
 from PySide6.QtCore import QRect, QSize, Qt, QTimer, Signal, Slot
-from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette, QStandardItem, QStandardItemModel
 from PySide6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PySide6.QtWidgets import QComboBox, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 
 from pyside_app_core import log
+from pyside_app_core.mixin.settings_mixin import SettingsMixin
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
-from pyside_app_core.ui.widgets.settings_mixin import SettingsMixin
 from pyside_app_core.utils.time_ms import SECONDS
 
-DisplayNameMapper = Callable[[QSerialPortInfo], str]
+
+class PortData(NamedTuple):
+    display_name: str
+    board: str
 
 
-def _default_display_name_mapper(port_info: QSerialPortInfo) -> str:
-    return port_info.systemLocation()
+PortDataMapper = Callable[[QSerialPortInfo], PortData]
+
+
+def _default_port_data_mapper(port_info: QSerialPortInfo) -> PortData:
+    return PortData(port_info.systemLocation(), "unknown:unknown")
 
 
 class ConnectionManager(SettingsMixin, QWidget):
     refresh_ports = Signal()
     request_connect = Signal(QSerialPortInfo)
     request_disconnect = Signal()
+    port_changed = Signal(QSerialPortInfo, str)
 
     SIZE = QSize(30, 30)
     ICON_SIZE = QSize(20, 20)
 
     def __init__(
         self,
-        *,
-        autoconnect: bool = False,
-        display_name_mapper: DisplayNameMapper = _default_display_name_mapper,
-        remember_last_connection: bool = False,
+        autoconnect: bool = False,  # noqa: FBT002
+        port_data_mapper: PortDataMapper = _default_port_data_mapper,
+        remember_last_connection: bool = False,  # noqa: FBT002
         parent: QWidget | None = None,
     ):
         super().__init__(parent=parent)
@@ -41,7 +47,7 @@ class ConnectionManager(SettingsMixin, QWidget):
         self._autoconnect = autoconnect
         self._autoconnect_done = False
 
-        self._display_name_mapper = display_name_mapper
+        self._port_data_mapper = port_data_mapper
 
         # remember last connection will connect to the same port from the last session the first
         # time the app is opened (if possible)
@@ -50,7 +56,7 @@ class ConnectionManager(SettingsMixin, QWidget):
 
         _ly = QVBoxLayout()
         _ly.setSpacing(0)
-        _ly.setContentsMargins(5, 5, 5, 5)
+        _ly.setContentsMargins(0, 0, 0, 0)
         self.setLayout(_ly)
 
         _ly_list = QHBoxLayout()
@@ -127,7 +133,7 @@ class ConnectionManager(SettingsMixin, QWidget):
     @Slot()
     def handle_serial_disconnect(self) -> None:
         log.debug("Com port disconnected")
-        self.request_port_refresh()
+        # self.request_port_refresh()
 
     @Slot()
     def handle_serial_ports(self, ports: list[QSerialPortInfo]) -> None:
@@ -136,16 +142,22 @@ class ConnectionManager(SettingsMixin, QWidget):
 
         remembered_index = -1
 
+        model = QStandardItemModel(parent=self)
+
         for i, port in enumerate(ports):
             log.debug(f"Adding port {port.systemLocation()}")
 
-            self._port_list.addItem(
-                self._display_name_mapper(port),
-                port,
-            )
+            name, board = self._port_data_mapper(port)
+
+            li = QStandardItem(name)
+            li.setData(port, Qt.ItemDataRole.UserRole)
+            li.setData(board, Qt.ItemDataRole.UserRole + 1)
+            model.appendRow(li)
 
             if self._remember_last_connection and self._last_port_serial == port.serialNumber():
                 remembered_index = i
+
+        self._port_list.setModel(model)
 
         if remembered_index >= 0:
             # clear it out so only happens first time
@@ -187,10 +199,13 @@ class ConnectionManager(SettingsMixin, QWidget):
         self._connect_btn.setDisabled(index < 0)
 
         if index < 0:
+            self.port_changed.emit(None, "")
             return
 
         port = cast(QSerialPortInfo, self._port_list.itemData(index, Qt.ItemDataRole.UserRole))
-        log.debug(f"Port Selected: {port.portName()}")
+        board = cast(str, self._port_list.itemData(index, Qt.ItemDataRole.UserRole + 1))
+        log.debug(f"Port Selected: {port.portName()}, {board}")
+        self.port_changed.emit(port, board)
 
     def _format_port_name(self, port: QSerialPortInfo) -> str:
         name: str = port.portName()

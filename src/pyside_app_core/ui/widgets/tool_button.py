@@ -2,7 +2,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QPushButton, QWidget
 
-from pyside_app_core.ui.widgets.object_name_mixin import ObjectNameMixin
+from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
 
 class ToolButton(ObjectNameMixin, QPushButton):

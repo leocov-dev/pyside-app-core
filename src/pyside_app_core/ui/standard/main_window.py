@@ -1,9 +1,9 @@
 from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QAction, QDesktopServices
-from PySide6.QtWidgets import QMainWindow, QWidget
+from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
+from pyside_app_core.app.application_service import AppMetadata
 from pyside_app_core.services import platform_service
-from pyside_app_core.ui.application_service import AppMetadata
 from pyside_app_core.ui.standard.about_dialog import AboutDialog
 from pyside_app_core.ui.standard.base_window import BaseMixin
 from pyside_app_core.ui.widgets.menu_ctx import MenuBarContext
@@ -12,8 +12,11 @@ from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
 
 class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
-    def __init__(self) -> None:
+    def __init__(self, *, primary: bool = False) -> None:
         super().__init__(parent=None)
+
+        # primary window will quit app when closed
+        self._primary = primary
 
         self._about_dialog = AboutDialog()
 
@@ -62,6 +65,10 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
     def _build_menus(self) -> None:
         pass
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        super().closeEvent(event)
+        QApplication.quit()
 
 
 class MainToolbarWindow(MainWindow):

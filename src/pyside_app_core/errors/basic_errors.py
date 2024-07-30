@@ -12,3 +12,7 @@ class CoreError(Exception):
 
 class ApplicationError(CoreError):
     """something bad happened at the application level"""
+
+
+class PreferencesError(CoreError):
+    """something bad happened with managing preferences"""
