@@ -5,6 +5,7 @@ from pathlib import Path
 from PySide6.QtCore import QResource
 
 from pyside_app_core import log
+from pyside_app_core.errors.basic_errors import ApplicationError
 
 
 def assert_resources_file(rcc: Path | None) -> Path:
@@ -22,7 +23,7 @@ def assert_resources_file(rcc: Path | None) -> Path:
             rcc = caller.parent / "resources.rcc"
             tried.append(str(rcc))
             if rcc.exists():
-                return rcc
+                break
         except IndexError:
             # ignore caller frame depth index errors
             pass
@@ -30,12 +31,15 @@ def assert_resources_file(rcc: Path | None) -> Path:
             # raised in standalone Nuitka build
             break
 
-    log.error(
+    log.debug(f"searched for resource.rcc in: [{', '.join(tried)}]")
+    if rcc and rcc.exists():
+        return rcc
+
+    raise ApplicationError(
         f"No resource.rcc file given or found, attempted:\n"
         f'{pprint.pformat([t for t in sorted(set(tried)) if "/" in t], compact=False)}\n'
         f"Will now exit.",
     )
-    sys.exit(1)
 
 
 def register_resource_file(rcc: Path | None) -> None:

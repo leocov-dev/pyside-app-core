@@ -4,7 +4,6 @@ from typing import Any, cast
 
 from PySide6.QtCore import Signal, SignalInstance
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
-
 from pyside_app_core.types.file_picker import DEFAULT_FILE_CONFIG, DirConfig, FileConfig
 
 
@@ -63,7 +62,7 @@ class FilePicker(QWidget):
 
         if self._truncate_path > 0 and self._file_path is not None:
             parts = self._file_path.parts
-            shortened = parts[-min(len(parts), self._truncate_path) :]
+            shortened = parts[-min(len(parts), self._truncate_path):]
             if len(shortened) < len(parts):
                 shortened = ("...", *shortened)
             self._path_edit.setText(os.sep.join(shortened))
@@ -88,14 +87,28 @@ class FilePicker(QWidget):
             "caption": self._browse_config.caption,
         }
         if self._browse_config.starting_directory:
-            kwargs["starting_directory"] = self._browse_config.starting_directory
+            kwargs["dir"] = self._browse_config.starting_directory
         if self._browse_config.options:
             kwargs["options"] = self._browse_config.options
 
         if isinstance(self._browse_config, FileConfig):
             if self._browse_config.selection_filter:
-                kwargs["selection_filter"] = self._browse_config.selection_filter
-            path, _ = QFileDialog.getOpenFileName(**kwargs)
+                kwargs["filter"] = self._browse_config.selection_filter
+
+            path, _ = QFileDialog.getOpenFileName(
+                self,
+                kwargs.get("caption"),
+                str(kwargs.get("dir", "")),
+                kwargs.get("filter", ""),
+                "",
+                kwargs.get("options"),
+            )
         else:
-            path = QFileDialog.getExistingDirectory(**kwargs)
-        self._path_edit.setText(path)
+            path = QFileDialog.getExistingDirectory(
+                self,
+                kwargs.get("caption"),
+                kwargs.get("dir"),
+                kwargs.get("options"),
+            )
+
+        self.set_file_path(path)

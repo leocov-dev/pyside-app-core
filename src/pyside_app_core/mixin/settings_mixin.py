@@ -1,10 +1,8 @@
-from typing import Any, TypeVar, cast
+from typing import Any, cast, TypeVar
 
 from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QWidget
-
-from pyside_app_core.app.application_service import AppMetadata
 
 _SV = TypeVar("_SV")
 
@@ -13,11 +11,7 @@ class SettingsMixin:
     def __init__(self, parent: QObject | None = None, *args: object, **kwargs: object):
         super().__init__(*args, **kwargs)
 
-        self._settings = QSettings(
-            AppMetadata.id,
-            AppMetadata.name,
-            parent,
-        )
+        self._settings = QSettings(parent)
 
         self._restored = False
 

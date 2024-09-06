@@ -72,8 +72,8 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
 
 class MainToolbarWindow(MainWindow):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
 
         self._tool_bar = ToolBarContext(area="top", parent=self, movable=False)
         self._tool_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)

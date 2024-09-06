@@ -27,6 +27,11 @@ class BaseApp(QApplication, Generic[M]):
 
         register_resource_file(resources_rcc)
 
+        self.setApplicationName(AppMetadata.name.replace(" ", "-"))
+        self.setApplicationDisplayName(AppMetadata.name)
+        self.setOrganizationName(AppMetadata.id)
+        self.setApplicationVersion(AppMetadata.version)
+
         self.setWindowIcon(
             QIcon(AppMetadata.icon)
             if AppMetadata.icon
