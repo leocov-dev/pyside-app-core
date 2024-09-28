@@ -18,7 +18,7 @@ _error_dialog_class: type[ErrorDialogInterface] | None = None
 
 
 def install_excepthook(error_dialog: type[QDialog] | None) -> None:
-    global _error_dialog_class  # noqa
+    global _error_dialog_class
     _error_dialog_class = error_dialog
     sys.excepthook = __custom_excepthook
 

@@ -2,17 +2,18 @@ import os
 from pathlib import Path
 from typing import Any, cast
 
-from PySide6.QtCore import Signal, SignalInstance
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
+
 from pyside_app_core.types.file_picker import DEFAULT_FILE_CONFIG, DirConfig, FileConfig
 
 
 class FilePicker(QWidget):
-    path_updated: SignalInstance = cast(SignalInstance, Signal(Path))
+    path_updated = Signal(Path)
 
     @property
-    def valueChanged(self) -> SignalInstance:
-        return self.path_updated
+    def valueChanged(self) -> Signal:
+        return self.path_updated  # type: ignore[return-value]
 
     def __init__(
         self,
@@ -62,7 +63,7 @@ class FilePicker(QWidget):
 
         if self._truncate_path > 0 and self._file_path is not None:
             parts = self._file_path.parts
-            shortened = parts[-min(len(parts), self._truncate_path):]
+            shortened = parts[-min(len(parts), self._truncate_path) :]
             if len(shortened) < len(parts):
                 shortened = ("...", *shortened)
             self._path_edit.setText(os.sep.join(shortened))
@@ -97,18 +98,29 @@ class FilePicker(QWidget):
 
             path, _ = QFileDialog.getOpenFileName(
                 self,
-                kwargs.get("caption"),
+                str(kwargs.get("caption")),
                 str(kwargs.get("dir", "")),
                 kwargs.get("filter", ""),
                 "",
-                kwargs.get("options"),
+                cast(QFileDialog.Option, kwargs.get("options")),
             )
         else:
             path = QFileDialog.getExistingDirectory(
                 self,
-                kwargs.get("caption"),
-                kwargs.get("dir"),
-                kwargs.get("options"),
+                str(kwargs.get("caption")),
+                str(kwargs.get("dir")),
+                cast(QFileDialog.Option, kwargs.get("options")),
             )
 
         self.set_file_path(path)
+
+
+if __name__ == "__main__":
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication()
+
+    fp = FilePicker()
+    fp.show()
+
+    app.exec()

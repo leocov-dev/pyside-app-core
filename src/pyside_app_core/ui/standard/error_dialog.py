@@ -1,9 +1,9 @@
-from PySide6 import QtWidgets
+from PySide6.QtWidgets import QMessageBox, QWidget
 
 from pyside_app_core.utils import strings
 
 
-class ErrorDialog(QtWidgets.QMessageBox):
+class ErrorDialog(QMessageBox):
     CHAR_WIDTH = 120
 
     def __init__(
@@ -11,10 +11,11 @@ class ErrorDialog(QtWidgets.QMessageBox):
         etype: type[BaseException],
         msg: str,
         details: str,
-        parent: QtWidgets.QWidget | None = None,
+        parent: QWidget | None = None,
     ):
         super().__init__(parent=parent)
         self.setWindowTitle("Error")
+        self.setIcon(QMessageBox.Icon.Critical)
 
         self.setText(f"Error: {etype.__name__: <{self.CHAR_WIDTH}}")
         if msg:

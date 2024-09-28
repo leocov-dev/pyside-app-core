@@ -3,19 +3,15 @@ import tempfile
 from pathlib import Path
 from typing import Literal
 
-from jinja2 import Environment, PackageLoader
-
-from pyside_app_core.resource_generator.resource_types import (
+from pyside_app_build.constants import RESOURCES_DIR, TEMPLATE_ENV
+from pyside_app_build.resource_generator.resource_types import (
     QtResourceFile,
     QtResourceGroup,
 )
 
-_std_resource_root = Path(__file__).parent.parent / "resources" / "core"
-
 
 def _compile_qrc_template(resources: list[QtResourceGroup]) -> str:
-    env = Environment(loader=PackageLoader("pyside_app_core.resources"), autoescape=True)
-    qrc_template = env.get_template("resources.qrc.jinja2")
+    qrc_template = TEMPLATE_ENV.get_template("resources.qrc.jinja2")
     return qrc_template.render(qresources=resources)
 
 
@@ -78,7 +74,7 @@ def compile_qrc_to_resources(
 
         resources = _build_resource_groups(
             [
-                _std_resource_root,
+                RESOURCES_DIR / "core",
                 *(additional_resource_roots or []),
             ]
         )

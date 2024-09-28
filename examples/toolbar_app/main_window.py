@@ -4,7 +4,8 @@ from PySide6.QtCore import QSize
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QLabel, QVBoxLayout
 
-from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefValue
+from pyside_app_core import log
+from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefItem, PrefSection
 from pyside_app_core.ui.standard import MainWindow
 from pyside_app_core.ui.widgets.connection_manager import ConnectionManager
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
@@ -21,23 +22,44 @@ class SimpleMainWindow(MainWindow):
         self.setMinimumSize(QSize(480, 240))
 
         self._prefs_mgr: PreferencesManager | None = None
-        PreferencesService.add_groups(
-            PrefGroup(
-                "app", "Application",
-                PrefGroup(
-                    "remember", "Keep Between Sessions",
-                    PrefValue("pos", "Remember Position", True),
-                    PrefValue("size", "Remember Size", True),
-                ),
-                PrefValue("path", "Default Path", Path.home() / "one" / "two" / "three" / "four"),
+        PreferencesService.add_prefs(
+            PrefSection(
+                "Application",
+                "app",
+                [
+                    PrefGroup(
+                        "Keep Between Sessions",
+                        "remember",
+                        [
+                            PrefItem.new("Remember Position", "pos", True),
+                            PrefItem.new("Remember Size", "size", False),
+                            PrefItem.new("Remember Number", "float-num", 12.34),
+                        ],
+                    ),
+                    PrefGroup(
+                        "Paths",
+                        "paths",
+                        [
+                            PrefItem.new("Default Path", "path", Path.home() / "one" / "two" / "three" / "four"),
+                            PrefItem.new(
+                                "Another Path", "another-path", Path.home() / "one" / "two" / "three" / "file.txt"
+                            ),
+                        ],
+                    ),
+                ],
             ),
             PrefGroup(
-                "dev", "Developer",
-                PrefValue("debug", "Debug Mode", False),
+                "Developer",
+                "dev",
+                [
+                    PrefItem.new("Debug Mode", "debug", False),
+                    PrefItem.new("Debug Format", "debug-fmt", "some-format-string"),
+                    PrefItem.new("Debug Level", "debug-lvl", 0),
+                ],
             ),
         )
 
-        print(PreferencesService.instance())
+        log.debug(PreferencesService.instance())
 
         self._menus()
         self._content()
@@ -55,38 +77,39 @@ class SimpleMainWindow(MainWindow):
         _tool_bar.setObjectName("main-tool-bar")
 
         with _tool_bar.add_action(
-                "Connect",
-                CoreIcon(
-                    ":/core/iconoir/ev-plug-charging.svg",
-                    ":/core/iconoir/ev-plug-xmark.svg",
-                ),
+            "Connect",
+            CoreIcon(
+                ":/core/iconoir/ev-plug-charging.svg",
+                ":/core/iconoir/ev-plug-xmark.svg",
+            ),
         ) as plug_action:
             plug_action.setCheckable(True)
 
         with _tool_bar.add_action(
-                "Connect",
-                CoreIcon(
-                    ":/core/iconoir/ev-plug-charging.svg",
-                    ":/core/iconoir/ev-plug-xmark.svg",
-                ),
+            "Connect",
+            CoreIcon(
+                ":/core/iconoir/ev-plug-charging.svg",
+                ":/core/iconoir/ev-plug-xmark.svg",
+            ),
         ) as plug_action:
             plug_action.setCheckable(True)
             plug_action.setChecked(True)
 
         with _tool_bar.add_action(
-                "Reload",
-                CoreIcon(
-                    ":/core/iconoir/refresh-circle.svg",
-                ),
+            "Reload",
+            CoreIcon(
+                ":/core/iconoir/refresh-circle.svg",
+            ),
         ) as reload_action:
             reload_action.setDisabled(True)
 
         with _tool_bar.add_action(
-                "Save",
-                CoreIcon(
-                    ":/core/iconoir/floppy-disk.svg",
-                ),
+            "Save",
+            CoreIcon(
+                ":/core/iconoir/floppy-disk.svg",
+            ),
         ) as raise_action:
+
             def _raise() -> None:
                 raise Exception("This is a test error")  # noqa
 
@@ -95,10 +118,10 @@ class SimpleMainWindow(MainWindow):
         _tool_bar.add_stretch()
 
         with _tool_bar.add_action(
-                "Preferences",
-                CoreIcon(
-                    ":/core/iconoir/settings.svg",
-                ),
+            "Preferences",
+            CoreIcon(
+                ":/core/iconoir/settings.svg",
+            ),
         ) as prefs_action:
             prefs_action.triggered.connect(PreferencesManager.open)
 

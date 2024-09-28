@@ -16,7 +16,7 @@ class WindowSettingsMixin(ObjectNameMixin, SettingsMixin):
         self._settings.setValue(f"{self.object_name}_geometry", cast(QWidget, self).saveGeometry())
 
         if isinstance(self, QMainWindow):
-            cast(SettingsMixin, self)._settings.setValue(  # noqa: SLF001
+            cast(SettingsMixin, self)._settings.setValue(
                 f"{cast(ObjectNameMixin, self).object_name}_window_state", self.saveState()
             )
 

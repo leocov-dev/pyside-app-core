@@ -54,10 +54,15 @@ hatch test -a -p
 Resource files MUST be generated at least once in the project using this library 
 for icons to function.
 
-When installed this library provides a cli tool `pyside-app-core-compile-rcc` 
+When installed this library provides a cli tool `pyside-app-compile-rcc` 
 that aids in generating a `resources.rcc` file.
 
 ```shell
 # from repo with this lib installed
-pyside-app-core-compile-rcc a/target/directory
+pyside-app-compile-rcc a/target/directory
 ```
+
+### Hatch Build Plugin
+
+This library exposes a `hatch` build plugin that will generate Qt resources and
+package a standalone executable.

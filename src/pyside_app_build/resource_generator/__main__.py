@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from pyside_app_core.resource_generator import compile_qrc_to_resources
+from pyside_app_build.resource_generator import compile_qrc_to_resources
 
 
 def main() -> None:

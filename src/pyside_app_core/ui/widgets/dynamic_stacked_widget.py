@@ -1,11 +1,10 @@
-from PySide6 import QtWidgets
-from PySide6.QtWidgets import QSizePolicy
+from PySide6.QtWidgets import QSizePolicy, QStackedWidget, QWidget
 
 from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
 
-class DynamicStackedWidget(ObjectNameMixin, QtWidgets.QStackedWidget):
-    def __init__(self, parent: QtWidgets.QWidget) -> None:
+class DynamicStackedWidget(ObjectNameMixin, QStackedWidget):
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)

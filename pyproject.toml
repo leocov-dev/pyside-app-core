@@ -25,6 +25,8 @@ requires-python = ">=3.12"
 dependencies = [
     "pyside6==6.7.*",
     "jinja2==3.*",
+    "hatchling",
+    "typing-extensions",
 ]
 dynamic = ["version"]
 
@@ -34,10 +36,19 @@ dynamic = ["version"]
 "Releases" = "https://github.com/leocov-dev/pyside-app-core/releases"
 
 [tool.hatch.version]
-path = "src/pyside_app_core/__init__.py"
+path = "src/pyside_app_core/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "src/pyside_app_core",
+    "src/pyside_app_build",
+]
 
 [project.scripts]
-pyside-app-core-compile-rcc = "pyside_app_core.resource_generator.__main__:main"
+pyside-app-compile-rcc = "pyside_app_build.resource_generator.__main__:main"
+
+[project.entry-points.hatch]
+pyside-app = "pyside_app_build.hooks"
 
 # default ---------------------------------------------------------------
 [tool.hatch.envs.default]
@@ -88,6 +99,9 @@ lint-fix = [
 
 # examples ---------------------------------------------------
 [tool.hatch.envs.examples]
+extra-dependencies = [
+    "loguru",
+]
 
 [tool.hatch.envs.examples.scripts]
 toolbar-app = "python -m examples.toolbar_app --generate-rcc"
@@ -106,6 +120,8 @@ extend-ignore = [
     "TRY003",
     "N802",
     "FBT001",
+    "PLW0603",
+    "SLF001",
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
@@ -121,14 +137,18 @@ extend-ignore = [
     "SLF001",
     "PT011",
 ]
-"*/resource_generator/*" = [
+"src/pyside_app_build/*" = [
     "T201",
     "S607",
+    "PLR2004",
 ]
 
 [tool.mypy]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
-packages = ["pyside_app_core"]
+packages = [
+    "pyside_app_core",
+    "pyside_app_build"
+]
 strict = true
 implicit_reexport = true
 
@@ -137,15 +157,23 @@ implicit_reexport = true
 [tool.importlinter]
 root_packages = [
     "pyside_app_core",
+    "pyside_app_build",
 ]
 include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "core seperate from build"
+type = "independence"
+modules = [
+    "pyside_app_core",
+    "pyside_app_build",
+]
 
 [[tool.importlinter.contracts]]
 name = "Module Layering"
 type = "layers"
 layers = [
     "ui",
-    "resource_generator",
     "services",
     "mixin",
     "app",
@@ -154,9 +182,13 @@ layers = [
     "log",
     "constants",
     "types",
+    "__about__",
 ]
 containers = ["pyside_app_core"]
 exhaustive = true
+ignore_imports = [
+    "pyside_app_core.services.preferences_service.model -> pyside_app_core.ui.prefs"
+]
 
 
 [[tool.importlinter.contracts]]

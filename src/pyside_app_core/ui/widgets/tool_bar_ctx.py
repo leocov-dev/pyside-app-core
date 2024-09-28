@@ -2,20 +2,19 @@ import contextlib
 from collections.abc import Iterator
 from typing import Literal
 
-from PySide6 import QtWidgets
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMainWindow, QToolBar, QToolButton, QWidget
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QToolBar, QToolButton, QWidget
 
 from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
 ToolBarArea = Literal["top", "bottom", "left", "right"]
 
 _TOOL_BAR_AREA_MAP = {
-    "top":    Qt.ToolBarArea.TopToolBarArea,
+    "top": Qt.ToolBarArea.TopToolBarArea,
     "bottom": Qt.ToolBarArea.BottomToolBarArea,
-    "right":  Qt.ToolBarArea.RightToolBarArea,
-    "left":   Qt.ToolBarArea.LeftToolBarArea,
+    "right": Qt.ToolBarArea.RightToolBarArea,
+    "left": Qt.ToolBarArea.LeftToolBarArea,
 }
 
 
@@ -43,9 +42,9 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
 
         parent.addToolBar(_TOOL_BAR_AREA_MAP[self._area], self)
 
-    def add_stretch(self):
+    def add_stretch(self) -> None:
         stretch = QWidget(self)
-        stretch.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addWidget(stretch)
 
     @contextlib.contextmanager

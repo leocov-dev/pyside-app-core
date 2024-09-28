@@ -2,13 +2,16 @@ import argparse
 import os
 from pathlib import Path
 
+from loguru import logger
+
 from pyside_app_core import log
+from pyside_app_core.log import configure_get_logger_func
 
 _root = Path(__file__).parent
 
 
 def compile_rcc() -> None:
-    from pyside_app_core import resource_generator
+    from pyside_app_build import resource_generator
 
     log.info("Generating resources...")
 
@@ -16,6 +19,8 @@ def compile_rcc() -> None:
 
 
 def main() -> None:
+    configure_get_logger_func(lambda: logger.opt(depth=1))
+
     # NOTE: these imports are lumped in here for the ability to
     # set PLATFORM_OVERRIDE from code, normally you would not need
     # to do this

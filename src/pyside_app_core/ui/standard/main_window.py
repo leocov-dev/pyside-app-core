@@ -1,3 +1,5 @@
+from typing import Any
+
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
@@ -72,7 +74,7 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
 
 class MainToolbarWindow(MainWindow):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self._tool_bar = ToolBarContext(area="top", parent=self, movable=False)

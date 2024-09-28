@@ -47,6 +47,8 @@ class _Logger(Protocol):
 
     def exception(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
+    def setLevel(self, level: int, /, *args: object, **kwargs: object) -> None: ...
+
 
 def __default_get_logger() -> logging.Logger:
     name = _get_caller_name()
@@ -59,7 +61,7 @@ __get_logger_func: GetLogger = __default_get_logger  # type: ignore[assignment]
 
 
 def configure_get_logger_func(func: GetLogger) -> None:
-    global __get_logger_func  # noqa: PLW0603
+    global __get_logger_func
     __get_logger_func = func
 
 
@@ -97,3 +99,8 @@ def exception(msg: object, *args: object, **kwargs: object) -> None:
     """call logger's exception"""
     lg = __get_logger_func()
     lg.exception(msg, *args, **kwargs)  # type: ignore[arg-type]
+
+
+def set_level(level: int) -> None:
+    lg = __get_logger_func()
+    lg.setLevel(level)
