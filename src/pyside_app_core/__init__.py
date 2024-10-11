@@ -1,1 +1,1 @@
-__version__ = "0.7.0"
+from .__about__ import __version__

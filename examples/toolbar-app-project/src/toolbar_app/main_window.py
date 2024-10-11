@@ -115,6 +115,14 @@ class SimpleMainWindow(MainWindow):
 
             raise_action.triggered.connect(_raise)
 
+        with _tool_bar.add_action(
+                "A",
+                CoreIcon(
+                    ":/tb/icons/cube-hole.svg",
+                ),
+        ):
+            pass
+
         _tool_bar.add_stretch()
 
         with _tool_bar.add_action(

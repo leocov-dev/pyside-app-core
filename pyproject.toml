@@ -20,12 +20,13 @@ classifiers = [
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-keywords = ["pyside", "pyside6", "frameless", "app", "style"]
+keywords = ["pyside", "pyside6", "qt", "qt6", "framework"]
 requires-python = ">=3.12"
 dependencies = [
     "pyside6==6.7.*",
     "jinja2==3.*",
     "hatchling",
+    "loguru",
     "typing-extensions",
 ]
 dynamic = ["version"]
@@ -44,9 +45,6 @@ packages = [
     "src/pyside_app_build",
 ]
 
-[project.scripts]
-pyside-app-compile-rcc = "pyside_app_build.resource_generator.__main__:main"
-
 [project.entry-points.hatch]
 pyside-app = "pyside_app_build.hooks"
 
@@ -54,6 +52,10 @@ pyside-app = "pyside_app_build.hooks"
 [tool.hatch.envs.default]
 type = "virtual"
 path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+build-example = "cd {root}/examples/toolbar-app-project && hatch env remove hatch-build && hatch build -t pyside-app"
+run-example = "cd {root}/examples/toolbar-app-project && hatch run toolbar-app"
 
 # testing ----------------------------------------
 [tool.hatch.envs.hatch-test]
@@ -76,9 +78,6 @@ extra-dependencies = [
     "import-linter==2.*",
 ]
 
-#[tool.hatch.envs.hatch-static-analysis.env-vars]
-#PYTHONPATH = "{root}/src:{env:PYTHONPATH:}"
-
 [tool.hatch.envs.hatch-static-analysis.scripts]
 format-check = [
     'ruff format{env:HATCH_FMT_ARGS:} --check --diff {args:.}',
@@ -96,15 +95,6 @@ lint-fix = [
     'ruff check{env:HATCH_FMT_ARGS:} --fix {args:.}',
     'lint-imports',
 ]
-
-# examples ---------------------------------------------------
-[tool.hatch.envs.examples]
-extra-dependencies = [
-    "loguru",
-]
-
-[tool.hatch.envs.examples.scripts]
-toolbar-app = "python -m examples.toolbar_app --generate-rcc"
 
 # ------------------------------
 # testing
@@ -189,7 +179,6 @@ exhaustive = true
 ignore_imports = [
     "pyside_app_core.services.preferences_service.model -> pyside_app_core.ui.prefs"
 ]
-
 
 [[tool.importlinter.contracts]]
 name = "Widget Layering"

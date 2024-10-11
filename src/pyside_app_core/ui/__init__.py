@@ -17,7 +17,7 @@ def assert_resources_file(rcc: Path | None) -> Path:
 
     tried = []
 
-    for i in range(10):
+    for i in range(10, -1, -1):
         try:
             caller = debug_service.get_caller_file(i)
             rcc = caller.parent / "resources.rcc"
@@ -31,13 +31,15 @@ def assert_resources_file(rcc: Path | None) -> Path:
             # raised in standalone Nuitka build
             break
 
-    log.debug(f"searched for resource.rcc in: [{', '.join(tried)}]")
+    tried_pp = pprint.pformat([t for t in sorted(set(tried)) if "/" in t], compact=False)
+
+    log.debug(f"searched for resource.rcc in:\n{tried_pp}")
     if rcc and rcc.exists():
         return rcc
 
     raise ApplicationError(
         f"No resource.rcc file given or found, attempted:\n"
-        f'{pprint.pformat([t for t in sorted(set(tried)) if "/" in t], compact=False)}\n'
+        f'{tried_pp}\n'
         f"Will now exit.",
     )
 

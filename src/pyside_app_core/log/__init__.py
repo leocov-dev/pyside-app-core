@@ -47,8 +47,6 @@ class _Logger(Protocol):
 
     def exception(self, msg: str, /, *args: object, **kwargs: object) -> None: ...
 
-    def setLevel(self, level: int, /, *args: object, **kwargs: object) -> None: ...
-
 
 def __default_get_logger() -> logging.Logger:
     name = _get_caller_name()

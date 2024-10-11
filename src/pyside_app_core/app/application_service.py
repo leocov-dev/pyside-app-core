@@ -84,10 +84,12 @@ class AppMetadata(metaclass=MetadataMeta):
         cls.help_url = help_url  # type: ignore[assignment]
         cls.bug_report_url = bug_report_url  # type: ignore[assignment]
         cls.oss_licenses = [  # type: ignore[assignment]
+            # TODO: scan resources at runtime
             ":/core/notices/licenses/python.md",
             ":/core/notices/licenses/qt.md",
             ":/core/notices/licenses/jinja2.md",
             ":/core/notices/licenses/iconoir.md",
+            ":/core/notices/licenses/loguru.md",
             *(oss_licenses or []),
         ]
 

@@ -63,9 +63,10 @@ class _AboutApp(QWidget):
         _ly_split.addLayout(_ly_icon)
 
         text_area = QTextBrowser()
+        text_area.setOpenExternalLinks(True)
         text_area.setViewportMargins(10, 10, 10, 10)
         text_area.setStyleSheet(
-            f"""
+        f"""
         QTextBrowser {{
             background-color: {self.palette().color(QPalette.ColorRole.Window).name()};
             border: none;
@@ -79,6 +80,11 @@ class _AboutApp(QWidget):
             "version": AppMetadata.version,
             "id": AppMetadata.id,
         }
+
+        if AppMetadata.help_url:
+            args["help_url"] = AppMetadata.help_url
+        if AppMetadata.bug_report_url:
+            args["bug_report_url"] = AppMetadata.bug_report_url
 
         env = Environment(loader=BaseLoader(), autoescape=True)
         if template_data := AppMetadata.about_template:

@@ -23,3 +23,6 @@ resoruces.py
 .DS_Store
 
 .disabled/
+
+_pysidedeploy.spec
+_generated_icon.png
