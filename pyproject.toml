@@ -54,10 +54,6 @@ packages = [
 [project.entry-points.hatch]
 pyside-app = "pyside_app_build.hooks"
 
-# release ---
-[tool.semantic_release]
-tag_format = "{version}"
-
 # default ---------------------------------------------------------------
 [tool.hatch.envs.default]
 type = "virtual"

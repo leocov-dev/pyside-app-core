@@ -19,7 +19,7 @@ jobs:
       id-token: write
 
     outputs:
-      TAG: ${{ steps.semantic.outputs.tag }}
+      TAG: ${{ steps.semver.outputs.nextStrict }}
 
     runs-on: ubuntu-latest
     steps:
@@ -28,11 +28,25 @@ jobs:
           # Personal Access Token enables git push in actions (repo contents permission)
           token: ${{ secrets.PAT }}
 
-      - name: Python Semantic Release
-        id: semantic
-        run: pipx run --spec "python-semantic-release~=9.10" semantic-release version --no-changelog
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Calculate next version
+        id: semver
+        uses: ietf-tools/semver-action@v1.8.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current version
+        id: current
+        run: echo "version=$(pipx run hatch version | tr -d '\n')" >> $GITHUB_OUTPUT
+
+      - if: ${{ steps.current.outputs.version == steps.semver.outputs.nextStrict || !steps.current.outputs.version }}
+        run: exit 1
+
+      - name: Commit version change and tag
+        run: |
+          git config --global user.name 'GitHub Automation'
+          git config --global user.email 'automation[bot]@leocov.com'
+          git tag ${{ steps.semver.outputs.nextStrict }}
+          git push --tags
 
       - name: Create Build
         run: pipx run hatch build -t wheel --clean
@@ -42,10 +56,21 @@ jobs:
         with:
           inputs: ./dist/*
 
-      - name: Python Semantic Release - Publish
-        run: pipx run --spec "python-semantic-release~=9.10" semantic-release publish
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Changelog
+        id: changelog
+        uses: requarks/changelog-action@v1.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.semver.outputs.nextStrict }}
+          excludeScopes: "release"
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          tag: ${{ steps.semver.outputs.nextStrict }}
+          name: "Release v${{ steps.semver.outputs.nextStrict }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+
 
   # -------------
   pypi:
