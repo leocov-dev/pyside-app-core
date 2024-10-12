@@ -91,6 +91,7 @@ def build_deploy_spec(
         "--assume-yes-for-downloads",
         "--noinclude-qt-translations",
         "--static-libpython=no",
+        "--report=compilation-report.xml",
         *[f"--include-package-data={d}" for d in extra_package_data],
         *[f"--include-data-dir={d}" for d in extra_data_dirs]
     ]

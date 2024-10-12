@@ -2,7 +2,7 @@
 
 Custom style, widgets, and utilities for cross-platform PySide6 applications.
 
-> 🚧 🚧 🚧 NOTICE 🚧 🚧 🚧
+> [!WARNING]
 >
 > This project should be considered experimental and subject to breaking changes 
 > AT ANY TIME until a v1.0.0 release.
@@ -35,10 +35,15 @@ hatch env create
 
 ### Run example application
 
-You must run the examples from the repository root directory.
+An example project/application is included
 
 ```shell
-hatch run examples:toolbar_app
+# switch to the example project dir
+cd examples/toolbar-app-project
+# build the project
+hatch build -t pyside-app --clean
+# list the build artifacts
+ls dist
 ```
 
 ### Run tests
@@ -49,20 +54,7 @@ Hatch can run tests across multiple versions of python.
 hatch test -a -p
 ```
 
-### Generate resources files
-
-Resource files MUST be generated at least once in the project using this library 
-for icons to function.
-
-When installed this library provides a cli tool `pyside-app-compile-rcc` 
-that aids in generating a `resources.rcc` file.
-
-```shell
-# from repo with this lib installed
-pyside-app-compile-rcc a/target/directory
-```
-
 ### Hatch Build Plugin
 
 This library exposes a `hatch` build plugin that will generate Qt resources and
-package a standalone executable.
+package a standalone executable. See the example project for details.

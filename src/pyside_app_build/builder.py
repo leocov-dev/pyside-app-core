@@ -56,6 +56,7 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
 
         shutil.move(bundle_tmp, app_build_bundle)
         shutil.move(self.config.spec_root / "deployment", self.config.build_dir / "deployment")
+        shutil.move(self.config.spec_root / "compilation-report.xml", self.config.build_dir / "compilation-report.xml")
 
         self.app.display_debug("Packaging App Executable...")
         match plat := platform.system():
@@ -90,10 +91,21 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
 
 
     def _pyside_deploy(self, spec_file: Path) -> Path:
+        match plat := platform.system():
+            case "Darwin":
+                mode = "standalone"
+            case "Linux":
+                mode = "onefile"
+            case "Windows":
+                mode = "onefile"
+            case _:
+                raise Exception(f"Unsupported platform: {plat}")
+
         out = subprocess.run(
             [
                 "pyside6-deploy",
                 "--force",
+                "--mode", mode,
                 "--keep-deployment-files",
                 "--c",
                 str(spec_file),
@@ -101,10 +113,12 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             text=True,
             cwd=str(spec_file.parent),
             capture_output=True,
+            check=True,
         )
 
         if self.app.verbosity >= 1:
             print(out.stdout)
+            print(out.stderr)
 
         if out.returncode != 0:
             raise Exception(f"PySide Deploy failed: {out.stderr}")
