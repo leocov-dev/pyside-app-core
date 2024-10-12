@@ -38,9 +38,7 @@ def assert_resources_file(rcc: Path | None) -> Path:
         return rcc
 
     raise ApplicationError(
-        f"No resource.rcc file given or found, attempted:\n"
-        f'{tried_pp}\n'
-        f"Will now exit.",
+        f"No resource.rcc file given or found, attempted:\n" f"{tried_pp}\n" f"Will now exit.",
     )
 
 

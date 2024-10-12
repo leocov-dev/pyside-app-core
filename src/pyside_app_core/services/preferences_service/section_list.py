@@ -55,7 +55,7 @@ class SectionListPage(QWidget):
         _ly.addSpacing(20)
 
         self._links = QVBoxLayout()
-        self._links.setContentsMargins(15, 0,0,0)
+        self._links.setContentsMargins(15, 0, 0, 0)
         _ly.addLayout(self._links)
 
     def set_section(self, section: PrefSection) -> None:

@@ -15,9 +15,7 @@ def generate_project_icon(icon_target: Path, letter: str) -> Path:
     paint = QtGui.QPainter()
     paint.begin(pix)
 
-    paint.setRenderHints(
-        QtGui.QPainter.RenderHint.Antialiasing | QtGui.QPainter.RenderHint.TextAntialiasing
-    )
+    paint.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing | QtGui.QPainter.RenderHint.TextAntialiasing)
 
     pen = QtGui.QPen()
     pen.setColor(QtGui.QColor(0, 0, 0))
@@ -50,8 +48,5 @@ def generate_project_icon(icon_target: Path, letter: str) -> Path:
     return icon_target
 
 
-if __name__ == '__main__':
-    generate_project_icon(
-        Path(__file__).parent / "Test.png",
-        "TC"
-    )
+if __name__ == "__main__":
+    generate_project_icon(Path(__file__).parent / "Test.png", "TC")

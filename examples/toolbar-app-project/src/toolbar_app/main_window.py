@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 
 from pyside_app_core import log
 from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefItem, PrefSection
+from pyside_app_core.ui.prefs.preferences_utility_widgets import ComboItemWidget
 from pyside_app_core.ui.standard import MainWindow
 from pyside_app_core.ui.widgets.connection_manager import ConnectionManager
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
@@ -21,7 +22,6 @@ class SimpleMainWindow(MainWindow):
         # ------------------------------------------------------------------------------
         self.setMinimumSize(QSize(480, 240))
 
-        self._prefs_mgr: PreferencesManager | None = None
         PreferencesService.add_prefs(
             PrefSection(
                 "Application",
@@ -34,6 +34,12 @@ class SimpleMainWindow(MainWindow):
                             PrefItem.new("Remember Position", "pos", True),
                             PrefItem.new("Remember Size", "size", False),
                             PrefItem.new("Remember Number", "float-num", 12.34),
+                            PrefItem.new(
+                                "Special Choice",
+                                "spec-choice",
+                                1,
+                                widget_class=ComboItemWidget(["One", "Two", "Three"]),
+                            ),
                         ],
                     ),
                     PrefGroup(
@@ -55,6 +61,12 @@ class SimpleMainWindow(MainWindow):
                     PrefItem.new("Debug Mode", "debug", False),
                     PrefItem.new("Debug Format", "debug-fmt", "some-format-string"),
                     PrefItem.new("Debug Level", "debug-lvl", 0),
+                    PrefItem.new(
+                        "My Selection",
+                        "my-sel",
+                        0,
+                        widget_class=ComboItemWidget(["A", "B", "C", "D", "E"]),
+                    ),
                 ],
             ),
         )
@@ -116,10 +128,10 @@ class SimpleMainWindow(MainWindow):
             raise_action.triggered.connect(_raise)
 
         with _tool_bar.add_action(
-                "A",
-                CoreIcon(
-                    ":/tb/icons/cube-hole.svg",
-                ),
+            "A",
+            CoreIcon(
+                ":/tb/icons/cube-hole.svg",
+            ),
         ):
             pass
 
@@ -150,10 +162,3 @@ class SimpleMainWindow(MainWindow):
         _central_layout.addStretch()
 
         self.statusBar().showMessage("Hi There")
-
-    def open_preferences(self) -> None:
-        if self._prefs_mgr:
-            self._prefs_mgr.close()
-
-        self._prefs_mgr = PreferencesManager()
-        self._prefs_mgr.show()

@@ -13,12 +13,12 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import QSizePolicy, QSplitter, QStackedWidget, QTreeView, QVBoxLayout, QWidget
 
 from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefSection
-from pyside_app_core.services.preferences_service.default_editor import DefaultPreferencesPage
 from pyside_app_core.services.preferences_service.model import PreferencesModel
 from pyside_app_core.services.preferences_service.section_list import SectionListPage
+from pyside_app_core.ui.prefs.default_editor import DefaultPreferencesPage
 from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
-_mgr = None
+_mgr: "PreferencesManager | None" = None
 
 
 class PreferencesManager(WindowSettingsMixin, QWidget):

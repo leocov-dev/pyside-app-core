@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
-from pyside_app_core import resources  # noqa: F401
+
+from pyside_app_core import resources
 
 _root = Path(__file__).parent
 

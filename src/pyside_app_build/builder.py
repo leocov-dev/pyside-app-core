@@ -9,7 +9,9 @@ from typing import Any
 from hatchling.builders.config import BuilderConfig
 from hatchling.builders.plugin.interface import BuilderInterface
 from hatchling.plugin.manager import PluginManager
+
 from pyside_app_build._custom_icon_gen import generate_project_icon
+from pyside_app_build._exception import PySideBuildError
 from pyside_app_build._pysidedeploy_spec_gen import build_deploy_spec
 from pyside_app_build.config import PySideAppBuildConfig
 
@@ -23,10 +25,10 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
 
     # --------------------------------------------------------------------------
 
-    def clean(self, directory: str, versions: list[str]) -> None:
+    def clean(self, _: str, __: list[str]) -> None:
         self._clean()
 
-    def _clean(self):
+    def _clean(self) -> None:
         shutil.rmtree(self.config.dist_dir, ignore_errors=True)
         shutil.rmtree(self.config.build_dir, ignore_errors=True)
         self.config.dist_dir.mkdir(exist_ok=True)
@@ -67,7 +69,7 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             case "Windows":
                 artifact = self._win_copy(app_build_bundle)
             case _:
-                raise Exception(f"Unsupported platform: {plat}")
+                raise PySideBuildError(f"Unsupported platform: {plat}")
 
         return str(artifact)
 
@@ -89,7 +91,6 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
     def _gen_icon(self) -> None:
         generate_project_icon(self.config.icon, self.config.entrypoint)
 
-
     def _pyside_deploy(self, spec_file: Path) -> Path:
         match plat := platform.system():
             case "Darwin":
@@ -99,13 +100,14 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             case "Windows":
                 mode = "onefile"
             case _:
-                raise Exception(f"Unsupported platform: {plat}")
+                raise PySideBuildError(f"Unsupported platform: {plat}")
 
         out = subprocess.run(
             [
                 "pyside6-deploy",
                 "--force",
-                "--mode", mode,
+                "--mode",
+                mode,
                 "--keep-deployment-files",
                 "--c",
                 str(spec_file),
@@ -121,14 +123,10 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             print(out.stderr)
 
         if out.returncode != 0:
-            raise Exception(f"PySide Deploy failed: {out.stderr}")
+            raise PySideBuildError(f"PySide Deploy failed: {out.stderr}")
 
-        app_bundle = re.findall(
-            r"\[DEPLOY] Executed file created in (.+)",
-            out.stdout,
-            re.MULTILINE
-        )[0]
-        self.app.display_debug(f"---> \"{app_bundle}\"")
+        app_bundle = re.findall(r"\[DEPLOY] Executed file created in (.+)", out.stdout, re.MULTILINE)[0]
+        self.app.display_debug(f'---> "{app_bundle}"')
 
         return Path(app_bundle)
 
@@ -159,13 +157,14 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             text=True,
             cwd=str(app.parent),
             capture_output=True,
+            check=False,
         )
 
         if self.app.verbosity >= 1:
             print(out.stdout)
 
         if out.returncode != 0:
-            raise Exception(f"DMG Packaging failed: {out.stderr}")
+            raise PySideBuildError(f"DMG Packaging failed: {out.stderr}")
 
         shutil.move(dmg_source, dmg_target)
 

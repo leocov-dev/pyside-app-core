@@ -1,5 +1,5 @@
 from pathlib import Path
-from uuid import uuid4
+from typing import cast
 
 from hatchling.builders.config import BuilderConfig
 
@@ -17,39 +17,49 @@ class PySideAppBuildConfig(BuilderConfig):
 
     @property
     def icon(self) -> Path:
-        return Path(self.root) / self.target_config.get("icon")
+        i = self.target_config.get("icon")
+        if not isinstance(i, str):
+            raise TypeError("icon must be a string")
+
+        return Path(self.root) / i
 
     @property
     def extra_python_packages(self) -> list[str]:
-        return self.target_config.get("extra-python-packages", [])
+        return cast(list[str], self.target_config.get("extra-python-packages", []))
 
     @property
     def extra_package_data(self) -> list[str]:
-        return self.target_config.get("extra-package-data", [])
+        return cast(list[str], self.target_config.get("extra-package-data", []))
 
     @property
     def extra_qt_modules(self) -> list[str]:
-        return self.target_config.get("extra-qt-modules", [])
+        return cast(list[str], self.target_config.get("extra-qt-modules", []))
 
     @property
     def extra_qt_plugins(self) -> list[str]:
-        return self.target_config.get("extra-qt-plugins", [])
+        return cast(list[str], self.target_config.get("extra-qt-plugins", []))
 
     @property
     def macos_permissions(self) -> list[str]:
-        return self.target_config.get("macos-permissions", [])
+        return cast(list[str], self.target_config.get("macos-permissions", []))
 
     @property
     def extra_data_dirs(self) -> list[str]:
-        return self.target_config.get("extra-data-dirs", [])
+        return cast(list[str], self.target_config.get("extra-data-dirs", []))
 
     @property
     def spec_root(self) -> Path:
-        return Path(self.root) / self.target_config.get("spec-root")
+        sr = self.target_config.get("spec-root")
+        if not isinstance(sr, str):
+            raise TypeError("spec-root must be a string")
+        return Path(self.root) / sr
 
     @property
     def entrypoint(self) -> str:
-        entrypoint_file = Path(self.root) / self.target_config.get("entrypoint")
+        ep = self.target_config.get("entrypoint")
+        if not isinstance(ep, str):
+            raise TypeError("entrypoint must be a string")
+        entrypoint_file = Path(self.root) / ep
         return str(entrypoint_file.relative_to(self.spec_root))
 
     # @property

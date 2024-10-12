@@ -7,10 +7,10 @@ from pyside_app_build.builder import PySideAppBuilder
 
 
 @hookimpl
-def hatch_register_builder() -> type[BuilderInterface]:
+def hatch_register_builder() -> type[BuilderInterface]:  # type: ignore[type-arg]
     return PySideAppBuilder
 
 
 @hookimpl
-def hatch_register_build_hook() -> type[BuildHookInterface]:
+def hatch_register_build_hook() -> type[BuildHookInterface]:  # type: ignore[type-arg]
     return QtResourceBuildHook

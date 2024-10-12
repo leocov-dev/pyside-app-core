@@ -99,6 +99,6 @@ def exception(msg: object, *args: object, **kwargs: object) -> None:
     lg.exception(msg, *args, **kwargs)  # type: ignore[arg-type]
 
 
-def set_level(level: int) -> None:
-    lg = __get_logger_func()
-    lg.setLevel(level)
+# def set_level(level: int) -> None:
+#     lg = __get_logger_func()
+#     lg.setLevel(level)

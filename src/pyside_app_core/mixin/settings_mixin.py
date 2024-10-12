@@ -1,4 +1,4 @@
-from typing import Any, cast, TypeVar
+from typing import Any, TypeVar, cast
 
 from PySide6.QtCore import QCoreApplication, QObject, QSettings
 from PySide6.QtGui import QShowEvent
@@ -21,7 +21,8 @@ class SettingsMixin:
 
     def get_setting(
         self,
-        key: str, default: _SV | None = None,
+        key: str,
+        default: _SV | None = None,
         type_: type[_SV] | None = None,
     ) -> _SV:
         if type_ is None:

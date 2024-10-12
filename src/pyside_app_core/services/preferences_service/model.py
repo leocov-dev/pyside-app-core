@@ -47,6 +47,7 @@ class PrefItem(Sequence[QStandardItem]):
         display_name: str,
         name: str,
         default_value: str | float | bool | Path,
+        *,
         widget_class: type[ItemWidgetInterface] | Callable[[type], type[ItemWidgetInterface]] = prefs.auto,
     ) -> "PrefItem":
         name_item = QStandardItem(display_name)
@@ -63,7 +64,7 @@ class PrefItem(Sequence[QStandardItem]):
         type_item.setData(widget_class, Qt.ItemDataRole.UserRole + 1)
         type_item.setEditable(False)
 
-        value_item = QStandardItem(str(default_value))
+        value_item = QStandardItem()
 
         if issubclass(_type, bool):
             value_item.setText("")
@@ -71,6 +72,7 @@ class PrefItem(Sequence[QStandardItem]):
             value_item.setCheckable(True)
             value_item.setCheckState(Qt.CheckState.Checked if default_value else Qt.CheckState.Unchecked)
         else:
+            value_item.setText(str(default_value))
             value_item.setData(default_value, Qt.ItemDataRole.UserRole)
 
         return cls(name_item, type_item, value_item)
@@ -102,7 +104,7 @@ class PrefItem(Sequence[QStandardItem]):
     @property
     def value(self) -> Any:
         if issubclass(self.type_, bool):
-            return self.value_item.checkState() != Qt.CheckState.Checked
+            return Qt.CheckState(self.value_item.checkState()) == Qt.CheckState.Checked
         return self.value_item.data(Qt.ItemDataRole.UserRole)
 
     @property
@@ -225,12 +227,12 @@ class PreferencesModel(SettingsMixin, QStandardItemModel):
             raise ValueError(f"Duplicate Preference Item Paths: {duplicate}")
 
         # ----
-        for item in self.walk():
-            if isinstance(item, PrefItem):
-                stored_value = self.get_setting(item.fqdn, item.value)
-                if stored_value != item.value:
+        for pref in self.walk():
+            if isinstance(pref, PrefItem):
+                stored_value: Any = self.get_setting(pref.fqdn, pref.value)
+                if stored_value != pref.value:
                     self.blockSignals(True)
-                    item.set_value(stored_value)
+                    pref.set_value(stored_value)
                     self.blockSignals(False)
 
     def walk(self) -> Iterator[PrefSection | PrefGroup | PrefItem]:
@@ -271,11 +273,7 @@ class PreferencesModel(SettingsMixin, QStandardItemModel):
 
         self.store_setting(
             item.fqdn,
-            top_left.data(
-                Qt.ItemDataRole.CheckStateRole
-                if top_left.flags() & Qt.ItemFlag.ItemIsUserCheckable
-                else Qt.ItemDataRole.UserRole
-            ),
+            item.value,
         )
 
 

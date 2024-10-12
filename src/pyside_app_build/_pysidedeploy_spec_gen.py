@@ -1,4 +1,3 @@
-import io
 import sys
 from configparser import ConfigParser
 from pathlib import Path
@@ -31,8 +30,8 @@ _SpecNuitka = TypedDict(
     "_SpecNuitka",
     {
         "macos.permissions": str,
-        "extra_args":        str,
-    }
+        "extra_args": str,
+    },
 )
 
 
@@ -60,14 +59,14 @@ def build_deploy_spec(
         "ordered-set",
         "zstandard",
         "imageio",
-        *extra_python_packages,
+        *(extra_python_packages or []),
     ]
 
     qt_modules = [
         "Widgets",
         "Core",
         "Gui",
-        *extra_qt_modules,
+        *(extra_qt_modules or []),
     ]
 
     qt_plugins = [
@@ -75,14 +74,14 @@ def build_deploy_spec(
         "platformthemes",
         "accessiblebridge",
         "platforms",
-        'xcbglintegrations',
-        'iconengines',
+        "xcbglintegrations",
+        "iconengines",
         "egldeviceintegrations",
         "platforminputcontexts",
         "imageformats",
         "generic",
         "styles",
-        *extra_qt_plugins,
+        *(extra_qt_plugins or []),
     ]
 
     extra_args = [
@@ -92,37 +91,39 @@ def build_deploy_spec(
         "--noinclude-qt-translations",
         "--static-libpython=no",
         "--report=compilation-report.xml",
-        *[f"--include-package-data={d}" for d in extra_package_data],
-        *[f"--include-data-dir={d}" for d in extra_data_dirs]
+        f"--include-package-data={','.join(extra_package_data)}" if extra_package_data else "",
+        f"--include-package-data={','.join(extra_data_dirs)}" if extra_data_dirs else "",
+        # *[f"{d}" for d in extra_package_data],
+        # *[f"--include-data-dir={d}" for d in extra_data_dirs]
     ]
 
     data: PySideSpec = {
-        "app":    {
-            "title":          entrypoint.removesuffix(".py"),
-            "project_dir":    ".",
-            "input_file":     entrypoint,
+        "app": {
+            "title": entrypoint.removesuffix(".py"),
+            "project_dir": ".",
+            "input_file": entrypoint,
             "exec_directory": ".",
-            "project_file":   '',
-            "icon":           str(icon),
+            "project_file": "",
+            "icon": str(icon),
         },
         "python": {
             "python_path": sys.executable,
-            "packages":    ",".join(sorted(set(python_packages))),
+            "packages": ",".join(sorted(set(python_packages))),
         },
-        "qt":     {
-            "qml_files":            '',
-            "excluded_qml_plugins": '',
-            "modules":              ",".join(sorted(set(qt_modules))),
-            "plugins":              ",".join(sorted(set(qt_plugins))),
+        "qt": {
+            "qml_files": "",
+            "excluded_qml_plugins": "",
+            "modules": ",".join(sorted(set(qt_modules or []))),
+            "plugins": ",".join(sorted(set(qt_plugins or []))),
         },
         "nuitka": {
-            "macos.permissions": ",".join(sorted(set(macos_permissions))),
-            "extra_args":        " ".join(sorted(set(extra_args))),
+            "macos.permissions": ",".join(sorted(set(macos_permissions or []))),
+            "extra_args": " ".join(sorted(set(extra_args or []))),
         },
     }
 
     parser = ConfigParser()
-    parser.read_dict(data)
+    parser.read_dict(data)  # type: ignore[arg-type]
 
     spec_target = target_dir / "_pysidedeploy.spec"
 
@@ -135,7 +136,6 @@ def build_deploy_spec(
 if __name__ == "__main__":
     build_deploy_spec(
         target_dir=Path(__file__).parent,
-        title="ODC Commander",
         entrypoint="ODC Commander.py",
         icon=Path("/Users/leo/src/odc-commander/src/resources/odc/app/icon.png"),
         extra_python_packages=[],

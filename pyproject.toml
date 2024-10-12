@@ -129,7 +129,8 @@ extend-ignore = [
     "S101",
     "INP001",
     "FBT001",
-    "PT006", "PLR2004",
+    "PT006",
+    "PLR2004",
     "SLF001",
     "PT011",
 ]
@@ -137,6 +138,9 @@ extend-ignore = [
     "T201",
     "S607",
     "PLR2004",
+]
+"examples/*" = [
+    "INP001",
 ]
 
 [tool.mypy]
@@ -164,6 +168,9 @@ modules = [
     "pyside_app_core",
     "pyside_app_build",
 ]
+ignore_imports = [
+    "pyside_app_build.constants -> pyside_app_core.resources",
+]
 
 [[tool.importlinter.contracts]]
 name = "Module Layering"
@@ -179,6 +186,8 @@ layers = [
     "constants",
     "types",
     "__about__",
+    "_version",
+    "resources",
 ]
 containers = ["pyside_app_core"]
 exhaustive = true

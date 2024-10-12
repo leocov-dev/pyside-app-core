@@ -66,7 +66,7 @@ class _AboutApp(QWidget):
         text_area.setOpenExternalLinks(True)
         text_area.setViewportMargins(10, 10, 10, 10)
         text_area.setStyleSheet(
-        f"""
+            f"""
         QTextBrowser {{
             background-color: {self.palette().color(QPalette.ColorRole.Window).name()};
             border: none;

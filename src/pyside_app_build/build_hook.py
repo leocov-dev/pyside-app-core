@@ -3,31 +3,29 @@ from typing import Any
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
+from pyside_app_build._exception import QtResourceGenError
 from pyside_app_build.resource_generator import compile_qrc_to_resources
 
 
-class QtResourceBuildHook(BuildHookInterface):
-    """ build Qt resources """
+class QtResourceBuildHook(BuildHookInterface):  # type: ignore[type-arg]
+    """build Qt resources"""
 
     PLUGIN_NAME = "pyside-app"
 
-    def initialize(self, version: str, build_data: dict[str, Any]) -> None:
+    def initialize(self, _: str, __: dict[str, Any]) -> None:
         project_root = Path(self.root)
         resource_target: str = self.config.get("resource-target", "")
         abs_target = project_root / resource_target
 
         if not abs_target.exists():
-            raise Exception("resource-target dir does not exist")
+            raise QtResourceGenError("resource-target dir does not exist")
 
         resource_roots: list[str] = self.config.get("extra-resource-roots", [])
 
-        abs_roots = [
-            project_root / r
-            for r in resource_roots
-        ]
+        abs_roots = [project_root / r for r in resource_roots]
 
         if any(not r.exists() for r in abs_roots):
-            raise Exception("extra-resource-roots contained invalid paths")
+            raise QtResourceGenError("extra-resource-roots contained invalid paths")
 
         self.app.display_debug("Generating Qt resources...")
         self._compile_rcc(

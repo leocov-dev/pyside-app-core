@@ -22,7 +22,7 @@ class DefaultPreferencesPage(QWidget):
         _ly.addSpacing(20)
 
         self._form = QFormLayout()
-        self._form.setContentsMargins(15, 0,0,0)
+        self._form.setContentsMargins(15, 0, 0, 0)
         _ly.addLayout(self._form)
 
         _ly.addStretch(99)

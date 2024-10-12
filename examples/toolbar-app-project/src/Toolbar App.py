@@ -4,6 +4,7 @@ import os
 
 def main():
     from toolbar_app import run
+
     run.run()
 
 
