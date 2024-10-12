@@ -30,13 +30,9 @@ jobs:
 
       - name: Python Semantic Release
         id: semantic
-        uses: python-semantic-release/python-semantic-release@v9.10.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          build: false
-          tag: true
-          vcs_release: true
-          changelog: false
+        run: pipx run hatch run semantic-release version --no-changelog
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Build
         run: pipx run hatch build -t wheel --clean
@@ -47,9 +43,9 @@ jobs:
           inputs: ./dist/*
 
       - name: Python Semantic Release - Publish
-        uses: python-semantic-release/publish-action@v9.10.1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: pipx run hatch run semantic-release publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # -------------
   pypi:
