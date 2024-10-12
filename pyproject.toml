@@ -1,5 +1,8 @@
 [build-system]
-requires = ["hatchling"]
+requires = [
+    "hatchling",
+    "hatch-vcs",
+]
 build-backend = "hatchling.build"
 
 [project]
@@ -37,7 +40,10 @@ dynamic = ["version"]
 "Releases" = "https://github.com/leocov-dev/pyside-app-core/releases"
 
 [tool.hatch.version]
-path = "src/pyside_app_core/__about__.py"
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/pyside_app_core/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = [
@@ -47,6 +53,13 @@ packages = [
 
 [project.entry-points.hatch]
 pyside-app = "pyside_app_build.hooks"
+
+# release ---
+[tool.semantic_release]
+tag_format = "{version}"
+
+[tool.semantic_release.remote.token]
+env = "GITHUB_TOKEN"
 
 # default ---------------------------------------------------------------
 [tool.hatch.envs.default]
