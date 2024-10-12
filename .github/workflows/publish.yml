@@ -30,7 +30,7 @@ jobs:
 
       - name: Python Semantic Release
         id: semantic
-        run: pipx run hatch run semantic-release version --no-changelog
+        run: pipx run --spec "python-semantic-release~=9.10" semantic-release version --no-changelog
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,7 +43,7 @@ jobs:
           inputs: ./dist/*
 
       - name: Python Semantic Release - Publish
-        run: pipx run hatch run semantic-release publish
+        run: pipx run --spec "python-semantic-release~=9.10" semantic-release publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
