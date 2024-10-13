@@ -39,9 +39,13 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
     def get_version_api(self) -> dict[str, Callable[..., str]]:
         return {
             "standard": self._build_standard,
+            "debug": self._build_debug,
         }
 
     # --------------------------------------------------------------------------
+
+    def _build_debug(self, _: str, **__: Any) -> str:
+        return self._build_standard(_, **__)
 
     def _build_standard(self, _: str, **__: Any) -> str:
         self._clean()

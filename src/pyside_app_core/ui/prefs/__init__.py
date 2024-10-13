@@ -8,6 +8,10 @@ from pyside_app_core.ui.prefs.preferences_default_widgets import (
     _PathItemWidget,
     _StringItemWidget,
 )
+from pyside_app_core.ui.prefs.preferences_utility_widgets import (
+    ComboItemWidget,
+    PathWithPlaceholder,
+)
 
 
 def auto(_type: type) -> type[ItemWidget]:

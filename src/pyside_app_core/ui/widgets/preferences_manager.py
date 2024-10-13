@@ -37,6 +37,7 @@ class PreferencesManager(WindowSettingsMixin, QWidget):
 
         self.setWindowTitle("Preferences")
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setMinimumSize(640, 480)
 
         # ---
         _ly = QVBoxLayout()

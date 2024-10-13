@@ -41,6 +41,10 @@ class PreferencesService(QObject):
     def fqdn_to_pref(cls, fqdn: str) -> PrefItem | PrefGroup | PrefSection | None:
         return cls.instance()._fqdn_to_item(fqdn)
 
+    @classmethod
+    def clear_all(cls) -> None:
+        cls.instance()._model.clear_all_prefs()
+
     def __init__(self) -> None:
         super().__init__(parent=QCoreApplication.instance())
 

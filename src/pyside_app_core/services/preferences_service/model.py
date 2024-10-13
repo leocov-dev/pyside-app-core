@@ -71,6 +71,9 @@ class PrefItem(Sequence[QStandardItem]):
             value_item.setEditable(False)
             value_item.setCheckable(True)
             value_item.setCheckState(Qt.CheckState.Checked if default_value else Qt.CheckState.Unchecked)
+        if issubclass(_type, Path):
+            value_item.setText("" if default_value == Path() else str(default_value))
+            value_item.setData(None if default_value == Path() else default_value, Qt.ItemDataRole.UserRole)
         else:
             value_item.setText(str(default_value))
             value_item.setData(default_value, Qt.ItemDataRole.UserRole)
@@ -104,8 +107,11 @@ class PrefItem(Sequence[QStandardItem]):
     @property
     def value(self) -> Any:
         if issubclass(self.type_, bool):
-            return Qt.CheckState(self.value_item.checkState()) == Qt.CheckState.Checked
-        return self.value_item.data(Qt.ItemDataRole.UserRole)
+            value = Qt.CheckState(self.value_item.checkState()) == Qt.CheckState.Checked
+        else:
+            value = self.value_item.data(Qt.ItemDataRole.UserRole)
+        log.debug(f"PrefItem.value -> {value}")
+        return value
 
     @property
     def fqdn(self) -> str:
@@ -121,6 +127,7 @@ class PrefItem(Sequence[QStandardItem]):
         )
 
     def set_value(self, value: Any) -> None:
+        log.debug(f"PrefItem.set_value({value})")
         if issubclass(self.type_, bool):
             self.value_item.setCheckState(Qt.CheckState.Checked if value else Qt.CheckState.Unchecked)
         else:
@@ -208,6 +215,10 @@ class PreferencesModel(SettingsMixin, QStandardItemModel):
                 PrefGroup | PrefSection,
                 self.item(row, 0),
             )
+
+    def clear_all_prefs(self) -> None:
+        log.warning("Clearing all settings...")
+        self._settings.clear()
 
     def appendRows(self, items: Sequence[PrefSection | PrefGroup]) -> None:
         for item in items:

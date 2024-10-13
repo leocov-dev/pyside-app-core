@@ -86,15 +86,12 @@ def build_deploy_spec(
 
     extra_args = [
         "--quiet",
-        "--no-progressbar",
         "--assume-yes-for-downloads",
         "--noinclude-qt-translations",
         "--static-libpython=no",
         "--report=compilation-report.xml",
-        f"--include-package-data={','.join(extra_package_data)}" if extra_package_data else "",
-        f"--include-package-data={','.join(extra_data_dirs)}" if extra_data_dirs else "",
-        # *[f"{d}" for d in extra_package_data],
-        # *[f"--include-data-dir={d}" for d in extra_data_dirs]
+        *[f"--include-package-data={d}" for d in (extra_package_data or [])],
+        *[f"--include-data-dir={d}" for d in (extra_data_dirs or [])],
     ]
 
     data: PySideSpec = {

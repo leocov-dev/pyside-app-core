@@ -1,13 +1,6 @@
 import argparse
 import os
 
-
-def main():
-    from toolbar_app import run
-
-    run.run()
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--style", choices=["mac", "win", "nix"])
@@ -22,4 +15,7 @@ if __name__ == "__main__":
         case "nix":
             os.environ["PLATFORM_OVERRIDE"] = "Linux"
 
-    main()
+    # this is nested in here to allow the platform overrides above
+    from toolbar_app.app import SimpleApp
+
+    SimpleApp().launch()

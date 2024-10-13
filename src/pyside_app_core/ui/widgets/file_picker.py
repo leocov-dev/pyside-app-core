@@ -1,15 +1,21 @@
 import os
+from enum import auto, Enum
 from pathlib import Path
 from typing import Any, cast
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
+from pyside_app_core import log
+from pyside_app_core.types.file_picker import DEFAULT_DIR_CONFIG, DEFAULT_FILE_CONFIG, DirConfig, FileConfig
 
-from pyside_app_core.types.file_picker import DEFAULT_FILE_CONFIG, DirConfig, FileConfig
+
+class FilePickerType(Enum):
+    DIR = auto()
+    FILE = auto()
 
 
 class FilePicker(QWidget):
-    path_updated = Signal(Path)
+    path_updated = Signal(object)
 
     @property
     def valueChanged(self) -> Signal:
@@ -19,7 +25,8 @@ class FilePicker(QWidget):
         self,
         *,
         heading: str = "",
-        config: DirConfig | FileConfig | None = None,
+        placeholder: str = "",
+        config: DirConfig | FileConfig | FilePickerType | None = None,
         truncate_path: int = -1,
         parent: QWidget | None = None,
     ):
@@ -32,7 +39,11 @@ class FilePicker(QWidget):
         self._file_path: Path | None = None
 
         # ---
-        self._browse_config = config or DEFAULT_FILE_CONFIG
+        self._browse_config: FileConfig | DirConfig
+        if isinstance(config, FilePickerType):
+            self._browse_config = DEFAULT_FILE_CONFIG if config == FilePickerType.FILE else DEFAULT_DIR_CONFIG
+        else:
+            self._browse_config = config or DEFAULT_FILE_CONFIG
 
         # ---
         _ly = QHBoxLayout()
@@ -45,6 +56,9 @@ class FilePicker(QWidget):
 
         # display only
         self._path_edit = QLineEdit(parent=self)
+        self._path_edit.setClearButtonEnabled(True)
+        if placeholder:
+            self._path_edit.setPlaceholderText(placeholder)
         _ly.addWidget(self._path_edit)
 
         self._browse_btn = QPushButton("Browse")
@@ -59,11 +73,14 @@ class FilePicker(QWidget):
         return self._file_path
 
     def set_file_path(self, file_path: Path | str | None) -> None:
-        self._file_path = file_path if file_path is None else Path(file_path)
+        file_path = Path(file_path) if file_path else None
 
-        if self._truncate_path > 0 and self._file_path is not None:
+        log.debug(f"FilePicker.set_file_path({file_path})")
+        self._file_path = file_path
+
+        if self._truncate_path > 0 and self._file_path:
             parts = self._file_path.parts
-            shortened = parts[-min(len(parts), self._truncate_path) :]
+            shortened = parts[-min(len(parts), self._truncate_path):]
             if len(shortened) < len(parts):
                 shortened = ("...", *shortened)
             self._path_edit.setText(os.sep.join(shortened))
@@ -84,35 +101,33 @@ class FilePicker(QWidget):
         self._browse_btn.setHidden(val)
 
     def _on_browse_btn_clicked(self) -> None:
-        kwargs: dict[str, Any] = {
-            "caption": self._browse_config.caption,
-        }
-        if self._browse_config.starting_directory:
-            kwargs["dir"] = self._browse_config.starting_directory
-        if self._browse_config.options:
-            kwargs["options"] = self._browse_config.options
+        if self._browse_config.starting_directory and not self._file_path:
+            starting_dir = self._browse_config.starting_directory
+        else:
+            starting_dir = self.file_path if self._file_path and self.file_path.exists() else Path.home()
+
+        kwargs: dict[str, Any] = {}
 
         if isinstance(self._browse_config, FileConfig):
-            if self._browse_config.selection_filter:
-                kwargs["filter"] = self._browse_config.selection_filter
 
             path, _ = QFileDialog.getOpenFileName(
                 self,
-                str(kwargs.get("caption")),
-                str(kwargs.get("dir", "")),
-                kwargs.get("filter", ""),
+                str(self._browse_config.caption),
+                str(starting_dir),
+                self._browse_config.selection_filter or "",
                 "",
-                cast(QFileDialog.Option, kwargs.get("options")),
+                cast(QFileDialog.Option, self._browse_config.options),
             )
         else:
             path = QFileDialog.getExistingDirectory(
                 self,
-                str(kwargs.get("caption")),
-                str(kwargs.get("dir")),
-                cast(QFileDialog.Option, kwargs.get("options")),
+                str(self._browse_config.caption),
+                str(starting_dir),
+                cast(QFileDialog.Option, self._browse_config.options),
             )
 
-        self.set_file_path(path)
+        if path:
+            self.set_file_path(path)
 
 
 if __name__ == "__main__":

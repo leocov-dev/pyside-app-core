@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Protocol
 
 from PySide6.QtWidgets import (
@@ -81,14 +82,14 @@ class _BoolItemWidget(ItemWidget):
 
 
 class _PathItemWidget(ItemWidget):
-    def __init__(self, item: PrefItemInterface, parent: QWidget | None = None):
-        super().__init__(item, parent)
-
-        path = item.value
+    @classmethod
+    def make_config(cls, path: Path | None) -> DirConfig | FileConfig:
         config: DirConfig | FileConfig
-        if path.is_dir():
+        if path and path.is_dir():
             config = DirConfig(
-                caption="Pick a directory", starting_directory=path, options=QFileDialog.Option.ShowDirsOnly
+                caption="Pick a directory",
+                starting_directory=path,
+                options=QFileDialog.Option.ShowDirsOnly,
             )
         else:
             config = FileConfig(
@@ -97,9 +98,13 @@ class _PathItemWidget(ItemWidget):
                 options=QFileDialog.Option.ReadOnly,
                 selection_filter="All Files (*)",
             )
+        return config
+
+    def __init__(self, item: PrefItemInterface[Path], parent: QWidget | None = None):
+        super().__init__(item, parent)
 
         fp = FilePicker(
-            config=config,
+            config=self.make_config(item.value),
             parent=self,
         )
         fp.set_file_path(item.value)
