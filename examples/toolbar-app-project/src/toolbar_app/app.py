@@ -1,8 +1,9 @@
 from pathlib import Path
 
 from loguru import logger
+from PySide6.QtGui import Qt
 
-from pyside_app_core.app.application_service import AppMetadata
+from pyside_app_core.app import AppMetadata
 from pyside_app_core.errors import excepthook
 from pyside_app_core.log import configure_get_logger_func
 from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefItem, PrefSection
@@ -35,6 +36,11 @@ class SimpleApp(BaseApp):
                 "Application",
                 "app",
                 [
+                    PrefGroup(
+                        "Settings",
+                        "settings",
+                        [PrefItem.new("Theme", "theme", 0, widget_class=ComboItemWidget(["System", "Dark", "Light"]))],
+                    ),
                     PrefGroup(
                         "Keep Between Sessions",
                         "remember",
@@ -86,6 +92,14 @@ class SimpleApp(BaseApp):
                 ],
             ),
         )
+
+        # ----
+        PreferencesService.connect_pref_changed(
+            "app.settings.theme",
+            lambda p: self.styleHints().setColorScheme(Qt.ColorScheme(p.value)),
+        )
+
+        # self.styleHints().setColorScheme(Qt.ColorScheme(PreferencesService.fqdn_to_pref("app.settings.theme").value))
 
     def build_main_window(self):
         return SimpleMainWindow()

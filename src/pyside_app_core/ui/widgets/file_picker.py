@@ -1,10 +1,11 @@
 import os
-from enum import auto, Enum
+from enum import Enum, auto
 from pathlib import Path
-from typing import Any, cast
+from typing import cast
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFileDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QWidget
+
 from pyside_app_core import log
 from pyside_app_core.types.file_picker import DEFAULT_DIR_CONFIG, DEFAULT_FILE_CONFIG, DirConfig, FileConfig
 
@@ -80,7 +81,7 @@ class FilePicker(QWidget):
 
         if self._truncate_path > 0 and self._file_path:
             parts = self._file_path.parts
-            shortened = parts[-min(len(parts), self._truncate_path):]
+            shortened = parts[-min(len(parts), self._truncate_path) :]
             if len(shortened) < len(parts):
                 shortened = ("...", *shortened)
             self._path_edit.setText(os.sep.join(shortened))
@@ -89,27 +90,35 @@ class FilePicker(QWidget):
 
         self.path_updated.emit(self._file_path)
 
+    def setReadOnly(self, value: bool = True) -> None:  # noqa: FBT002
+        self._path_edit.setClearButtonEnabled(not value)
+        self._path_edit.setReadOnly(value)
+        self._browse_btn.setDisabled(value)
+        self._browse_btn.setHidden(value)
+
+    def setEnabled(self, value: bool = True) -> None:  # noqa: FBT002
+        self._path_edit.setClearButtonEnabled(value)
+        super().setEnabled(value)
+
+    def setDisabled(self, value: bool = True) -> None:  # noqa: FBT002
+        self._path_edit.setClearButtonEnabled(not value)
+        super().setDisabled(value)
+
     def setValue(self, value: Path | str | None) -> None:
         self.set_file_path(value)
 
     def clear(self) -> None:
         self.set_file_path(None)
 
-    def setReadOnly(self, val: bool = True) -> None:  # noqa: FBT002
-        self._path_edit.setReadOnly(val)
-        self._browse_btn.setDisabled(val)
-        self._browse_btn.setHidden(val)
-
     def _on_browse_btn_clicked(self) -> None:
+        starting_dir: Path | None
+
         if self._browse_config.starting_directory and not self._file_path:
             starting_dir = self._browse_config.starting_directory
         else:
-            starting_dir = self.file_path if self._file_path and self.file_path.exists() else Path.home()
-
-        kwargs: dict[str, Any] = {}
+            starting_dir = self.file_path if (self._file_path and cast(Path, self.file_path).exists()) else Path.home()
 
         if isinstance(self._browse_config, FileConfig):
-
             path, _ = QFileDialog.getOpenFileName(
                 self,
                 str(self._browse_config.caption),

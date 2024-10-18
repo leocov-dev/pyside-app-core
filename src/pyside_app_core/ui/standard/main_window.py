@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
-from pyside_app_core.app.application_service import AppMetadata
+from pyside_app_core.app import AppMetadata
 from pyside_app_core.services import platform_service
 from pyside_app_core.ui.standard.about_dialog import AboutDialog
 from pyside_app_core.ui.standard.base_window import BaseMixin
@@ -80,6 +80,11 @@ class MainToolbarWindow(MainWindow):
         self._tool_bar = ToolBarContext(area="top", parent=self, movable=False)
         self._tool_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
+        self._build_toolbar()
+
     @property
     def tool_bar(self) -> ToolBarContext:
         return self._tool_bar
+
+    def _build_toolbar(self) -> None:
+        pass

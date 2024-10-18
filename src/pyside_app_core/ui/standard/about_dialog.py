@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from pyside_app_core.app.application_service import AppMetadata, TemplateMeta
+from pyside_app_core.app import AppMetadata
 from pyside_app_core.utils.files import load_text_file
 
 
@@ -88,7 +88,7 @@ class _AboutApp(QWidget):
 
         env = Environment(loader=BaseLoader(), autoescape=True)
         if template_data := AppMetadata.about_template:
-            raw, data = cast(TemplateMeta, template_data)
+            raw, data = template_data
             args = {**args, **(data or {})}
         else:
             raw = load_text_file(":/core/notices/about.md.jinja2")

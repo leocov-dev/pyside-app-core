@@ -29,6 +29,9 @@ class PrefItem(Sequence[QStandardItem]):
     def __len__(self) -> int:
         return len(self._row_items)
 
+    def __str__(self) -> str:
+        return f'{type(self).__name__} "{self.fqdn}" {self.type_} ({self.value})'
+
     def __init__(
         self,
         name_item: QStandardItem,

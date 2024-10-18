@@ -180,6 +180,7 @@ layers = [
     "services",
     "mixin",
     "app",
+    "validators",
     "utils",
     "errors",
     "log",

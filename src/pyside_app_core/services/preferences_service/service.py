@@ -1,26 +1,23 @@
-from collections.abc import Iterator
+from collections import defaultdict
+from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Any
 
-from PySide6.QtCore import QCoreApplication, QItemSelection, QObject, Signal
+from PySide6.QtCore import QCoreApplication, QItemSelection, QModelIndex, QObject
 from PySide6.QtGui import QStandardItem
 
 from pyside_app_core.services.preferences_service.model import PreferencesModel, PrefGroup, PrefItem, PrefSection
-from pyside_app_core.utils.property import ro_classproperty
+
+PrefCallback = Callable[[PrefItem], None]
 
 
 class PreferencesService(QObject):
-    _pref_changed = Signal(str, object)
-
     def __new__(cls) -> "PreferencesService":
         if hasattr(cls, "_instance"):
             raise TypeError(f"Get the instance via {cls.__name__}.instance()")
 
         cls._instance = super().__new__(cls)
         return cls._instance
-
-    @ro_classproperty
-    def pref_changed(cls) -> Signal:  # noqa: N805
-        return cls.instance()._pref_changed  # type: ignore[return-value]
 
     @classmethod
     def instance(cls) -> "PreferencesService":
@@ -45,10 +42,19 @@ class PreferencesService(QObject):
     def clear_all(cls) -> None:
         cls.instance()._model.clear_all_prefs()
 
+    @classmethod
+    def connect_pref_changed(cls, fqdn: str, cb: PrefCallback) -> None:
+        cls.instance()._listeners[fqdn].append(cb)
+
     def __init__(self) -> None:
         super().__init__(parent=QCoreApplication.instance())
 
         self._model = PreferencesModel(parent=self)
+
+        self._listeners: dict[str, list[PrefCallback]] = defaultdict(list)
+
+        # ---
+        self._model.dataChanged.connect(self._on_change)
 
     def __len__(self) -> int:
         return self._model.rowCount()
@@ -64,6 +70,14 @@ class PreferencesService(QObject):
                 *[f"    {p.fqdn}: {p.value}" for p in self.model().walk() if isinstance(p, PrefItem)],
             ]
         )
+
+    def _on_change(self, tl: QModelIndex, *_: Any) -> None:
+        item = self._model.pref_from_index(tl)
+        if not isinstance(item, PrefItem):
+            return
+
+        for listener in self._listeners[item.fqdn]:
+            listener(item)
 
     def _fqdn_to_item(self, fqdn: str) -> PrefItem | PrefGroup | PrefSection | None:
         for item in self.model().walk():

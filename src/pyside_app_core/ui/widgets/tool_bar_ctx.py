@@ -22,6 +22,8 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
     def __init__(self, area: ToolBarArea, parent: QMainWindow, *, movable: bool = False) -> None:
         self._area = area
         self._actions: list[QAction] = []
+        self._spacing = 0
+        self._spacing_items: list[QWidget] = []
 
         if area == "left":
             self._border_side = "right"
@@ -47,6 +49,17 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
         stretch.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.addWidget(stretch)
 
+    def add_spacer(self, width: int = 10) -> None:
+        spacer = QWidget(self)
+        spacer.setDisabled(True)
+        spacer.setFixedSize(QSize(width, 1))
+        self.addWidget(spacer)
+
+    def setSpacing(self, spacing: int) -> None:
+        self._spacing = spacing
+        for item in self._spacing_items:
+            item.setFixedSize(QSize(spacing, 1))
+
     @contextlib.contextmanager
     def add_action(self, name: str, icon: QIcon | None = None) -> Iterator[QAction]:
         action = QAction(text=name, parent=self)
@@ -59,3 +72,9 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
             _ = next(c for c in self.children() if isinstance(c, QToolButton))
         yield action
         self.addAction(action)
+
+        spacer = QWidget(self)
+        spacer.setDisabled(True)
+        spacer.setFixedSize(QSize(self._spacing, 1))
+        self._spacing_items.append(spacer)
+        self.addWidget(spacer)
