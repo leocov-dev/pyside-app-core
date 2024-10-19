@@ -1,8 +1,8 @@
 from typing import Any
 
 from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
+from PySide6.QtGui import QAction, QCloseEvent, QColor, QDesktopServices, QResizeEvent
+from PySide6.QtWidgets import QApplication, QGraphicsColorizeEffect, QMainWindow, QWidget
 
 from pyside_app_core.app import AppMetadata
 from pyside_app_core.services import platform_service
