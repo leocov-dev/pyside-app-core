@@ -10,7 +10,16 @@ from PySide6.QtCore import (
     Qt,
 )
 from PySide6.QtGui import QShowEvent
-from PySide6.QtWidgets import QSizePolicy, QSplitter, QStackedWidget, QTreeView, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QDialog,
+    QHBoxLayout,
+    QPushButton, QSizePolicy,
+    QSplitter,
+    QStackedWidget,
+    QTreeView,
+    QVBoxLayout,
+    QWidget,
+)
 
 from pyside_app_core.services.preferences_service import PreferencesService, PrefGroup, PrefSection
 from pyside_app_core.services.preferences_service.model import PreferencesModel
@@ -18,19 +27,8 @@ from pyside_app_core.services.preferences_service.section_list import SectionLis
 from pyside_app_core.ui.prefs.default_editor import DefaultPreferencesPage
 from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
-_mgr: "PreferencesManager | None" = None
 
-
-class PreferencesManager(WindowSettingsMixin, QWidget):
-    @classmethod
-    def open(cls) -> None:
-        global _mgr
-        if _mgr is not None:
-            _mgr.close()
-            _mgr.deleteLater()
-
-        _mgr = PreferencesManager()
-        _mgr.show()
+class PreferencesWidget(WindowSettingsMixin, QWidget):
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent=parent)
@@ -142,3 +140,26 @@ class _OnlyGroupsProxy(QSortFilterProxyModel):
     def filterAcceptsRow(self, source_row: int, source_parent: QModelIndex | QPersistentModelIndex) -> bool:
         source_index = self.sourceModel().index(source_row, 0, source_parent)
         return self.sourceModel().rowCount(source_index) > 0
+
+
+class PreferencesDialog(QDialog):
+
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(parent)
+
+        _ly = QVBoxLayout()
+        _ly.setContentsMargins(0, 0, 0, 10)
+        _ly.setSpacing(5)
+        self.setLayout(_ly)
+
+        self._mgr = PreferencesWidget(self)
+        _ly.addWidget(self._mgr)
+
+        _ly_btns = QHBoxLayout()
+        _ly_btns.setContentsMargins(10, 0, 10, 0)
+        _close = QPushButton("Close", self)
+        _close.setDefault(True)
+        _ly_btns.addWidget(_close, alignment=Qt.AlignmentFlag.AlignRight)
+        _ly.addLayout(_ly_btns)
+
+        _close.clicked.connect(self.close)

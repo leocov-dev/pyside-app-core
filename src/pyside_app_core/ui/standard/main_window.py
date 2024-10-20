@@ -1,29 +1,27 @@
-from typing import Any
+import contextlib
+from typing import Any, cast
 
 from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QAction, QCloseEvent, QColor, QDesktopServices, QResizeEvent
-from PySide6.QtWidgets import QApplication, QGraphicsColorizeEffect, QMainWindow, QWidget
+from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices, QResizeEvent
+from PySide6.QtWidgets import QApplication, QDialog, QGraphicsBlurEffect, QMainWindow, QWidget
 
 from pyside_app_core.app import AppMetadata
 from pyside_app_core.services import platform_service
 from pyside_app_core.ui.standard.about_dialog import AboutDialog
-from pyside_app_core.ui.standard.base_window import BaseMixin
+from pyside_app_core.ui.standard.base_window import BaseMixin, Shade
 from pyside_app_core.ui.widgets.menu_ctx import MenuBarContext
 from pyside_app_core.ui.widgets.tool_bar_ctx import ToolBarContext
 from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
 
 class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
-    def __init__(self, *, primary: bool = False) -> None:
+    def __init__(self) -> None:
         super().__init__(parent=None)
 
-        # primary window will quit app when closed
-        self._primary = primary
+        self._shade = Shade(self)
+        self.setGraphicsEffect(self._shade.gfx())
 
-        self._about_dialog = AboutDialog()
-
-        self._central = QWidget(parent=self)
-        self.setCentralWidget(self._central)
+        self.setCentralWidget(QWidget(self))
 
         # must call in order to show grab handle
         self.statusBar().show()
@@ -51,7 +49,7 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
         with self._menu_bar.menu("Help") as help_menu:
             with help_menu.action("About") as about_action:
                 about_action.setMenuRole(QAction.MenuRole.AboutRole)
-                about_action.triggered.connect(self._about_dialog.exec)
+                about_action.triggered.connect(lambda: self.show_app_modal_dialog(self.about_dialog()))
 
             if AppMetadata.help_url:
                 with help_menu.action("Get Help") as help_action:
@@ -68,10 +66,36 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
     def _build_menus(self) -> None:
         pass
 
+    @staticmethod
+    def about_dialog() -> AboutDialog:
+        return AboutDialog()
+
     def closeEvent(self, event: QCloseEvent) -> None:
         super().closeEvent(event)
         QApplication.quit()
 
+    def shade(self, value: bool) -> None:
+        self._shade.setVisible(value)
+        self._shade.raise_()
+        if value:
+            self.graphicsEffect().setBlurRadius(2)
+        else:
+            self.graphicsEffect().setBlurRadius(0)
+
+    @contextlib.contextmanager
+    def shade_ctx(self):
+        self.shade(True)
+        yield
+        self.shade(False)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        super().resizeEvent(event)
+        self._shade.update_size()
+
+    def show_app_modal_dialog(self, dialog: QDialog) -> int:
+        with self.shade_ctx():
+            dialog.setModal(True)
+            return dialog.exec()
 
 class MainToolbarWindow(MainWindow):
     def __init__(self, *args: Any, **kwargs: Any) -> None:

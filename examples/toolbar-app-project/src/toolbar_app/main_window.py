@@ -8,13 +8,13 @@ from pyside_app_core.ui.standard import MainWindow
 from pyside_app_core.ui.widgets.connection_manager import ConnectionManager
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
 from pyside_app_core.ui.widgets.multi_combo_box import MultiComboBox
-from pyside_app_core.ui.widgets.preferences_manager import PreferencesManager
+from pyside_app_core.ui.widgets.preferences_manager import PreferencesDialog, PreferencesWidget
 from pyside_app_core.ui.widgets.tool_bar_ctx import ToolBarContext
 
 
 class SimpleMainWindow(MainWindow):
     def __init__(self) -> None:
-        super().__init__(primary=True)
+        super().__init__()
 
         # ------------------------------------------------------------------------------
         self.setMinimumSize(QSize(480, 240))
@@ -27,10 +27,11 @@ class SimpleMainWindow(MainWindow):
     def _menus(self) -> None:
         with (
             self._menu_bar.menu("File") as file_menu,
-            file_menu.action("Preferences...") as prefs_action,
+            file_menu.action("Preferences...") as self._prefs_action,
         ):
-            prefs_action.setMenuRole(QAction.MenuRole.PreferencesRole)
-            prefs_action.triggered.connect(PreferencesManager.open)
+            self._prefs_action.setMenuRole(QAction.MenuRole.PreferencesRole)
+            self._prefs_action.setIcon(CoreIcon(":/core/iconoir/settings.svg"))
+            self._prefs_action.triggered.connect(lambda: self.show_app_modal_dialog(PreferencesDialog()))
 
     def _content(self) -> None:
         _tool_bar = ToolBarContext("top", self)
@@ -93,13 +94,7 @@ class SimpleMainWindow(MainWindow):
 
         _tool_bar.add_stretch()
 
-        with _tool_bar.add_action(
-            "Preferences",
-            CoreIcon(
-                ":/core/iconoir/settings.svg",
-            ),
-        ) as prefs_action:
-            prefs_action.triggered.connect(PreferencesManager.open)
+        _tool_bar.addAction(self._prefs_action)
 
         # -----
         _central_layout = QVBoxLayout()
