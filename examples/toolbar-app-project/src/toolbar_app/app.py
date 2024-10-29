@@ -12,7 +12,7 @@ from pyside_app_core.ui.standard.error_dialog import ErrorDialog
 from pyside_app_core.ui.widgets.base_app import BaseApp
 from pyside_app_core.ui.widgets.file_picker import FilePickerType
 from toolbar_app import __version__
-from toolbar_app.main_window import SimpleMainWindow
+from toolbar_app.main_window import ToolbarAppMainWindow
 
 configure_get_logger_func(lambda: logger)
 
@@ -31,6 +31,15 @@ class SimpleApp(BaseApp):
     def __init__(self, resources_rcc: Path | None = None):
         super().__init__(resources_rcc=resources_rcc)
 
+        # ----
+        PreferencesService.connect_pref_changed(
+            "app.settings.theme",
+            lambda p: self.styleHints().setColorScheme(Qt.ColorScheme(p.value)),
+        )
+
+        # self.styleHints().setColorScheme(Qt.ColorScheme(PreferencesService.fqdn_to_pref("app.settings.theme").value))
+
+    def configure_preferences(self) -> None:
         PreferencesService.add_prefs(
             PrefSection(
                 "Application",
@@ -93,13 +102,5 @@ class SimpleApp(BaseApp):
             ),
         )
 
-        # ----
-        PreferencesService.connect_pref_changed(
-            "app.settings.theme",
-            lambda p: self.styleHints().setColorScheme(Qt.ColorScheme(p.value)),
-        )
-
-        # self.styleHints().setColorScheme(Qt.ColorScheme(PreferencesService.fqdn_to_pref("app.settings.theme").value))
-
     def build_main_window(self):
-        return SimpleMainWindow()
+        return ToolbarAppMainWindow()

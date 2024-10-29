@@ -1,8 +1,7 @@
 from typing import cast
 
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPalette, QResizeEvent
-from PySide6.QtWidgets import QGraphicsBlurEffect, QStackedLayout, QWidget
+from PySide6.QtGui import QPainter, QPaintEvent, QPalette
+from PySide6.QtWidgets import QGraphicsBlurEffect, QWidget
 
 
 class BaseMixin:
@@ -18,19 +17,17 @@ class BaseMixin:
 
 
 class Shade(QWidget):
-
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self.setHidden(True)
 
     def gfx(self) -> QGraphicsBlurEffect:
-
         gfx = QGraphicsBlurEffect(self)
         gfx.setBlurHints(QGraphicsBlurEffect.BlurHint.QualityHint)
         gfx.setBlurRadius(0)
         return gfx
 
-    def paintEvent(self, event: QPaintEvent) -> None:
+    def paintEvent(self, _: QPaintEvent) -> None:
         painter = QPainter(self)
 
         color = self.palette().color(QPalette.ColorRole.Window)

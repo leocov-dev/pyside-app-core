@@ -1,16 +1,10 @@
 from typing import cast
 
 from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import (
-    QColorConstants,
-    QGuiApplication,
-    QIcon,
-    QIconEngine,
-    QPainter,
-    QPalette,
-    QPixmap,
-)
+from PySide6.QtGui import QColor, QGuiApplication, QIcon, QIconEngine, QPainter, QPalette, QPixmap
 from PySide6.QtSvg import QSvgRenderer
+
+from pyside_app_core.utils.painter import safe_paint
 
 
 class _SvgIconEngine(QIconEngine):
@@ -24,7 +18,7 @@ class _SvgIconEngine(QIconEngine):
 
     def pixmap(self, size: QSize, mode: QIcon.Mode, state: QIcon.State) -> QPixmap:
         pixmap = QPixmap(size)
-        pixmap.fill(QColorConstants.Transparent)
+        pixmap.fill(QColor(0, 0, 0, 0))
 
         painter = QPainter(pixmap)
         self.paint(painter, pixmap.rect(), mode, state)
@@ -44,17 +38,17 @@ class _SvgIconEngine(QIconEngine):
         elif mode == QIcon.Mode.Disabled:
             color = app_palette.color(QPalette.ColorRole.PlaceholderText)
         elif mode == QIcon.Mode.Active:
-            color = app_palette.color(QPalette.ColorRole.Text)
+            color = app_palette.color(QPalette.ColorRole.Accent)
         elif mode == QIcon.Mode.Selected:
-            color = app_palette.color(QPalette.ColorRole.BrightText)
+            color = app_palette.color(QPalette.ColorRole.Highlight)
         else:
             color = app_palette.color(QPalette.ColorRole.Text)
 
-        painter.save()
-        renderer.render(painter)
-        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
-        painter.fillRect(rect, color)
-        painter.restore()
+        with safe_paint(painter):
+            painter.setClipRect(rect)
+            renderer.render(painter)
+            painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+            painter.fillRect(rect, color)
 
 
 class CoreIcon(QIcon):

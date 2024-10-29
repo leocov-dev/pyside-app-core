@@ -2,7 +2,7 @@ import contextlib
 from collections.abc import Iterator
 
 from PySide6 import QtGui
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QMenu,
     QMenuBar,
@@ -26,10 +26,12 @@ class MenuContext(QMenu):
         yield self._menu_map[name]
 
     @contextlib.contextmanager
-    def action(self, name: str) -> Iterator[QAction]:
+    def action(self, name: str, icon: QIcon | None = None) -> Iterator[QAction]:
         if name not in self._action_map:
             self._action_map[name] = QtGui.QAction(name, self)
             self._action_map[name].setObjectName(f"MenuAction_{name.replace(' ', '_')}")
+            if icon:
+                self._action_map[name].setIcon(icon)
             self.addAction(self._action_map[name])
 
         yield self._action_map[name]

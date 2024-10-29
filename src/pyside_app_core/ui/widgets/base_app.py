@@ -32,6 +32,8 @@ class BaseApp(QApplication, Generic[M]):
         self.setOrganizationName(AppMetadata.id)
         self.setApplicationVersion(AppMetadata.version)
 
+        self.configure_preferences()
+
         self.setWindowIcon(
             QIcon(AppMetadata.icon)
             if AppMetadata.icon
@@ -39,6 +41,9 @@ class BaseApp(QApplication, Generic[M]):
         )
 
         self._main_window: M = self.build_main_window()
+
+    def configure_preferences(self) -> None:
+        raise NotImplementedError
 
     def build_main_window(self) -> M:
         raise NotImplementedError

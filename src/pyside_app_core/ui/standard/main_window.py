@@ -1,9 +1,10 @@
 import contextlib
-from typing import Any, cast
+from collections.abc import Generator
+from typing import Any
 
 from PySide6.QtCore import Qt, QUrl
 from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices, QResizeEvent
-from PySide6.QtWidgets import QApplication, QDialog, QGraphicsBlurEffect, QMainWindow, QWidget
+from PySide6.QtWidgets import QApplication, QDialog, QGraphicsBlurEffect, QMainWindow, QProgressBar, QWidget
 
 from pyside_app_core.app import AppMetadata
 from pyside_app_core.services import platform_service
@@ -25,6 +26,10 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
 
         # must call in order to show grab handle
         self.statusBar().show()
+
+        self._progress = QProgressBar(self)
+        self._progress.setHidden(True)
+        self.statusBar().addPermanentWidget(self._progress)
 
         self._menu_bar = MenuBarContext(self)
         self._menu_bar.setNativeMenuBar(platform_service.is_macos)
@@ -82,8 +87,11 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
         else:
             self.graphicsEffect().setBlurRadius(0)
 
+    def graphicsEffect(self) -> QGraphicsBlurEffect:
+        return super().graphicsEffect()  # type: ignore[return-value]
+
     @contextlib.contextmanager
-    def shade_ctx(self):
+    def shade_ctx(self) -> Generator[None, None, None]:
         self.shade(True)
         yield
         self.shade(False)
@@ -97,6 +105,14 @@ class MainWindow(WindowSettingsMixin, BaseMixin, QMainWindow):
             dialog.setModal(True)
             return dialog.exec()
 
+    def progress_tick(self, value: int, maximum: int) -> None:
+        self._progress.setMinimum(0)
+        self._progress.setMaximum(maximum)
+        self._progress.setValue(value)
+
+        self._progress.setVisible(value != maximum)
+
+
 class MainToolbarWindow(MainWindow):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -105,6 +121,8 @@ class MainToolbarWindow(MainWindow):
         self._tool_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
         self._build_toolbar()
+
+        self.tool_bar.remove_last_spacer()
 
     @property
     def tool_bar(self) -> ToolBarContext:

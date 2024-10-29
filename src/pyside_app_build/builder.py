@@ -10,7 +10,7 @@ from hatchling.builders.config import BuilderConfig
 from hatchling.builders.plugin.interface import BuilderInterface
 from hatchling.plugin.manager import PluginManager
 
-from pyside_app_build._custom_icon_gen import generate_project_icon
+from pyside_app_build._custom_icon_gen import assert_icon_size, generate_project_icon
 from pyside_app_build._exception import PySideBuildError
 from pyside_app_build._pysidedeploy_spec_gen import build_deploy_spec
 from pyside_app_build.config import PySideAppBuildConfig
@@ -53,7 +53,9 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
         self.app.display_debug("Building PySide App...")
 
         if not self.config.icon.exists():
-            self._gen_icon()
+            generate_project_icon(self.config.icon, self.config.entrypoint)
+        else:
+            assert_icon_size(self.config.icon)
 
         spec_file = self._gen_spec_file()
         bundle_tmp = self._pyside_deploy(spec_file)
@@ -91,9 +93,6 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
             extra_package_data=self.config.extra_package_data,
             extra_data_dirs=self.config.extra_data_dirs,
         )
-
-    def _gen_icon(self) -> None:
-        generate_project_icon(self.config.icon, self.config.entrypoint)
 
     def _pyside_deploy(self, spec_file: Path) -> Path:
         match plat := platform.system():

@@ -4,12 +4,22 @@ from PySide6 import QtGui
 from PySide6.QtCore import Qt
 
 
+def assert_icon_size(icon: Path) -> None:
+    img = QtGui.QImage(icon)
+
+    if img.width() != img.height():
+        raise ValueError("Icon must be square")
+
+    if img.width() not in [512, 1024]:
+        raise ValueError("Icon must be 512x512 or 1024x1024")
+
+
 def generate_project_icon(icon_target: Path, letter: str) -> Path:
     letter = letter.upper()[0]
 
     q_app = QtGui.QGuiApplication()
 
-    pix = QtGui.QPixmap(256, 256)
+    pix = QtGui.QPixmap(512, 512)
     pix.fill(QtGui.QColor(0, 0, 0, 0))
 
     paint = QtGui.QPainter()

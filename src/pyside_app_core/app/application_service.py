@@ -1,4 +1,7 @@
+from pathlib import Path
 from typing import NamedTuple
+
+from PySide6.QtCore import QStandardPaths
 
 from pyside_app_core.errors.basic_errors import ApplicationError
 
@@ -65,6 +68,7 @@ class AppMetadata:
     help_url: str
     bug_report_url: str
     oss_licenses: list[str]
+    documents_dir: Path
 
     _initialized = False
 
@@ -99,5 +103,8 @@ class AppMetadata:
             ":/core/notices/licenses/loguru.md",
             *(oss_licenses or []),
         ]
+        cls.documents_dir = (
+            Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)) / name
+        )
 
         cls._initialized = True

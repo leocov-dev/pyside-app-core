@@ -3,6 +3,7 @@ import traceback
 from types import TracebackType
 from typing import Protocol
 
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QDialog
 
 from pyside_app_core import log
@@ -28,6 +29,8 @@ def __custom_excepthook(
     evalue: BaseException,
     tb: TracebackType | None,
 ) -> None:
+    QGuiApplication.restoreOverrideCursor()
+
     formatted_exception_string = "".join(traceback.format_exception(etype, evalue, tb))
 
     log.exception(formatted_exception_string)

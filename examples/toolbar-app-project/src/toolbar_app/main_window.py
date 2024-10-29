@@ -4,15 +4,14 @@ from PySide6.QtWidgets import QLabel, QVBoxLayout
 
 from pyside_app_core import log
 from pyside_app_core.services.preferences_service import PreferencesService
-from pyside_app_core.ui.standard import MainWindow
+from pyside_app_core.ui.standard.main_window import MainToolbarWindow
 from pyside_app_core.ui.widgets.connection_manager import ConnectionManager
 from pyside_app_core.ui.widgets.core_icon import CoreIcon
 from pyside_app_core.ui.widgets.multi_combo_box import MultiComboBox
-from pyside_app_core.ui.widgets.preferences_manager import PreferencesDialog, PreferencesWidget
-from pyside_app_core.ui.widgets.tool_bar_ctx import ToolBarContext
+from pyside_app_core.ui.widgets.preferences_manager import PreferencesDialog
 
 
-class SimpleMainWindow(MainWindow):
+class ToolbarAppMainWindow(MainToolbarWindow):
     def __init__(self) -> None:
         super().__init__()
 
@@ -21,23 +20,21 @@ class SimpleMainWindow(MainWindow):
 
         log.debug(PreferencesService.instance())
 
-        self._menus()
-        self._content()
+        self.tool_bar.setSpacing(10)
 
-    def _menus(self) -> None:
+    def _build_menus(self) -> None:
         with (
             self._menu_bar.menu("File") as file_menu,
-            file_menu.action("Preferences...") as self._prefs_action,
+            file_menu.action(
+                "Preferences...",
+                CoreIcon(":/core/iconoir/settings.svg"),
+            ) as self._prefs_action,
         ):
             self._prefs_action.setMenuRole(QAction.MenuRole.PreferencesRole)
-            self._prefs_action.setIcon(CoreIcon(":/core/iconoir/settings.svg"))
             self._prefs_action.triggered.connect(lambda: self.show_app_modal_dialog(PreferencesDialog()))
 
-    def _content(self) -> None:
-        _tool_bar = ToolBarContext("top", self)
-        _tool_bar.setObjectName("main-tool-bar")
-
-        with _tool_bar.add_action(
+    def _build_toolbar(self) -> None:
+        with self.tool_bar.action(
             "Connect",
             CoreIcon(
                 ":/core/iconoir/ev-plug-charging.svg",
@@ -46,7 +43,7 @@ class SimpleMainWindow(MainWindow):
         ) as plug_action:
             plug_action.setCheckable(True)
 
-        with _tool_bar.add_action(
+        with self.tool_bar.action(
             "Connect",
             CoreIcon(
                 ":/core/iconoir/ev-plug-charging.svg",
@@ -56,7 +53,7 @@ class SimpleMainWindow(MainWindow):
             plug_action.setCheckable(True)
             plug_action.setChecked(True)
 
-        with _tool_bar.add_action(
+        with self.tool_bar.action(
             "Reload",
             CoreIcon(
                 ":/core/iconoir/refresh-circle.svg",
@@ -64,7 +61,7 @@ class SimpleMainWindow(MainWindow):
         ) as reload_action:
             reload_action.setDisabled(True)
 
-        with _tool_bar.add_action(
+        with self.tool_bar.action(
             "Save",
             CoreIcon(
                 ":/core/iconoir/floppy-disk.svg",
@@ -76,7 +73,7 @@ class SimpleMainWindow(MainWindow):
 
             raise_action.triggered.connect(_raise)
 
-        with _tool_bar.add_action(
+        with self.tool_bar.action(
             "A",
             CoreIcon(
                 ":/tb/icons/cube-hole.svg",
@@ -84,7 +81,7 @@ class SimpleMainWindow(MainWindow):
         ):
             pass
 
-        with _tool_bar.add_action(
+        with self.tool_bar.action(
             "Clear Settings",
             CoreIcon(
                 ":/tb/icons/one-point-circle.svg",
@@ -92,9 +89,9 @@ class SimpleMainWindow(MainWindow):
         ) as clear_action:
             clear_action.triggered.connect(lambda: PreferencesService.clear_all())
 
-        _tool_bar.add_stretch()
+        self.tool_bar.add_stretch()
 
-        _tool_bar.addAction(self._prefs_action)
+        self.tool_bar.addAction(self._prefs_action)
 
         # -----
         _central_layout = QVBoxLayout()

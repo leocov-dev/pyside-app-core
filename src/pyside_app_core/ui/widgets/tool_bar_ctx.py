@@ -1,10 +1,10 @@
 import contextlib
-from collections.abc import Iterator
+from collections.abc import Generator
 from typing import Literal
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QMainWindow, QSizePolicy, QToolBar, QToolButton, QWidget
+from PySide6.QtWidgets import QMainWindow, QSizePolicy, QToolBar, QWidget
 
 from pyside_app_core.mixin.object_name_mixin import ObjectNameMixin
 
@@ -21,7 +21,7 @@ _TOOL_BAR_AREA_MAP = {
 class ToolBarContext(ObjectNameMixin, QToolBar):
     def __init__(self, area: ToolBarArea, parent: QMainWindow, *, movable: bool = False) -> None:
         self._area = area
-        self._actions: list[QAction] = []
+        self._actions: dict[str, QAction] = {}
         self._spacing = 0
         self._spacing_items: list[QWidget] = []
 
@@ -50,31 +50,41 @@ class ToolBarContext(ObjectNameMixin, QToolBar):
         self.addWidget(stretch)
 
     def add_spacer(self, width: int = 10) -> None:
+        """fixed width constant spacer"""
         spacer = QWidget(self)
         spacer.setDisabled(True)
         spacer.setFixedSize(QSize(width, 1))
+        self._spacing_items.append(spacer)
         self.addWidget(spacer)
+
+    def remove_last_spacer(self) -> None:
+        spacer = self._spacing_items.pop()
+        spacer.deleteLater()
 
     def setSpacing(self, spacing: int) -> None:
         self._spacing = spacing
         for item in self._spacing_items:
             item.setFixedSize(QSize(spacing, 1))
 
+    def addAction(self, action: QAction) -> None:  # type: ignore[override]
+        self._actions[action.text()] = action
+        super().addAction(action)
+        # custom spacing between widgets
+        self.add_spacer(self._spacing)
+
     @contextlib.contextmanager
-    def add_action(self, name: str, icon: QIcon | None = None) -> Iterator[QAction]:
-        action = QAction(text=name, parent=self)
-        action.setObjectName(f"ToolBarAction_{name}")
+    def action(self, name: str, icon: QIcon | None = None) -> Generator[QAction, None, None]:
+        if name not in self._actions:
+            action = self._actions[name] = QAction(text=name, parent=self)
+            action.setObjectName(f"ToolBarAction_{name}")
+            self.addAction(action)
+        else:
+            action = self._actions[name]
+
         if icon:
             action.setIcon(icon)
 
-        self._actions.append(action)
-        if len(self._actions) == 1:
-            _ = next(c for c in self.children() if isinstance(c, QToolButton))
         yield action
-        self.addAction(action)
 
-        spacer = QWidget(self)
-        spacer.setDisabled(True)
-        spacer.setFixedSize(QSize(self._spacing, 1))
-        self._spacing_items.append(spacer)
-        self.addWidget(spacer)
+    def get_action(self, name: str) -> QAction:
+        return self._actions[name]

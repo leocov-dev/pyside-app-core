@@ -13,7 +13,8 @@ from PySide6.QtGui import QShowEvent
 from PySide6.QtWidgets import (
     QDialog,
     QHBoxLayout,
-    QPushButton, QSizePolicy,
+    QPushButton,
+    QSizePolicy,
     QSplitter,
     QStackedWidget,
     QTreeView,
@@ -29,7 +30,6 @@ from pyside_app_core.ui.widgets.window_settings_mixin import WindowSettingsMixin
 
 
 class PreferencesWidget(WindowSettingsMixin, QWidget):
-
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent=parent)
 
@@ -143,7 +143,6 @@ class _OnlyGroupsProxy(QSortFilterProxyModel):
 
 
 class PreferencesDialog(QDialog):
-
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
 
