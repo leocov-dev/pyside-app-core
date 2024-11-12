@@ -33,12 +33,12 @@ class SerialService(QObject):
 
     DEBUG = True
 
-    def __init__(self, transcoder: type[TranscoderInterface], parent: QObject):
+    def __init__(self, transcoder: type[TranscoderInterface] | None = None, parent: QObject | None = None):
         super().__init__(parent=parent)
 
         self._port_filter: PortFilter = _noop
 
-        self._transcoder: type[TranscoderInterface] = transcoder
+        self._transcoder: type[TranscoderInterface] | None = transcoder
         self._com: QSerialPort | None = None
         self._buffer = bytearray()
 
@@ -52,6 +52,9 @@ class SerialService(QObject):
         open_ok = com.open(QIODevice.OpenModeFlag.ReadWrite)
 
         return com, None if open_ok else com.error()
+
+    def set_transcoder(self, transcoder: type[TranscoderInterface]) -> None:
+        self._transcoder = transcoder
 
     def set_port_filter(self, func: PortFilter) -> None:
         self._port_filter = func
@@ -98,6 +101,9 @@ class SerialService(QObject):
 
     def send_data(self, data: Encodable) -> None:
         """send data to the connected port"""
+        if not self._transcoder:
+            return
+
         if self.DEBUG:
             log.debug(f"sending data: {data}")
 
@@ -131,7 +137,7 @@ class SerialService(QObject):
         super().deleteLater()
 
     def _on_data(self, *_: object, **__: object) -> None:
-        if not self._com:
+        if not self._com or not self._transcoder:
             return
 
         raw = self._com.readAll()

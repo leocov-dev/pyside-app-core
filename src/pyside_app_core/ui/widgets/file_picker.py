@@ -125,7 +125,7 @@ class FilePicker(QWidget):
                 str(starting_dir),
                 self._browse_config.selection_filter or "",
                 "",
-                cast(QFileDialog.Option, self._browse_config.options),
+                self._browse_config.options or QFileDialog.Option.ReadOnly,
             )
         else:
             path = QFileDialog.getExistingDirectory(
