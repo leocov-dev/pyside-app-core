@@ -2,6 +2,8 @@ import platform
 import re
 import shutil
 import subprocess
+import tarfile
+import zipfile
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -69,11 +71,11 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
         self.app.display_debug("Packaging App Executable...")
         match plat := platform.system():
             case "Darwin":
-                artifact = self._bundle_macos_dmg(app_build_bundle)
+                artifact = self._bundle_macos(app_build_bundle)
             case "Linux":
-                artifact = self._linux_remove_bin_extension(app_build_bundle)
+                artifact = self._bundle_linux(app_build_bundle)
             case "Windows":
-                artifact = self._win_copy(app_build_bundle)
+                artifact = self._bundle_windows(app_build_bundle)
             case _:
                 raise PySideBuildError(f"Unsupported platform: {plat}")
 
@@ -133,7 +135,7 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
 
         return Path(app_bundle)
 
-    def _bundle_macos_dmg(
+    def _bundle_macos(
         self,
         app: Path,
     ) -> Path:
@@ -173,19 +175,21 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
 
         return dmg_target
 
-    def _linux_remove_bin_extension(
+    def _bundle_linux(
         self,
-        with_bin: Path,
+        bundle: Path,
     ) -> Path:
-        without_bin = self.config.dist_dir / with_bin.name.removesuffix(".bin")
+        tar_target = self.config.dist_dir / f"{self.metadata.name}-linux.tar.gz"
 
-        shutil.copy(with_bin, without_bin)
+        with tarfile.open(tar_target, "w:gz") as tar:
+            tar.add(bundle, arcname=bundle.name.removesuffix(".bin"))
 
-        return without_bin
+        return tar_target
 
-    def _win_copy(self, bundle: Path) -> Path:
-        output = self.config.dist_dir / bundle.name
+    def _bundle_windows(self, bundle: Path) -> Path:
+        zip_target = self.config.dist_dir / f"{self.metadata.name}-win.zip"
 
-        shutil.copy(bundle, output)
+        with zipfile.ZipFile(zip_target, "w") as zip:
+            zip.write(bundle, arcname=bundle.name)
 
-        return output
+        return zip_target
