@@ -70,13 +70,8 @@ def build_deploy_spec(
     ]
 
     qt_plugins = [
-        "platforms/darwin",
-        "platformthemes",
         "platforms",
-        "xcbglintegrations",
         "iconengines",
-        "egldeviceintegrations",
-        "platforminputcontexts",
         "imageformats",
         "generic",
         "styles",
