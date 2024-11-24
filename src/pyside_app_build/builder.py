@@ -130,7 +130,12 @@ class PySideAppBuilder(BuilderInterface[PySideAppBuildConfig, PluginManager]):
         if out.returncode != 0:
             raise PySideBuildError(f"PySide Deploy failed: {out.stderr}")
 
-        app_bundle = re.findall(r"\[DEPLOY] Executed file created in (.+)", out.stdout, re.MULTILINE)[0]
+        match_lines = re.findall(r"\[DEPLOY] Executed file created in (.+)", out.stdout, re.MULTILINE)
+        if not match_lines:
+            raise PySideBuildError(f"Failed to find output file in text: {out.stdout}")
+
+        app_bundle = match_lines[0]
+
         self.app.display_debug(f'---> "{app_bundle}"')
 
         return Path(app_bundle)
