@@ -72,7 +72,6 @@ def build_deploy_spec(
     qt_plugins = [
         "platforms/darwin",
         "platformthemes",
-        "accessiblebridge",
         "platforms",
         "xcbglintegrations",
         "iconengines",
